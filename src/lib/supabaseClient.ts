@@ -1,0 +1,8 @@
+import { createClient } from '@supabase/supabase-js';
+
+const SUPABASE_URL = 'https://placeholder.supabase.co';
+const SUPABASE_ANON_KEY = 'placeholder';
+
+console.warn('⚠️ Supabase não configurado. Usando placeholders. O app funcionará em modo demo/mock.');
+
+export const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
