@@ -367,13 +367,13 @@ export const Admin: React.FC = () => {
                         <td className="p-4">
                           <div className="flex gap-1">
                             {Object.keys(mat.assets).map(lang => (
-                              <span key={lang} className="text-[10px] px-1.5 py-0.5 rounded uppercase font-semibold" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>{lang.split('-')[0]}</span>
+                              <button key={lang} onClick={() => setViewingMaterial({ mat, lang: lang as Language })} className="text-[10px] px-1.5 py-0.5 rounded uppercase font-semibold cursor-pointer hover:opacity-80 transition-opacity" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>{lang.split('-')[0]}</button>
                             ))}
                           </div>
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex justify-end gap-1">
-                            <button onClick={() => handleView(mat)} className="p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}><Eye size={18} /></button>
+                            <button onClick={() => handleView(mat)} className="p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }} title="Visualizar"><Eye size={18} /></button>
                             <button onClick={() => handleToggleActive(mat)} className="p-2 rounded-lg" style={{ color: mat.active ? 'var(--color-text-muted)' : 'var(--color-text-muted)' }}>{mat.active ? <Eye size={18} /> : <EyeOff size={18} />}</button>
                             <button onClick={() => handleOpenEdit(mat)} className="p-2 rounded-lg" style={{ color: 'var(--color-accent)' }}><Edit size={18} /></button>
                             <button onClick={() => handleDeleteMaterial(mat.id)} className="p-2 rounded-lg text-red-500"><Trash2 size={18} /></button>
