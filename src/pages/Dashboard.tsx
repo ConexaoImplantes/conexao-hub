@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { mockDb } from '../../lib/mockDb';
-import { Material, Language, MaterialType } from '../../types';
-import { MaterialCard } from '../../components/hub/MaterialCard';
-import { ViewerModal } from '../../components/hub/ViewerModal';
+import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { mockDb } from '../lib/mockDb';
+import { Material, Language, MaterialType } from '../types';
+import { MaterialCard } from '../components/hub/MaterialCard';
+import { ViewerModal } from '../components/hub/ViewerModal';
 import { Search, Grid, FileText, Image as ImageIcon, Video, Filter, ChevronRight, Layers, Sparkles } from 'lucide-react';
 
 export const Dashboard: React.FC = () => {
@@ -148,7 +148,7 @@ export const Dashboard: React.FC = () => {
 
         {filteredMaterials.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-24 backdrop-blur-sm border border-white/5 rounded-[2rem] animate-fade-in text-center px-4" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
-            <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-black/5 ring-4" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', ringColor: 'var(--color-surface)' }}>
+            <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg shadow-black/5 ring-4" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
               <Filter size={32} className="opacity-50" />
             </div>
             <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhum resultado encontrado</h3>
