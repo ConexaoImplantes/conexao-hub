@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Material, Language } from '../../types';
+import { Material, Language, MaterialType } from '../../types';
 import { X, ExternalLink, RefreshCw, PlayCircle, Youtube } from 'lucide-react';
 
 interface ViewerModalProps {
@@ -62,6 +62,17 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
   const embedConfig = useMemo(() => getEmbedConfig(asset.url), [asset.url]);
 
+  const getResolvedUrl = (url: string, type: MaterialType): string => {
+    const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (!driveMatch?.[1]) return url;
+    const id = driveMatch[1];
+    if (type === 'image') return `https://drive.google.com/uc?export=view&id=${id}`;
+    if (type === 'pdf') return `https://drive.google.com/file/d/${id}/preview`;
+    return url;
+  };
+
+  const resolvedUrl = useMemo(() => getResolvedUrl(asset.url, material.type), [asset.url, material.type]);
+
   return createPortal(
     <div
       className="fixed inset-0 bg-black flex flex-col animate-fade-in select-none"
@@ -116,14 +127,14 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
             if (material.type === 'image') {
                 return (
                     <div className="relative w-full h-full flex items-center justify-center p-4">
-                        <img src={asset.url} alt={displayTitle} className="max-w-full max-h-full object-contain shadow-2xl pointer-events-none" draggable="false" />
+                        <img src={resolvedUrl} alt={displayTitle} className="max-w-full max-h-full object-contain shadow-2xl pointer-events-none" draggable="false" />
                     </div>
                 );
             }
             if (material.type === 'pdf') {
                 return (
                     <div className="w-full h-full max-w-6xl mx-auto pt-20 pb-4 px-4">
-                        <iframe src={`${asset.url}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} className="w-full h-full rounded-lg bg-white shadow-2xl" title="PDF Viewer" />
+                        <iframe src={`${resolvedUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} className="w-full h-full rounded-lg bg-white shadow-2xl" title="PDF Viewer" />
                     </div>
                 );
             }
