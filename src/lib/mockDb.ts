@@ -96,13 +96,22 @@ export const mockDb = {
   getProfileById: async (id: string): Promise<UserProfile | null> => {
     if (id.startsWith('mock-')) return localUsers.find(u => u.id === id) || null;
 
-    const { data, error } = await supabase.from('profiles').select('*, user_roles(role)').eq('id', id).single();
-    if (error) {
-        if (error.code === 'PGRST116') return null;
-        if (error.code === '42P01') throw error;
-        console.error("DB Read Error:", error);
+    const [profileResult, roleResult] = await Promise.all([
+      supabase.from('profiles').select('*').eq('id', id).single(),
+      supabase.from('user_roles').select('role').eq('user_id', id).limit(1).single()
+    ]);
+
+    if (profileResult.error) {
+        if (profileResult.error.code === 'PGRST116') return null;
+        if (profileResult.error.code === '42P01') throw profileResult.error;
+        console.error("DB Read Error:", profileResult.error);
         return null;
     }
+
+    const data = {
+      ...profileResult.data,
+      user_roles: roleResult.data ? [roleResult.data] : []
+    };
     return mapProfileFromDb(data);
   },
 
@@ -199,9 +208,16 @@ export const mockDb = {
   },
 
   getUsers: async (): Promise<UserProfile[]> => {
-    const { data, error } = await supabase.from('profiles').select('*, user_roles(role)').order('name');
+    const { data: profiles, error } = await supabase.from('profiles').select('*').order('name');
     if (error) throw error;
-    return (data || []).map(mapProfileFromDb);
+    
+    const { data: roles } = await supabase.from('user_roles').select('user_id, role');
+    const roleMap = new Map((roles || []).map((r: any) => [r.user_id, r.role]));
+    
+    return (profiles || []).map((p: any) => mapProfileFromDb({
+      ...p,
+      user_roles: roleMap.has(p.id) ? [{ role: roleMap.get(p.id) }] : []
+    }));
   },
 
   getMaterials: async (role: Role): Promise<Material[]> => {
