@@ -1,0 +1,375 @@
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
+import { Material, Language, MaterialType, Role, MaterialAsset } from '../../types';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { X, Save, FileText, Image as ImageIcon, Video, Check, Globe, Users, Shield, Link as LinkIcon, Youtube, AlertCircle, Play } from 'lucide-react';
+
+interface TypeCardProps {
+  value: MaterialType;
+  icon: any;
+  label: string;
+  currentType: MaterialType;
+  onSelect: (val: MaterialType) => void;
+}
+
+const TypeCard = ({ value, icon: Icon, label, currentType, onSelect }: TypeCardProps) => (
+  <button
+    type="button"
+    onClick={() => onSelect(value)}
+    className={`
+      relative flex-1 flex flex-col items-center justify-center p-4 rounded-xl transition-all duration-200
+      ${currentType === value
+        ? 'shadow-sm ring-2'
+        : 'hover:opacity-80'}
+    `}
+    style={{
+      backgroundColor: currentType === value ? 'color-mix(in srgb, var(--color-accent) 5%, transparent)' : 'var(--color-surface)',
+      color: currentType === value ? 'var(--color-accent)' : 'var(--color-text-muted)',
+      ...(currentType === value ? { ringColor: 'var(--color-accent)' } : {})
+    }}
+  >
+    <Icon size={24} className="mb-2" />
+    <span className="text-xs font-bold uppercase tracking-wide">{label}</span>
+    {currentType === value && (
+      <div className="absolute top-2 right-2" style={{ color: 'var(--color-accent)' }}>
+        <Check size={16} />
+      </div>
+    )}
+  </button>
+);
+
+const VideoPreview = ({ url }: { url: string }) => {
+  if (!url) return null;
+
+  let embedUrl = '';
+  const cleanUrl = url.trim();
+
+  const youtubeMatch = cleanUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+  if (youtubeMatch && youtubeMatch[1]) {
+     embedUrl = `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&rel=0&modestbranding=1`;
+  } else if (cleanUrl.includes('drive.google.com')) {
+      const driveIdMatch = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+      if (driveIdMatch && driveIdMatch[1]) {
+          embedUrl = `https://drive.google.com/file/d/${driveIdMatch[1]}/preview`;
+      }
+  } else if (cleanUrl.match(/\.(mp4|webm|ogg)$/i)) {
+      return (
+        <div className="mt-4 rounded-xl overflow-hidden bg-black aspect-video relative shadow-lg">
+             <video src={cleanUrl} controls className="w-full h-full object-contain" />
+        </div>
+      );
+  }
+
+  if (embedUrl) {
+      return (
+        <div className="mt-4 rounded-xl overflow-hidden bg-black aspect-video relative shadow-lg group">
+             <iframe src={embedUrl} className="w-full h-full" allowFullScreen title="Preview" />
+             <div className="absolute top-2 right-2 bg-black/70 text-white text-[10px] px-2 py-1 rounded backdrop-blur-md pointer-events-none">
+                Preview
+             </div>
+        </div>
+      );
+  }
+
+  return (
+    <div className="mt-4 rounded-xl p-4 flex items-center justify-center gap-2 text-sm" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
+        <AlertCircle size={16} />
+        Não foi possível gerar preview para este link, mas ele será salvo.
+    </div>
+  );
+};
+
+interface MaterialFormModalProps {
+  initialData?: Material | null;
+  onClose: () => void;
+  onSave: (material: any) => Promise<void>;
+}
+
+export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialData, onClose, onSave }) => {
+  const { t } = useLanguage();
+  const languages: Language[] = ['pt-br', 'en-us', 'es-es'];
+  const allRoles: Role[] = ['client', 'distributor', 'consultant'];
+
+  const [titles, setTitles] = useState<Partial<Record<Language, string>>>({ 'pt-br': '' });
+  const [type, setType] = useState<MaterialType>('pdf');
+  const [allowedRoles, setAllowedRoles] = useState<Role[]>(['client']);
+  const [active, setActive] = useState(true);
+  const [assets, setAssets] = useState<Partial<Record<Language, MaterialAsset>>>({});
+  const [activeTab, setActiveTab] = useState<Language>('pt-br');
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (initialData) {
+      setTitles(initialData.title);
+      setType(initialData.type);
+      setAllowedRoles(initialData.allowedRoles);
+      setActive(initialData.active);
+      setAssets(initialData.assets);
+    }
+  }, [initialData]);
+
+  const handleTitleChange = (lang: Language, value: string) => {
+    setTitles(prev => ({ ...prev, [lang]: value }));
+  };
+
+  const handleUrlPasteOrChange = (lang: Language, value: string) => {
+    let finalValue = value;
+    if (value.includes('<iframe') && value.includes('src=')) {
+        const srcMatch = value.match(/src=["'](.*?)["']/);
+        if (srcMatch && srcMatch[1]) {
+            finalValue = srcMatch[1];
+        }
+    }
+    setAssets(prev => {
+      const current = prev[lang] || { url: '', status: 'published' as const };
+      return { ...prev, [lang]: { ...current, url: finalValue } };
+    });
+  };
+
+  const handleSubtitleChange = (lang: Language, value: string) => {
+    setAssets(prev => {
+      const current = prev[lang] || { url: '', status: 'published' as const };
+      return { ...prev, [lang]: { ...current, subtitleUrl: value } };
+    });
+  };
+
+  const toggleRole = (role: Role) => {
+    setAllowedRoles(prev =>
+      prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]
+    );
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+
+    const cleanedAssets: Partial<Record<Language, MaterialAsset>> = {};
+    const cleanedTitles: Partial<Record<Language, string>> = {};
+    let hasAtLeastOneValidVersion = false;
+
+    languages.forEach(lang => {
+        const url = assets[lang]?.url?.trim();
+        const title = titles[lang]?.trim();
+        if (url && title) {
+            hasAtLeastOneValidVersion = true;
+            cleanedAssets[lang] = { url, subtitleUrl: assets[lang]?.subtitleUrl?.trim(), status: assets[lang]?.status || 'published' };
+            cleanedTitles[lang] = title;
+        }
+    });
+
+    if (!hasAtLeastOneValidVersion) {
+        setError('Preencha o Título e a URL para pelo menos um idioma.');
+        return;
+    }
+    if (allowedRoles.length === 0) {
+        setError('Selecione pelo menos um perfil de acesso.');
+        return;
+    }
+
+    const payload = {
+      ...(initialData || {}),
+      title: cleanedTitles,
+      type,
+      allowedRoles,
+      active,
+      assets: cleanedAssets
+    };
+
+    await onSave(payload);
+    onClose();
+  };
+
+  const hasContent = (lang: Language) => {
+    return (titles[lang]?.length || 0) > 0 || (assets[lang]?.url?.length || 0) > 0;
+  };
+
+  const getUrlPlaceholder = () => {
+    if (type === 'video') return "Cole o link do YouTube, Drive ou MP4 aqui...";
+    if (type === 'image') return t('url.placeholder.image');
+    return t('url.placeholder.pdf');
+  };
+
+  return createPortal(
+    <div className="fixed inset-0 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-all animate-fade-in" style={{ zIndex: 9999 }}>
+      <div className="rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-slide-up" style={{ backgroundColor: 'var(--color-surface)' }}>
+
+        <div className="px-6 py-4 flex justify-between items-center z-10 shrink-0" style={{ backgroundColor: 'var(--color-surface)' }}>
+          <div>
+            <h3 className="font-bold text-xl" style={{ color: 'var(--color-text-main)' }}>
+              {initialData ? t('edit.material') : t('add.material')}
+            </h3>
+            <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Preencha as informações globais e o conteúdo por idioma.</p>
+          </div>
+          <button onClick={onClose} className="p-2 rounded-full transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+            <X size={24} />
+          </button>
+        </div>
+
+        {error && (
+            <div className="bg-red-50 dark:bg-red-900/20 px-6 py-3 flex items-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium">
+                <AlertCircle size={16} />
+                {error}
+            </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
+
+          <div className="w-full md:w-1/3 p-6 overflow-y-auto" style={{ backgroundColor: 'var(--color-bg)' }}>
+            <div className="space-y-6">
+              <div>
+                <label className="text-xs font-bold uppercase mb-3 block tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Tipo de Material</label>
+                <div className="grid grid-cols-3 gap-2">
+                  <TypeCard value="pdf" icon={FileText} label="PDF" currentType={type} onSelect={setType} />
+                  <TypeCard value="image" icon={ImageIcon} label="IMG" currentType={type} onSelect={setType} />
+                  <TypeCard value="video" icon={Video} label="Video" currentType={type} onSelect={setType} />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase mb-3 flex items-center gap-2 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                  <Users size={14} /> {t('permissions')}
+                </label>
+                <div className="space-y-2">
+                  {allRoles.map(role => (
+                    <button
+                      key={role}
+                      type="button"
+                      onClick={() => toggleRole(role)}
+                      className="w-full flex items-center justify-between p-3 rounded-lg transition-all text-sm"
+                      style={{
+                        backgroundColor: 'var(--color-surface)',
+                        color: allowedRoles.includes(role) ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                        ...(allowedRoles.includes(role) ? { boxShadow: '0 0 0 1px var(--color-accent)' } : {})
+                      }}
+                    >
+                      <span className="font-medium">{t(`role.${role}`)}</span>
+                      {allowedRoles.includes(role) && <Check size={16} />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-bold uppercase mb-3 flex items-center gap-2 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                  <Shield size={14} /> {t('status')}
+                </label>
+                <div
+                  onClick={() => setActive(!active)}
+                  className={`cursor-pointer p-4 rounded-xl flex items-center justify-between transition-colors ${active ? 'bg-green-500/10 text-green-600 dark:text-green-400' : ''}`}
+                  style={!active ? { backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' } : {}}
+                >
+                  <span className="font-medium">{active ? t('active') : t('inactive')}</span>
+                  <div className={`w-10 h-6 rounded-full relative transition-colors ${active ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                    <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm ${active ? 'left-5' : 'left-1'}`} />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex-1 flex flex-col min-h-0" style={{ backgroundColor: 'var(--color-surface)' }}>
+            <div className="flex px-6 pt-4 gap-6 overflow-x-auto shrink-0">
+              {languages.map(lang => {
+                const isCompleted = hasContent(lang);
+                const label = lang === 'pt-br' ? 'Português' : lang === 'en-us' ? 'English' : 'Español';
+                const flag = lang === 'pt-br' ? '🇧🇷' : lang === 'en-us' ? '🇺🇸' : '🇪🇸';
+                return (
+                  <button
+                    key={lang}
+                    type="button"
+                    onClick={() => setActiveTab(lang)}
+                    className="pb-4 px-1 relative font-medium text-sm transition-colors whitespace-nowrap flex items-center gap-2 outline-none"
+                    style={{ color: activeTab === lang ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
+                  >
+                    <span className="text-base">{flag}</span> {label}
+                    {isCompleted && <span className="w-1.5 h-1.5 rounded-full bg-green-500 ml-1" title="Conteúdo inserido"></span>}
+                    {activeTab === lang && <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: 'var(--color-accent)' }} />}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="flex-1 p-6 overflow-y-auto min-h-0" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 30%, transparent)' }}>
+              <div className="max-w-xl mx-auto space-y-6 animate-fade-in">
+                <div className="space-y-4">
+                  <label className="block">
+                    <span className="text-sm font-semibold mb-1.5 block" style={{ color: 'var(--color-text-main)' }}>
+                      {t('title')} <span className="text-red-500">*</span>
+                    </span>
+                    <input
+                      type="text"
+                      placeholder={`Ex: Catálogo 2024 (${activeTab})`}
+                      className="w-full p-3 rounded-lg outline-none transition-all shadow-sm focus:ring-2"
+                      style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                      value={titles[activeTab] || ''}
+                      onChange={e => handleTitleChange(activeTab, e.target.value)}
+                    />
+                  </label>
+
+                  <label className="block group">
+                    <span className="text-sm font-semibold mb-1.5 flex items-center justify-between" style={{ color: 'var(--color-text-main)' }}>
+                       <span>URL <span className="text-red-500">*</span></span>
+                       {type === 'video' && (
+                           <span className="text-[10px] font-normal px-2 py-0.5 rounded" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
+                               Aceita Embed Codes e Links
+                           </span>
+                       )}
+                    </span>
+                    <div className="relative">
+                        <input
+                          type="text"
+                          placeholder={getUrlPlaceholder()}
+                          className="w-full p-3 pl-10 rounded-lg outline-none transition-all font-mono text-sm shadow-sm focus:ring-2"
+                          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                          value={assets[activeTab]?.url || ''}
+                          onChange={(e) => handleUrlPasteOrChange(activeTab, e.target.value)}
+                        />
+                        <LinkIcon className="absolute left-3 top-3 transition-colors" size={18} style={{ color: 'var(--color-text-muted)' }} />
+                    </div>
+                  </label>
+
+                  {type === 'video' && assets[activeTab]?.url && (
+                      <div className="animate-fade-in">
+                          <VideoPreview url={assets[activeTab]!.url!} />
+                      </div>
+                  )}
+
+                  {type === 'video' && (
+                    <label className="block animate-fade-in pt-2">
+                      <span className="text-sm font-semibold mb-1.5 block" style={{ color: 'var(--color-text-main)' }}>
+                        {t('asset.subtitle')} <span className="text-xs font-normal" style={{ color: 'var(--color-text-muted)' }}>(Opcional)</span>
+                      </span>
+                      <input
+                        type="text"
+                        placeholder="https://exemplo.com/legenda.vtt"
+                        className="w-full p-3 rounded-lg outline-none transition-all font-mono text-sm shadow-sm focus:ring-2"
+                        style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                        value={assets[activeTab]?.subtitleUrl || ''}
+                        onChange={(e) => handleSubtitleChange(activeTab, e.target.value)}
+                      />
+                    </label>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <div className="p-4 flex justify-end gap-3 shrink-0 z-20 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]" style={{ backgroundColor: 'var(--color-surface)' }}>
+              <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                {t('cancel')}
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="px-6 py-2.5 rounded-lg text-white hover:opacity-90 font-medium flex items-center gap-2 shadow-lg transition-transform active:scale-95"
+                style={{ backgroundColor: 'var(--color-accent)' }}
+              >
+                <Save size={18} />
+                {t('save')}
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>,
+    document.body
+  );
+};
