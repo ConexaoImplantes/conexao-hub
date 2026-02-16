@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useBrand } from '../../contexts/BrandContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useBrand } from '../contexts/BrandContext';
 import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Box, Sparkles, Info, Briefcase, User, Database, AlertTriangle, ChevronRight } from 'lucide-react';
-import { seedUsers } from '../../lib/seed';
-import { Role } from '../../types';
-import { SqlSetupModal } from '../../components/hub/SqlSetupModal';
+import { seedUsers } from '../lib/seed';
+import { Role } from '../types';
+import { SqlSetupModal } from '../components/hub/SqlSetupModal';
 
 export const AuthPage: React.FC = () => {
   const { login, register, loginMock, isDbMissing } = useAuth();
@@ -284,6 +284,7 @@ export const AuthPage: React.FC = () => {
         </div>
 
         {showSqlSetup && <SqlSetupModal onClose={() => setShowSqlSetup(false)} />}
+    </div>
     </div>
   );
 };

@@ -1,15 +1,15 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { mockDb } from '../../lib/mockDb';
-import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog } from '../../types';
-import { useLanguage } from '../../contexts/LanguageContext';
-import { useBrand } from '../../contexts/BrandContext';
+import { mockDb } from '../lib/mockDb';
+import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog } from '../types';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useBrand } from '../contexts/BrandContext';
 import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy } from 'lucide-react';
-import { MaterialFormModal } from '../../components/hub/MaterialFormModal';
-import { ViewerModal } from '../../components/hub/ViewerModal';
-import { UserCommunicationModal } from '../../components/hub/UserCommunicationModal';
-import { UserEditModal } from '../../components/hub/UserEditModal';
-import { ConfirmModal } from '../../components/hub/ConfirmModal';
+import { MaterialFormModal } from '../components/hub/MaterialFormModal';
+import { ViewerModal } from '../components/hub/ViewerModal';
+import { UserCommunicationModal } from '../components/hub/UserCommunicationModal';
+import { UserEditModal } from '../components/hub/UserEditModal';
+import { ConfirmModal } from '../components/hub/ConfirmModal';
 
 const ColorInput = ({ label, value, onChange, hint }: { label: string, value: string, onChange: (val: string) => void, hint: string }) => (
   <div className="space-y-1.5">
