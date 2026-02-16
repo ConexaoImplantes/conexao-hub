@@ -94,6 +94,31 @@ All colors MUST be HSL.
   }
 }
 
+/* Hub Conexao CSS Variables - injected dynamically by BrandContext */
+:root {
+  --color-bg: #f8fafc;
+  --color-surface: #ffffff;
+  --color-border: #e2e8f0;
+  --color-text-main: #1e293b;
+  --color-text-muted: #64748b;
+  --color-accent: #6366f1;
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #ef4444;
+}
+
+.animation-delay-2000 {
+  animation-delay: 2s;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @layer base {
   * {
     @apply border-border;

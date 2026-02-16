@@ -2,24 +2,60 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
+import { BrowserRouter } from "react-router-dom";
+import { ThemeProvider } from "./contexts/ThemeContext";
+import { LanguageProvider } from "./contexts/LanguageContext";
+import { BrandProvider } from "./contexts/BrandContext";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { Layout } from "./components/hub/Layout";
+import { GlobalEffects } from "./components/hub/GlobalEffects";
+import { AuthPage } from "./pages/AuthPage";
+import { Dashboard } from "./pages/Dashboard";
+import { Admin } from "./pages/Admin";
 
 const queryClient = new QueryClient();
+
+const AppContent = () => {
+  const { user, isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <div className="w-12 h-12 border-4 border-t-transparent rounded-full animate-spin" style={{ borderColor: 'var(--color-accent)', borderTopColor: 'transparent' }} />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated || !user) {
+    return <AuthPage />;
+  }
+
+  const isAdmin = user.role === 'super_admin';
+
+  return (
+    <Layout>
+      <GlobalEffects />
+      {isAdmin ? <Admin /> : <Dashboard />}
+    </Layout>
+  );
+};
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider>
+        <LanguageProvider>
+          <BrandProvider>
+            <BrowserRouter>
+              <AuthProvider>
+                <Toaster />
+                <Sonner />
+                <AppContent />
+              </AuthProvider>
+            </BrowserRouter>
+          </BrandProvider>
+        </LanguageProvider>
+      </ThemeProvider>
     </TooltipProvider>
   </QueryClientProvider>
 );
