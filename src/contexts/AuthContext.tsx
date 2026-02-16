@@ -71,18 +71,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (profile) {
         setUser(profile);
       } else {
-        console.warn("Perfil não encontrado para usuário logado. Tentando recuperar...");
-        const { data: userData } = await supabase.auth.getUser();
-        if (userData.user) {
-             await ensureProfile(userId, {
-                 name: userData.user.user_metadata.name || 'Usuário Recuperado',
-                 email: userData.user.email,
-                 role: userData.user.user_metadata.role || 'client',
-                 whatsapp: userData.user.user_metadata.whatsapp || '',
-                 cro: userData.user.user_metadata.cro
-             });
-             const newProfile = await mockDb.getProfileById(userId);
-             if (newProfile) setUser(newProfile);
+        console.warn("Perfil não encontrado para usuário logado. O trigger pode estar em execução, tentando novamente...");
+        // Wait briefly for the trigger to complete profile creation
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        const retryProfile = await mockDb.getProfileById(userId);
+        if (retryProfile) {
+          setUser(retryProfile);
+        } else {
+          console.error("Perfil não encontrado após retry.");
         }
       }
     } catch (error: any) {
