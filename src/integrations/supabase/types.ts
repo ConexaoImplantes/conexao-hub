@@ -14,16 +14,216 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      access_logs: {
+        Row: {
+          id: string
+          language: Database["public"]["Enums"]["app_language"]
+          material_id: string | null
+          timestamp: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          language?: Database["public"]["Enums"]["app_language"]
+          material_id?: string | null
+          timestamp?: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          language?: Database["public"]["Enums"]["app_language"]
+          material_id?: string | null
+          timestamp?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_logs_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      material_assets: {
+        Row: {
+          created_at: string
+          id: string
+          language: Database["public"]["Enums"]["app_language"]
+          material_id: string
+          status: Database["public"]["Enums"]["translation_status"]
+          subtitle_url: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language?: Database["public"]["Enums"]["app_language"]
+          material_id: string
+          status?: Database["public"]["Enums"]["translation_status"]
+          subtitle_url?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: Database["public"]["Enums"]["app_language"]
+          material_id?: string
+          status?: Database["public"]["Enums"]["translation_status"]
+          subtitle_url?: string | null
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "material_assets_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      materials: {
+        Row: {
+          active: boolean
+          allowed_roles: Database["public"]["Enums"]["app_role"][]
+          created_at: string
+          id: string
+          title: Json
+          type: Database["public"]["Enums"]["material_type"]
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          allowed_roles?: Database["public"]["Enums"]["app_role"][]
+          created_at?: string
+          id?: string
+          title?: Json
+          type?: Database["public"]["Enums"]["material_type"]
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          allowed_roles?: Database["public"]["Enums"]["app_role"][]
+          created_at?: string
+          id?: string
+          title?: Json
+          type?: Database["public"]["Enums"]["material_type"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          allowed_types: Database["public"]["Enums"]["material_type"][] | null
+          created_at: string
+          cro: string | null
+          email: string
+          id: string
+          name: string
+          preferences: Json
+          status: Database["public"]["Enums"]["app_status"]
+          updated_at: string
+          whatsapp: string | null
+        }
+        Insert: {
+          allowed_types?: Database["public"]["Enums"]["material_type"][] | null
+          created_at?: string
+          cro?: string | null
+          email: string
+          id: string
+          name: string
+          preferences?: Json
+          status?: Database["public"]["Enums"]["app_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Update: {
+          allowed_types?: Database["public"]["Enums"]["material_type"][] | null
+          created_at?: string
+          cro?: string | null
+          email?: string
+          id?: string
+          name?: string
+          preferences?: Json
+          status?: Database["public"]["Enums"]["app_status"]
+          updated_at?: string
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      system_config: {
+        Row: {
+          app_name: string
+          id: number
+          logo_url: string | null
+          theme_dark: Json
+          theme_light: Json
+          updated_at: string
+          webhook_url: string | null
+        }
+        Insert: {
+          app_name?: string
+          id?: number
+          logo_url?: string | null
+          theme_dark?: Json
+          theme_light?: Json
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Update: {
+          app_name?: string
+          id?: number
+          logo_url?: string | null
+          theme_dark?: Json
+          theme_light?: Json
+          updated_at?: string
+          webhook_url?: string | null
+        }
+        Relationships: []
+      }
+      user_roles: {
+        Row: {
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      get_user_role: {
+        Args: { _user_id: string }
+        Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_language: "pt-br" | "en-us" | "es-es"
+      app_role: "client" | "distributor" | "consultant" | "super_admin"
+      app_status: "pending" | "active" | "inactive" | "rejected"
+      material_type: "pdf" | "image" | "video"
+      translation_status: "draft" | "review" | "published"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +350,12 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_language: ["pt-br", "en-us", "es-es"],
+      app_role: ["client", "distributor", "consultant", "super_admin"],
+      app_status: ["pending", "active", "inactive", "rejected"],
+      material_type: ["pdf", "image", "video"],
+      translation_status: ["draft", "review", "published"],
+    },
   },
 } as const

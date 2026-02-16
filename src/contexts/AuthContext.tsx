@@ -126,10 +126,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           id: userId,
           name: data.name,
           email: data.email,
-          role: data.role,
           whatsapp: data.whatsapp,
           cro: data.cro || null,
-          status: 'pending',
+          status: 'pending' as const,
           preferences: { theme: 'light', language: 'pt-br' }
       }, { onConflict: 'id' });
 

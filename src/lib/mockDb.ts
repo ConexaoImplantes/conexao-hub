@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { Material, UserProfile, Role, SystemConfig, UserStatus, AccessLog, Language, MaterialAsset } from '../types';
+import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset } from '../types';
 
 let isMockMode = false;
 
@@ -14,7 +14,7 @@ const mapProfileFromDb = (data: any): UserProfile => ({
   id: data.id,
   name: data.name,
   email: data.email,
-  role: data.role,
+  role: data.user_roles?.[0]?.role || data.role || 'client',
   whatsapp: data.whatsapp,
   cro: data.cro,
   status: data.status,
@@ -72,23 +72,23 @@ export const mockDb = {
       appName: data.app_name,
       logoUrl: data.logo_url,
       webhookUrl: data.webhook_url,
-      themeLight: data.theme_light,
-      themeDark: data.theme_dark
+      themeLight: data.theme_light as unknown as ColorScheme,
+      themeDark: data.theme_dark as unknown as ColorScheme
     };
   },
 
   updateSystemConfig: async (config: SystemConfig): Promise<void> => {
     const { error } = await supabase
       .from('system_config')
-      .upsert({
-        id: 1,
+      .update({
         app_name: config.appName,
         logo_url: config.logoUrl,
         webhook_url: config.webhookUrl,
-        theme_light: config.themeLight,
-        theme_dark: config.themeDark,
+        theme_light: config.themeLight as any,
+        theme_dark: config.themeDark as any,
         updated_at: new Date().toISOString()
-      });
+      })
+      .eq('id', 1);
 
     if (error) throw error;
   },
@@ -96,7 +96,7 @@ export const mockDb = {
   getProfileById: async (id: string): Promise<UserProfile | null> => {
     if (id.startsWith('mock-')) return localUsers.find(u => u.id === id) || null;
 
-    const { data, error } = await supabase.from('profiles').select('*').eq('id', id).single();
+    const { data, error } = await supabase.from('profiles').select('*, user_roles(role)').eq('id', id).single();
     if (error) {
         if (error.code === 'PGRST116') return null;
         if (error.code === '42P01') throw error;
@@ -149,10 +149,10 @@ export const mockDb = {
 
     const assetsToInsert = Object.entries(material.assets).map(([lang, asset]) => ({
         material_id: matData.id,
-        language: lang,
+        language: lang as 'pt-br' | 'en-us' | 'es-es',
         url: (asset as MaterialAsset).url,
         subtitle_url: (asset as MaterialAsset).subtitleUrl,
-        status: (asset as MaterialAsset).status
+        status: (asset as MaterialAsset).status as 'draft' | 'review' | 'published'
     }));
 
     if (assetsToInsert.length > 0) {
@@ -181,10 +181,10 @@ export const mockDb = {
 
     const assetsToInsert = Object.entries(material.assets).map(([lang, asset]) => ({
         material_id: material.id,
-        language: lang,
+        language: lang as 'pt-br' | 'en-us' | 'es-es',
         url: (asset as MaterialAsset).url,
         subtitle_url: (asset as MaterialAsset).subtitleUrl,
-        status: (asset as MaterialAsset).status
+        status: (asset as MaterialAsset).status as 'draft' | 'review' | 'published'
     }));
 
     if (assetsToInsert.length > 0) {
@@ -199,7 +199,7 @@ export const mockDb = {
   },
 
   getUsers: async (): Promise<UserProfile[]> => {
-    const { data, error } = await supabase.from('profiles').select('*').order('name');
+    const { data, error } = await supabase.from('profiles').select('*, user_roles(role)').order('name');
     if (error) throw error;
     return (data || []).map(mapProfileFromDb);
   },
