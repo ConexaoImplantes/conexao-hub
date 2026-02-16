@@ -66,7 +66,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
     if (!driveMatch?.[1]) return url;
     const id = driveMatch[1];
-    if (type === 'image') return `https://drive.google.com/uc?export=view&id=${id}`;
+    if (type === 'image') return `https://lh3.googleusercontent.com/d/${id}=s2000`;
     if (type === 'pdf') return `https://drive.google.com/file/d/${id}/preview`;
     return url;
   };
