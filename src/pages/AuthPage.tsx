@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Box, Sparkles, Info, Briefcase, User, Database, AlertTriangle, ChevronRight } from 'lucide-react';
+import { UserPlus, ArrowLeft, Eye, EyeOff, Database, AlertTriangle, ChevronRight, Info } from 'lucide-react';
 import { seedUsers } from '../lib/seed';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
@@ -38,7 +38,6 @@ export const AuthPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-
     if (!isLogin) {
       const demoEmails = ['admin@demo.com', 'client@demo.com', 'distributor@demo.com', 'consultant@demo.com'];
       if (demoEmails.includes(email.trim().toLowerCase())) {
@@ -46,13 +45,9 @@ export const AuthPage: React.FC = () => {
         return;
       }
     }
-
     try {
-      if (isLogin) {
-        await login(email, password);
-      } else {
-        await register({ name, email, password, whatsapp, role, cro });
-      }
+      if (isLogin) await login(email, password);
+      else await register({ name, email, password, whatsapp, role, cro });
     } catch (err: any) {
       let msg = err.message || 'Erro inesperado';
       if (msg === 'Invalid login credentials') msg = 'Email ou senha incorretos.';
@@ -66,24 +61,13 @@ export const AuthPage: React.FC = () => {
   };
 
   const handleMockLogin = async (role: Role) => {
-    try {
-      await loginMock(role);
-    } catch (e: any) {
-      setError('Erro no login mock: ' + e.message);
-    }
+    try { await loginMock(role); } catch (e: any) { setError('Erro no login mock: ' + e.message); }
   };
 
   const handleSeed = async () => {
     if (!window.confirm("Isso tentará criar as contas demo no banco de dados REAL. Continuar?")) return;
     setIsSeeding(true);
-    try {
-      const result = await seedUsers();
-      alert(result);
-    } catch (e: any) {
-      alert("Erro: " + e.message);
-    } finally {
-      setIsSeeding(false);
-    }
+    try { const result = await seedUsers(); alert(result); } catch (e: any) { alert("Erro: " + e.message); } finally { setIsSeeding(false); }
   };
 
   const clearInvite = () => {
@@ -93,199 +77,161 @@ export const AuthPage: React.FC = () => {
     setIsLogin(true);
   };
 
-  const renderLogo = (size: "normal" | "large" = "normal") =>
-  <div className="flex items-center gap-3 justify-center mb-8 animate-float">
-        {config.logoUrl ?
-    <img src={config.logoUrl} alt="Logo" className={`${size === "large" ? "h-28" : "h-16"} drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all duration-500 hover:scale-105`} /> :
-
-    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} bg-gradient-to-br from-[#0a1e3d] via-[#122a4f] to-[#c9a655] rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
-              {config.appName.substring(0, 2).toUpperCase()}
-            </div>
-    }
-     </div>;
-
+  const inputClasses = "w-full px-4 py-3.5 rounded-xl bg-primary/5 border border-border text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 focus:border-ring transition-all text-sm";
+  const labelClasses = "block text-xs font-semibold uppercase tracking-wider mb-1.5 pl-0.5 text-muted-foreground";
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-hidden">
-      <div className="absolute inset-0 z-[-2]" style={{ background: 'linear-gradient(135deg, #0a1e3d 0%, #0d2548 30%, #122a4f 60%, #0a1e3d 100%)' }}></div>
-      <div className="absolute top-0 left-0 w-full h-full z-[-1] overflow-hidden">
-          <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] rounded-full blur-[120px] animate-blob" style={{ backgroundColor: 'rgba(201, 166, 85, 0.15)' }}></div>
-          <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] rounded-full blur-[100px] animate-blob animation-delay-2000" style={{ backgroundColor: 'rgba(10, 30, 61, 0.6)' }}></div>
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full opacity-10 animate-pulse" style={{ borderColor: '#c9a655' }}></div>
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border rounded-full opacity-5 animate-pulse" style={{ borderColor: '#c9a655', animationDelay: '1s' }}></div>
+    <div className="flex items-center justify-center min-h-screen p-4 bg-background relative overflow-hidden">
+      {/* Subtle background decoration */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute top-[-20%] right-[-10%] w-[600px] h-[600px] rounded-full bg-accent/5 blur-[120px]" />
+        <div className="absolute bottom-[-20%] left-[-10%] w-[500px] h-[500px] rounded-full bg-primary/10 blur-[100px]" />
       </div>
 
-      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group transition-all duration-500`} style={{ backgroundColor: 'rgba(18, 42, 79, 0.6)', border: '1px solid rgba(201, 166, 85, 0.15)' }}>
-
-        <div className="absolute top-0 left-0 w-full h-1 opacity-70" style={{ backgroundImage: 'linear-gradient(to right, transparent, #c9a655, transparent)' }}></div>
-
-        {!invitedRole && renderLogo()}
-
-        <div className="text-center mb-8 relative z-10">
-          {!isLogin && invitedRole ?
-          <div className="animate-fade-in md:hidden">
-                 <h2 className="text-2xl font-bold mb-2" style={{ color: '#f8fafc' }}>{t(`landing.${invitedRole}.title`)}</h2>
-             </div> :
-
-          <>
-                <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: '#f8fafc' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
-                <p className="text-lg font-medium bg-gradient-to-r from-[#c9a655] via-[#e0c778] to-[#c9a655] bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
-             </>
-          }
+      <div className="w-full max-w-md relative z-10">
+        {/* Logo */}
+        <div className="flex justify-center mb-8">
+          {config.logoUrl ? (
+            <img src={config.logoUrl} alt="Logo" className="h-16 drop-shadow-lg" />
+          ) : (
+            <div className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center text-primary-foreground text-2xl font-bold shadow-lg shadow-primary/20">
+              {config.appName.substring(0, 2).toUpperCase()}
+            </div>
+          )}
         </div>
 
-        <div className="space-y-4 mb-6 relative z-10">
-            {isDbMissing &&
-          <button
-            onClick={() => setShowSqlSetup(true)}
-            className="w-full bg-red-500/10 border border-red-500/20 rounded-xl p-4 flex items-center gap-3 text-left hover:bg-red-500/20 transition-all group/alert hover:scale-[1.02]">
-
-                    <div className="p-2 bg-red-500/20 rounded-lg text-red-500 shrink-0 animate-pulse">
-                        <Database size={18} />
-                    </div>
-                    <div>
-                        <p className="text-xs font-bold text-red-500 uppercase tracking-wide">Banco Incompleto</p>
-                         <p className="text-[10px]" style={{ color: '#8a9bb8' }}>Clique para corrigir e liberar o acesso.</p>
-                    </div>
-                    <AlertTriangle size={16} className="ml-auto text-red-500/50" />
-                </button>
-          }
-
-            {!isLogin && !invitedRole && !isDbMissing &&
-           <div className="rounded-xl p-4 text-center" style={{ backgroundColor: 'rgba(201, 166, 85, 0.05)', border: '1px solid rgba(201, 166, 85, 0.15)' }}>
-                    <div className="flex items-center justify-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider" style={{ color: '#c9a655' }}>
-                        <Info size={14} /> Contas Demo
-                    </div>
-                    <p className="text-xs leading-relaxed" style={{ color: '#8a9bb8' }}>
-                        {t('auth.hint')}
-                    </p>
-                </div>
-          }
-
-            {error &&
-          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-sm flex flex-col gap-2 animate-slide-up">
-                <div className="flex items-start gap-3">
-                    <AlertTriangle className="shrink-0 mt-0.5" size={16} />
-                    <span className="leading-snug">{error}</span>
-                </div>
-                {error.includes('Tabelas') &&
-            <button onClick={() => setShowSqlSetup(true)} className="text-xs font-bold underline text-left mt-1 hover:text-red-500">
-                        Resolver Agora
-                    </button>
-            }
-            </div>
-          }
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
-          {!isLogin &&
-          <div className="group">
-              <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Nome Completo</label>
-              <input type="text" required className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={name} onChange={(e) => setName(e.target.value)} />
-            </div>
-          }
-
-          <div className="group">
-            <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Email</label>
-            <input type="email" required className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
+        {/* Card */}
+        <div className="bg-card border border-border rounded-2xl shadow-xl shadow-black/5 p-8">
+          {/* Header */}
+          <div className="text-center mb-6">
+            {!isLogin && invitedRole ? (
+              <h2 className="text-xl font-bold text-card-foreground">{t(`landing.${invitedRole}.title`)}</h2>
+            ) : (
+              <>
+                <h2 className="text-2xl font-bold text-card-foreground mb-1">
+                  {isLogin ? t('auth.login') : t('auth.register')}
+                </h2>
+                <p className="text-sm font-medium text-accent">{config.appName}</p>
+              </>
+            )}
           </div>
 
-          <div className="group">
-            <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Senha</label>
-            <div className="relative">
-              <input
-                type={showPassword ? "text" : "password"}
-                required
-                className="w-full p-4 pr-12 rounded-xl focus:ring-2 outline-none transition-all"
-                style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)} />
+          {/* Alerts */}
+          {isDbMissing && (
+            <button onClick={() => setShowSqlSetup(true)} className="w-full mb-4 bg-destructive/10 border border-destructive/20 rounded-xl p-3 flex items-center gap-3 text-left hover:bg-destructive/15 transition-colors">
+              <Database size={16} className="text-destructive shrink-0" />
+              <div className="flex-1">
+                <p className="text-xs font-bold text-destructive">Banco Incompleto</p>
+                <p className="text-[10px] text-muted-foreground">Clique para corrigir.</p>
+              </div>
+              <AlertTriangle size={14} className="text-destructive/50" />
+            </button>
+          )}
 
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none transition-colors" style={{ color: '#8a9bb8' }} tabIndex={-1}>
-                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+          {!isLogin && !invitedRole && !isDbMissing && (
+            <div className="mb-4 rounded-xl p-3 bg-accent/5 border border-accent/15 text-center">
+              <div className="flex items-center justify-center gap-1.5 mb-1 text-accent text-xs font-semibold uppercase tracking-wide">
+                <Info size={12} /> Contas Demo
+              </div>
+              <p className="text-[11px] text-muted-foreground leading-relaxed">{t('auth.hint')}</p>
+            </div>
+          )}
+
+          {error && (
+            <div className="mb-4 p-3 bg-destructive/10 border border-destructive/20 rounded-xl text-sm text-destructive flex items-start gap-2">
+              <AlertTriangle className="shrink-0 mt-0.5" size={14} />
+              <div>
+                <span className="leading-snug">{error}</span>
+                {error.includes('Tabelas') && (
+                  <button onClick={() => setShowSqlSetup(true)} className="block text-xs font-bold underline mt-1">Resolver Agora</button>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {!isLogin && (
+              <div>
+                <label className={labelClasses}>Nome Completo</label>
+                <input type="text" required className={inputClasses} value={name} onChange={(e) => setName(e.target.value)} />
+              </div>
+            )}
+
+            <div>
+              <label className={labelClasses}>Email</label>
+              <input type="email" required className={inputClasses} value={email} onChange={(e) => setEmail(e.target.value)} />
+            </div>
+
+            <div>
+              <label className={labelClasses}>Senha</label>
+              <div className="relative">
+                <input type={showPassword ? "text" : "password"} required className={inputClasses + " pr-11"} value={password} onChange={(e) => setPassword(e.target.value)} />
+                <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors" tabIndex={-1}>
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </div>
+
+            {!isLogin && (
+              <>
+                <div>
+                  <label className={labelClasses}>WhatsApp</label>
+                  <input type="tel" required className={inputClasses} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+                </div>
+                {!invitedRole && (
+                  <div>
+                    <label className={labelClasses}>Tipo de Perfil</label>
+                    <select className={inputClasses} value={role} onChange={(e) => setRole(e.target.value)}>
+                      <option value="client">Cliente</option>
+                      <option value="distributor">Distribuidor</option>
+                      <option value="consultant">Consultor</option>
+                    </select>
+                  </div>
+                )}
+                <div>
+                  <label className={labelClasses}>CRO (Opcional)</label>
+                  <input type="text" className={inputClasses} value={cro} onChange={(e) => setCro(e.target.value)} />
+                </div>
+              </>
+            )}
+
+            <button type="submit" className="w-full bg-accent text-accent-foreground font-semibold py-3.5 rounded-xl hover:opacity-90 active:scale-[0.98] transition-all shadow-md shadow-accent/20 flex items-center justify-center gap-2 mt-2">
+              {!isLogin && invitedRole && <UserPlus size={18} />}
+              {isLogin ? 'Entrar na Plataforma' : invitedRole ? 'Confirmar Cadastro' : 'Criar Nova Conta'}
+              <ChevronRight size={16} />
+            </button>
+          </form>
+
+          {/* Footer links */}
+          <div className="mt-6 text-center text-sm space-y-4">
+            {invitedRole ? (
+              <button onClick={clearInvite} className="flex items-center justify-center gap-2 mx-auto text-muted-foreground hover:text-foreground transition-colors text-sm">
+                <ArrowLeft size={14} /> Voltar para Login Padrão
               </button>
-            </div>
-          </div>
-
-          {!isLogin &&
-          <>
-              <div className="group">
-                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>WhatsApp</label>
-                <input type="tel" required className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
-              </div>
-
-              <div className="grid grid-cols-1 gap-5">
-                 {!invitedRole &&
-              <div className="group">
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Tipo de Perfil</label>
-                      <select className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={role} onChange={(e) => setRole(e.target.value)}>
-                        <option value="client">Cliente</option>
-                        <option value="distributor">Distribuidor</option>
-                        <option value="consultant">Consultor</option>
-                      </select>
-                    </div>
-              }
-                 <div className="group">
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>CRO (Opcional)</label>
-                    <input type="text" className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={cro} onChange={(e) => setCro(e.target.value)} />
-                 </div>
-              </div>
-            </>
-          }
-
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: 'linear-gradient(135deg, #c9a655, #b8952e)', boxShadow: '0 10px 30px -5px rgba(201, 166, 85, 0.4)' }}>
-             <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
-             <span className="relative z-10 flex items-center gap-2">
-                {!isLogin && invitedRole && <UserPlus size={20} />}
-                {isLogin ? 'Entrar na Plataforma' : invitedRole ? 'Confirmar Cadastro' : 'Criar Nova Conta'}
-                <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
-             </span>
-          </button>
-        </form>
-
-        <div className="mt-8 text-center text-sm space-y-8 relative z-10">
-          {invitedRole ?
-          <button onClick={clearInvite} className="flex items-center justify-center gap-2 mx-auto transition-colors font-medium group" style={{ color: '#8a9bb8' }}>
-               <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Voltar para Login Padrão
-             </button> :
-
-          <>
-                <button onClick={() => setIsLogin(!isLogin)} className="font-medium block w-full transition-colors underline decoration-transparent hover:decoration-current underline-offset-4" style={{ color: '#c9a655' }}>
-                {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
+            ) : (
+              <>
+                <button onClick={() => setIsLogin(!isLogin)} className="text-accent font-medium hover:underline underline-offset-4">
+                  {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
                 </button>
-
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                <div className="pt-2">
-                    <button onClick={handleSeed} disabled={isSeeding} className="text-[10px] flex items-center justify-center gap-2 hover:opacity-100 transition-colors py-2 px-4 rounded-full mx-auto opacity-50" style={{ color: '#8a9bb8' }}>
-                        <Database size={12} />
-                        {isSeeding ? 'Criando usuários...' : 'Resetar Banco REAL'}
-                    </button>
+                <div>
+                  <button onClick={handleSeed} disabled={isSeeding} className="text-[10px] text-muted-foreground/50 hover:text-muted-foreground transition-colors flex items-center justify-center gap-1.5 mx-auto py-1">
+                    <Database size={10} />
+                    {isSeeding ? 'Criando usuários...' : 'Resetar Banco REAL'}
+                  </button>
                 </div>
-            </>
-          }
+              </>
+            )}
+          </div>
         </div>
 
-        {showSqlSetup && <SqlSetupModal onClose={() => setShowSqlSetup(false)} />}
-    </div>
-    </div>);
+        {/* Brand footer */}
+        <p className="text-center text-[10px] text-muted-foreground/40 mt-6 tracking-wide">
+          {config.appName} &bull; Plataforma Premium
+        </p>
+      </div>
 
+      {showSqlSetup && <SqlSetupModal onClose={() => setShowSqlSetup(false)} />}
+    </div>
+  );
 };
