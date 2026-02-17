@@ -1,43 +1,63 @@
 
-# Fix: Google Drive Links for PDF and Image Materials
+# Aplicacao da Paleta de Cores - Branding Conexao Digital Implant
 
-## Problem
-When a user saves a Google Drive sharing link (e.g. `https://drive.google.com/file/d/XXX/view?usp=sharing`) for a PDF or image material, it doesn't display because:
+## Cores Extraidas das Imagens
 
-- **Images**: The `<img src="...">` tag receives the sharing page URL, not a direct image URL
-- **PDFs**: The `<iframe src="...">` tag receives the sharing page URL instead of the embeddable preview URL
+| Cor | Hex | Uso na Marca |
+|-----|-----|-------------|
+| Azul Marinho Profundo | `#0a1e3d` | Fundo principal (backgrounds escuros) |
+| Azul Marinho Medio | `#122a4f` | Superficies/cards no tema escuro |
+| Dourado | `#c9a655` | Cor de destaque (CTAs, destaques, links ativos) |
+| Branco | `#f8fafc` | Texto principal no tema escuro |
+| Cinza Azulado | `#64748b` | Texto secundario |
 
-The Google Drive ID extraction logic already exists in `ViewerModal.tsx` (line 42-52) but is only used for the video path.
+## Proposta de Aplicacao
 
-## Solution
-Modify `ViewerModal.tsx` to detect Google Drive links **before** rendering PDFs and images, converting them to the correct format:
+### Tema Escuro (Principal - reflete o branding forte da marca)
 
-- **Images**: Convert to `https://drive.google.com/uc?export=view&id=FILE_ID`
-- **PDFs**: Convert to `https://drive.google.com/file/d/FILE_ID/preview`
+| Variavel | Valor Atual | Valor Proposto | Onde aparece |
+|----------|------------|----------------|-------------|
+| background | `#0f172a` | `#0a1e3d` | Fundo geral da aplicacao |
+| surface | `#1e293b` | `#122a4f` | Cards, modais, header |
+| textMain | `#f8fafc` | `#f8fafc` | Textos principais (mantido) |
+| textMuted | `#94a3b8` | `#8a9bb8` | Textos secundarios, labels |
+| border | `transparent` | `#1e3a5f` | Bordas de cards e inputs |
+| accent | `#6366f1` | `#c9a655` | Botoes, links, badges ativos |
+| success | `#22c55e` | `#22c55e` | Status de sucesso (mantido) |
+| warning | `#eab308` | `#d4aa4f` | Alertas (harmonizado com dourado) |
+| error | `#ef4444` | `#ef4444` | Erros (mantido) |
 
-## Technical Changes
+### Tema Claro (Versao profissional e limpa)
 
-### File: `src/components/hub/ViewerModal.tsx`
+| Variavel | Valor Atual | Valor Proposto | Onde aparece |
+|----------|------------|----------------|-------------|
+| background | `#f8fafc` | `#f0f4f8` | Fundo geral |
+| surface | `#ffffff` | `#ffffff` | Cards e modais (mantido) |
+| textMain | `#0f172a` | `#0a1e3d` | Texto principal (azul marinho da marca) |
+| textMuted | `#64748b` | `#5a6a7e` | Textos secundarios |
+| border | `#e2e8f0` | `#d0d8e4` | Bordas |
+| accent | `#3b82f6` | `#b8952e` | Dourado mais escuro para contraste em fundo claro |
+| success | `#10b981` | `#10b981` | Mantido |
+| warning | `#f59e0b` | `#c9a655` | Harmonizado com dourado |
+| error | `#ef4444` | `#ef4444` | Mantido |
 
-1. Move the `getEmbedConfig` function call **above** the render logic (already done at line 63)
-2. Update the **image rendering block** (line 116-121):
-   - Check if the URL is a Google Drive link
-   - If yes, use `https://drive.google.com/uc?export=view&id=FILE_ID` instead of `asset.url`
+## Alteracoes Tecnicas
 
-3. Update the **PDF rendering block** (line 123-128):
-   - Check if the URL is a Google Drive link
-   - If yes, use `https://drive.google.com/file/d/FILE_ID/preview` instead of `asset.url`
+### Arquivo: `src/contexts/BrandContext.tsx`
+- Atualizar o objeto `defaults` com os novos valores de `themeLight` e `themeDark`
 
-4. Create a helper function `getResolvedUrl(url, type)` that:
-   - Extracts the Google Drive file ID from the URL (reusing existing regex)
-   - Returns the appropriate URL format based on material type
-   - Falls through to the original URL for non-Drive links
+### Arquivo: `src/index.css`
+- Atualizar as variaveis CSS root (fallback) com os novos valores da paleta
 
-### File: `src/components/hub/MaterialFormModal.tsx`
-No changes needed -- the form already saves the URL as-is, which is fine. The conversion happens at display time.
+### Arquivo: `src/components/hub/Layout.tsx`
+- Atualizar o gradiente do avatar/logo de `from-blue-500 to-purple-600` para `from-[#0a1e3d] to-[#c9a655]` (azul marinho para dourado)
+- Atualizar o gradiente do avatar do usuario de `from-blue-500 to-purple-500` para o mesmo esquema
 
-## Expected Result
-- PDF links from Google Drive will render in the embedded viewer
-- Image links from Google Drive will display correctly in the `<img>` tag
-- Video links continue working as before (no regression)
-- Non-Google-Drive URLs continue working unchanged
+### Arquivo: `src/pages/AuthPage.tsx`
+- Atualizar gradientes e cores de destaque na tela de login para usar o azul marinho e dourado da marca
+
+## Resultado Esperado
+- O tema escuro reflete fielmente o branding sofisticado e premium da Conexao Digital Implant
+- O dourado como cor de destaque traz a identidade visual da marca para botoes e elementos interativos
+- O tema claro mantem a legibilidade com toques sutis do azul marinho e dourado
+- Consistencia visual entre todos os componentes da aplicacao
