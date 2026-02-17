@@ -15,7 +15,10 @@ const ColorInput = ({ label, value, onChange, hint }: {label: string;value: stri
 <div className="space-y-1.5">
     <label className="block text-xs font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text-muted)' }}>{label}</label>
     <div className="flex items-center gap-2">
-      <input type="color" value={value} onChange={(e) => onChange(e.target.value)} className="h-9 w-9 rounded cursor-pointer border-0 p-0 shadow-sm overflow-hidden" />
+      <div className="relative h-9 w-9 shrink-0">
+        <div className="absolute inset-0 rounded-lg shadow-sm border" style={{ backgroundColor: value || '#000000', borderColor: 'var(--color-border)' }} />
+        <input type="color" value={value || '#000000'} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+      </div>
       <input type="text" value={value} onChange={(e) => onChange(e.target.value)} className="flex-1 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm font-mono uppercase focus:ring-2 outline-none" style={{ color: 'var(--color-text-main)' }} />
     </div>
     <p className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{hint}</p>
