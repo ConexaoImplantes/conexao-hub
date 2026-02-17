@@ -22,7 +22,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     {config.logoUrl ? (
                     <img src={config.logoUrl} alt="Logo" className="relative h-9 w-auto object-contain transition-transform duration-500 group-hover:scale-105" />
                     ) : (
-                    <div className="relative w-10 h-10 bg-gradient-to-br from-[#0a1e3d] to-[#c9a655] rounded-xl flex items-center justify-center text-white font-bold shadow-lg transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110">
+                    <div className="relative w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white font-bold shadow-lg transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110">
                         {config.appName.substring(0, 2).toUpperCase()}
                     </div>
                     )}
@@ -59,7 +59,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                 <div className="flex items-center gap-3 pl-2">
                     <div className="flex items-center gap-3 rounded-full p-1 pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-[#0a1e3d] to-[#c9a655] flex items-center justify-center text-white text-sm font-bold shadow-md ring-2 ring-white/20 transition-all">
+                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-blue-500 to-purple-500 flex items-center justify-center text-white text-sm font-bold shadow-md ring-2 ring-white/20 transition-all">
                             {user?.name.charAt(0)}
                         </div>
                         <div className="hidden md:block leading-none">
