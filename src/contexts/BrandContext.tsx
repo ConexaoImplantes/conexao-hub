@@ -87,9 +87,9 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   return (
     <BrandContext.Provider value={{ config: config || defaults, updateConfig, isLoading }}>
       {!isLoading && config ? children : (
-         <div className="h-screen w-full flex flex-col gap-4 items-center justify-center bg-gray-50 text-gray-500 font-medium animate-pulse">
-            <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"></div>
-            <span>Carregando Sistema...</span>
+         <div className="h-screen w-full flex flex-col gap-4 items-center justify-center font-medium animate-pulse" style={{ background: 'linear-gradient(135deg, #0a1e3d 0%, #122a4f 100%)' }}>
+            <div className="w-12 h-12 rounded-full border-4 animate-spin" style={{ borderColor: '#1e3a5f', borderTopColor: '#c9a655' }}></div>
+            <span style={{ color: '#c9a655' }}>Carregando Sistema...</span>
          </div>
       )}
     </BrandContext.Provider>

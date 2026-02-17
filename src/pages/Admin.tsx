@@ -416,11 +416,11 @@ export const Admin: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
-                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500"><Eye size={24} /></div>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(10, 30, 61, 0.1)', color: '#0a1e3d' }}><Eye size={24} /></div>
                     <div><p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('analytics.total.views')}</p><p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{filteredLogs.length}</p></div>
                 </div>
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
-                    <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500"><Users size={24} /></div>
+                    <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ backgroundColor: 'rgba(201, 166, 85, 0.1)', color: '#c9a655' }}><Users size={24} /></div>
                     <div><p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('analytics.unique.users')}</p><p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{new Set(filteredLogs.map((l) => l.userId)).size}</p></div>
                 </div>
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
@@ -432,7 +432,7 @@ export const Admin: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
                     <div className="px-6 py-4 flex justify-between items-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 30%, transparent)' }}>
-                         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Trophy size={18} className="text-yellow-500" />{t('analytics.rank.materials')}</h3>
+                         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Trophy size={18} style={{ color: '#c9a655' }} />{t('analytics.rank.materials')}</h3>
                     </div>
                     <div className="p-4 space-y-3">
                          {aggregatedMetrics.slice(0, 5).map((item, index) => {
@@ -461,7 +461,7 @@ export const Admin: React.FC = () => {
 
                 <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
                      <div className="px-6 py-4 flex justify-between items-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 30%, transparent)' }}>
-                         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Users size={18} className="text-blue-500" />{t('analytics.rank.users')}</h3>
+                         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Users size={18} style={{ color: '#0a1e3d' }} />{t('analytics.rank.users')}</h3>
                     </div>
                     <div className="p-4 space-y-3">
                         {activeUsersRanking.map((user, index) =>

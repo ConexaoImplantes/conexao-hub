@@ -107,28 +107,29 @@ export const AuthPage: React.FC = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 relative overflow-hidden">
-      <div className="absolute inset-0 z-[-2]" style={{ backgroundColor: 'var(--color-bg)' }}></div>
+      <div className="absolute inset-0 z-[-2]" style={{ background: 'linear-gradient(135deg, #0a1e3d 0%, #0d2548 30%, #122a4f 60%, #0a1e3d 100%)' }}></div>
       <div className="absolute top-0 left-0 w-full h-full z-[-1] overflow-hidden">
-          <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
-          <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob animation-delay-2000" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full opacity-20 animate-pulse"></div>
+          <div className="absolute top-[10%] left-[10%] w-[500px] h-[500px] rounded-full blur-[120px] animate-blob" style={{ backgroundColor: 'rgba(201, 166, 85, 0.15)' }}></div>
+          <div className="absolute bottom-[10%] right-[10%] w-[400px] h-[400px] rounded-full blur-[100px] animate-blob animation-delay-2000" style={{ backgroundColor: 'rgba(10, 30, 61, 0.6)' }}></div>
+          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full opacity-10 animate-pulse" style={{ borderColor: '#c9a655' }}></div>
+          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border rounded-full opacity-5 animate-pulse" style={{ borderColor: '#c9a655', animationDelay: '1s' }}></div>
       </div>
 
-      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10 relative overflow-hidden group transition-all duration-500 ${invitedRole ? 'bg-white/90 dark:bg-black/80' : ''}`} style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl relative overflow-hidden group transition-all duration-500`} style={{ backgroundColor: 'rgba(18, 42, 79, 0.6)', border: '1px solid rgba(201, 166, 85, 0.15)' }}>
 
-        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent to-transparent opacity-50" style={{ backgroundImage: `linear-gradient(to right, transparent, var(--color-accent), transparent)` }}></div>
+        <div className="absolute top-0 left-0 w-full h-1 opacity-70" style={{ backgroundImage: 'linear-gradient(to right, transparent, #c9a655, transparent)' }}></div>
 
         {!invitedRole && renderLogo()}
 
         <div className="text-center mb-8 relative z-10">
           {!isLogin && invitedRole ?
           <div className="animate-fade-in md:hidden">
-                <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>{t(`landing.${invitedRole}.title`)}</h2>
+                 <h2 className="text-2xl font-bold mb-2" style={{ color: '#f8fafc' }}>{t(`landing.${invitedRole}.title`)}</h2>
              </div> :
 
           <>
-                <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: 'var(--color-text-main)' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
-                <p className="text-lg font-medium bg-gradient-to-r from-[#0a1e3d] to-[#c9a655] bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
+                <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: '#f8fafc' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
+                <p className="text-lg font-medium bg-gradient-to-r from-[#c9a655] via-[#e0c778] to-[#c9a655] bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
              </>
           }
         </div>
@@ -144,18 +145,18 @@ export const AuthPage: React.FC = () => {
                     </div>
                     <div>
                         <p className="text-xs font-bold text-red-500 uppercase tracking-wide">Banco Incompleto</p>
-                        <p className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>Clique para corrigir e liberar o acesso.</p>
+                         <p className="text-[10px]" style={{ color: '#8a9bb8' }}>Clique para corrigir e liberar o acesso.</p>
                     </div>
                     <AlertTriangle size={16} className="ml-auto text-red-500/50" />
                 </button>
           }
 
             {!isLogin && !invitedRole && !isDbMissing &&
-          <div className="rounded-xl p-4 text-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 10%, transparent)' }}>
-                    <div className="flex items-center justify-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>
+           <div className="rounded-xl p-4 text-center" style={{ backgroundColor: 'rgba(201, 166, 85, 0.05)', border: '1px solid rgba(201, 166, 85, 0.15)' }}>
+                    <div className="flex items-center justify-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider" style={{ color: '#c9a655' }}>
                         <Info size={14} /> Contas Demo
                     </div>
-                    <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                    <p className="text-xs leading-relaxed" style={{ color: '#8a9bb8' }}>
                         {t('auth.hint')}
                     </p>
                 </div>
@@ -179,28 +180,28 @@ export const AuthPage: React.FC = () => {
         <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
           {!isLogin &&
           <div className="group">
-              <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Nome Completo</label>
-              <input type="text" required className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={name} onChange={(e) => setName(e.target.value)} />
+              <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Nome Completo</label>
+              <input type="text" required className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={name} onChange={(e) => setName(e.target.value)} />
             </div>
           }
 
           <div className="group">
-            <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Email</label>
-            <input type="email" required className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
+            <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Email</label>
+            <input type="email" required className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
 
           <div className="group">
-            <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Senha</label>
+            <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Senha</label>
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full p-4 pr-12 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10"
-                style={{ color: 'var(--color-text-main)' }}
+                className="w-full p-4 pr-12 rounded-xl focus:ring-2 outline-none transition-all"
+                style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)} />
 
-              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none transition-colors" style={{ color: 'var(--color-text-muted)' }} tabIndex={-1}>
+              <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none transition-colors" style={{ color: '#8a9bb8' }} tabIndex={-1}>
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
@@ -209,15 +210,15 @@ export const AuthPage: React.FC = () => {
           {!isLogin &&
           <>
               <div className="group">
-                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>WhatsApp</label>
-                <input type="tel" required className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+                <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>WhatsApp</label>
+                <input type="tel" required className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
               </div>
 
               <div className="grid grid-cols-1 gap-5">
                  {!invitedRole &&
               <div className="group">
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Tipo de Perfil</label>
-                      <select className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={role} onChange={(e) => setRole(e.target.value)}>
+                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>Tipo de Perfil</label>
+                      <select className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={role} onChange={(e) => setRole(e.target.value)}>
                         <option value="client">Cliente</option>
                         <option value="distributor">Distribuidor</option>
                         <option value="consultant">Consultor</option>
@@ -225,14 +226,14 @@ export const AuthPage: React.FC = () => {
                     </div>
               }
                  <div className="group">
-                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>CRO (Opcional)</label>
-                    <input type="text" className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={cro} onChange={(e) => setCro(e.target.value)} />
+                    <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: '#8a9bb8' }}>CRO (Opcional)</label>
+                    <input type="text" className="w-full p-4 rounded-xl focus:ring-2 outline-none transition-all" style={{ color: '#f8fafc', backgroundColor: 'rgba(10, 30, 61, 0.5)', border: '1px solid rgba(201, 166, 85, 0.1)' }} value={cro} onChange={(e) => setCro(e.target.value)} />
                  </div>
               </div>
             </>
           }
 
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ backgroundColor: 'var(--color-accent)', boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--color-accent) 30%, transparent)' }}>
+          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: 'linear-gradient(135deg, #c9a655, #b8952e)', boxShadow: '0 10px 30px -5px rgba(201, 166, 85, 0.4)' }}>
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2">
                 {!isLogin && invitedRole && <UserPlus size={20} />}
@@ -244,12 +245,12 @@ export const AuthPage: React.FC = () => {
 
         <div className="mt-8 text-center text-sm space-y-8 relative z-10">
           {invitedRole ?
-          <button onClick={clearInvite} className="flex items-center justify-center gap-2 mx-auto transition-colors font-medium group" style={{ color: 'var(--color-text-muted)' }}>
+          <button onClick={clearInvite} className="flex items-center justify-center gap-2 mx-auto transition-colors font-medium group" style={{ color: '#8a9bb8' }}>
                <ArrowLeft size={16} className="group-hover:-translate-x-1 transition-transform" /> Voltar para Login Padrão
              </button> :
 
           <>
-                <button onClick={() => setIsLogin(!isLogin)} className="font-medium block w-full transition-colors underline decoration-transparent hover:decoration-current underline-offset-4" style={{ color: 'var(--color-text-muted)' }}>
+                <button onClick={() => setIsLogin(!isLogin)} className="font-medium block w-full transition-colors underline decoration-transparent hover:decoration-current underline-offset-4" style={{ color: '#c9a655' }}>
                 {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
                 </button>
 
@@ -274,7 +275,7 @@ export const AuthPage: React.FC = () => {
 
 
                 <div className="pt-2">
-                    <button onClick={handleSeed} disabled={isSeeding} className="text-[10px] flex items-center justify-center gap-2 hover:opacity-100 transition-colors py-2 px-4 rounded-full mx-auto opacity-50" style={{ color: 'var(--color-text-muted)' }}>
+                    <button onClick={handleSeed} disabled={isSeeding} className="text-[10px] flex items-center justify-center gap-2 hover:opacity-100 transition-colors py-2 px-4 rounded-full mx-auto opacity-50" style={{ color: '#8a9bb8' }}>
                         <Database size={12} />
                         {isSeeding ? 'Criando usuários...' : 'Resetar Banco REAL'}
                     </button>

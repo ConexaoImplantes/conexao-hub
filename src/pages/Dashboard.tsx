@@ -97,10 +97,10 @@ export const Dashboard: React.FC = () => {
               <div className="min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
 
               <div className="hidden md:block mt-4 pt-4 px-2 border-t border-white/5">
-                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 p-5 group transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-500/40">
-                      <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl group-hover:bg-indigo-500/30 transition-colors duration-500"></div>
+                  <div className="relative overflow-hidden rounded-2xl p-5 group transition-all duration-300 hover:shadow-lg" style={{ background: 'linear-gradient(135deg, rgba(10, 30, 61, 0.15), rgba(201, 166, 85, 0.08))', border: '1px solid rgba(201, 166, 85, 0.15)' }}>
+                      <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl transition-colors duration-500" style={{ backgroundColor: 'rgba(201, 166, 85, 0.1)' }}></div>
                       <div className="relative z-10">
-                          <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 mb-2">
+                          <div className="flex items-center gap-2 mb-2" style={{ color: '#c9a655' }}>
                               <Sparkles size={16} className="animate-pulse" />
                               <span className="text-xs font-bold uppercase tracking-wide">Dica Pro</span>
                           </div>
@@ -116,7 +116,7 @@ export const Dashboard: React.FC = () => {
 
       <div className="flex-1 min-w-0 z-0">
         <div className="mb-10 relative group rounded-[2rem] overflow-hidden animate-fade-in">
-            <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)` }}></div>
+            <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: 'linear-gradient(to right, rgba(10, 30, 61, 0.15), rgba(201, 166, 85, 0.08), transparent)' }}></div>
             <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
 
             <div className="relative z-10 p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 backdrop-blur-sm">
