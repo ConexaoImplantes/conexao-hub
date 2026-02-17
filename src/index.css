@@ -96,14 +96,14 @@ All colors MUST be HSL.
 
 /* Hub Conexao CSS Variables - injected dynamically by BrandContext */
 :root {
-  --color-bg: #f8fafc;
+  --color-bg: #f0f4f8;
   --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-text-main: #1e293b;
-  --color-text-muted: #64748b;
-  --color-accent: #6366f1;
-  --color-success: #22c55e;
-  --color-warning: #f59e0b;
+  --color-border: #d0d8e4;
+  --color-text-main: #0a1e3d;
+  --color-text-muted: #5a6a7e;
+  --color-accent: #b8952e;
+  --color-success: #10b981;
+  --color-warning: #c9a655;
   --color-error: #ef4444;
 }
 
