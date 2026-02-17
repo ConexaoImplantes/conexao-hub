@@ -98,7 +98,7 @@ export const AuthPage: React.FC = () => {
         {config.logoUrl ?
     <img src={config.logoUrl} alt="Logo" className={`${size === "large" ? "h-28" : "h-16"} drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all duration-500 hover:scale-105`} /> :
 
-    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} bg-gradient-to-br from-blue-500 via-purple-600 to-indigo-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
+    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} bg-gradient-to-br from-[#0a1e3d] via-[#122a4f] to-[#c9a655] rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
               {config.appName.substring(0, 2).toUpperCase()}
             </div>
     }
@@ -110,7 +110,7 @@ export const AuthPage: React.FC = () => {
       <div className="absolute inset-0 z-[-2]" style={{ backgroundColor: 'var(--color-bg)' }}></div>
       <div className="absolute top-0 left-0 w-full h-full z-[-1] overflow-hidden">
           <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
-          <div className="absolute bottom-[20%] right-[20%] w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob animation-delay-2000" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
           <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full opacity-20 animate-pulse"></div>
       </div>
 
@@ -128,7 +128,7 @@ export const AuthPage: React.FC = () => {
 
           <>
                 <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: 'var(--color-text-main)' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
-                <p className="text-lg font-medium bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
+                <p className="text-lg font-medium bg-gradient-to-r from-[#0a1e3d] to-[#c9a655] bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
              </>
           }
         </div>
