@@ -28,7 +28,7 @@ export const AuthPage: React.FC = () => {
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
     const roleParam = searchParams.get('role');
-    if (roleParam && ['client', 'distributor', 'consultant'].includes(roleParam)) {
+    if (roleParam && ['client', 'distributor', 'consultant', 'super_admin'].includes(roleParam)) {
       setIsLogin(false);
       setInvitedRole(roleParam);
       setRole(roleParam);
@@ -124,7 +124,7 @@ export const AuthPage: React.FC = () => {
           {!isLogin && invitedRole ?
           <div className="animate-fade-in">
               <h2 className="text-3xl font-bold mb-2 tracking-tight" style={{ color: 'var(--color-text-main)' }}>
-                Cadastro de {invitedRole === 'client' ? 'Clientes' : invitedRole === 'distributor' ? 'Distribuidores' : 'Consultores'}
+                Cadastro de {invitedRole === 'client' ? 'Clientes' : invitedRole === 'distributor' ? 'Distribuidores' : invitedRole === 'consultant' ? 'Consultores' : 'Administradores'}
               </h2>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 Acesse materiais exclusivos e acompanhe as novidades da plataforma {config.appName}.
@@ -237,7 +237,7 @@ export const AuthPage: React.FC = () => {
                       <div>
                         <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>Perfil pré-definido</p>
                         <p className="text-sm font-semibold capitalize" style={{ color: 'var(--color-text-main)' }}>
-                          {invitedRole === 'client' ? 'Cliente' : invitedRole === 'distributor' ? 'Distribuidor' : 'Consultor'}
+                          {invitedRole === 'client' ? 'Cliente' : invitedRole === 'distributor' ? 'Distribuidor' : invitedRole === 'consultant' ? 'Consultor' : 'Administrador'}
                         </p>
                       </div>
                     </div>
