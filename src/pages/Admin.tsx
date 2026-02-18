@@ -749,7 +749,8 @@ export const Admin: React.FC = () => {
                           { role: 'consultant' as Role, icon: Sparkles, desc: 'Consultor especializado da plataforma.' },
                           { role: 'super_admin' as Role, icon: Settings, desc: 'Acesso total à plataforma e administração.' },
                         ]).map(({ role, icon: Icon, desc }) => {
-                  const fullUrl = `${window.location.origin}/?role=${role}`;
+                  const publishedUrl = 'https://conexao-hub.lovable.app';
+                  const fullUrl = `${publishedUrl}/?role=${role}`;
                   return (
                     <div key={role} className="p-5 rounded-xl flex flex-col gap-3" style={{ backgroundColor: 'var(--color-bg)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
                               <div className="flex items-center gap-3">
