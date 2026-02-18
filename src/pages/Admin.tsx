@@ -742,11 +742,12 @@ export const Admin: React.FC = () => {
                           Compartilhe estes links para que novos usuários se cadastrem com o <strong style={{ color: 'var(--color-text-main)' }}>perfil pré-definido e bloqueado</strong>. O usuário não poderá alterar o tipo de perfil ao se cadastrar pelo link.
                         </p>
                       </div>
-                      <div className="grid md:grid-cols-3 gap-4">
+                      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                         {([
                           { role: 'client' as Role, icon: User, desc: 'Acesso aos materiais. Pode informar o CRO.' },
                           { role: 'distributor' as Role, icon: Briefcase, desc: 'Distribuidor de produtos e materiais.' },
                           { role: 'consultant' as Role, icon: Sparkles, desc: 'Consultor especializado da plataforma.' },
+                          { role: 'super_admin' as Role, icon: Settings, desc: 'Acesso total à plataforma e administração.' },
                         ]).map(({ role, icon: Icon, desc }) => {
                   const fullUrl = `${window.location.origin}/?role=${role}`;
                   return (
