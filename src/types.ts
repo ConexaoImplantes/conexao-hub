@@ -3,6 +3,7 @@ export type Language = 'pt-br' | 'en-us' | 'es-es';
 export type MaterialType = 'image' | 'pdf' | 'video';
 export type UserStatus = 'pending' | 'active' | 'inactive' | 'rejected';
 export type TranslationStatus = 'draft' | 'review' | 'published';
+export type ProgressStatus = 'started' | 'completed';
 
 export interface UserProfile {
   id: string;
@@ -13,6 +14,7 @@ export interface UserProfile {
   cro?: string;
   status: UserStatus;
   allowedTypes?: MaterialType[];
+  points: number;
   preferences: {
     theme: 'light' | 'dark';
     language: Language;
@@ -33,6 +35,9 @@ export interface Material {
   assets: Partial<Record<Language, MaterialAsset>>;
   active: boolean;
   createdAt: string;
+  points: number;
+  tags: string[];
+  category?: string;
 }
 
 export interface Collection {
@@ -42,7 +47,12 @@ export interface Collection {
   coverImage?: string;
   allowedRoles: Role[];
   active: boolean;
+  points: number;
   createdAt: string;
+  updatedAt?: string;
+  // computed fields
+  itemCount?: number;
+  completedCount?: number;
 }
 
 export interface CollectionItem {
@@ -50,13 +60,16 @@ export interface CollectionItem {
   collectionId: string;
   materialId: string;
   orderIndex: number;
+  material?: Material;
 }
 
 export interface UserProgress {
+  id: string;
   userId: string;
   materialId: string;
-  status: 'started' | 'completed';
-  completedAt: string;
+  status: ProgressStatus;
+  completedAt?: string;
+  createdAt: string;
 }
 
 export interface AccessLog {
@@ -88,4 +101,31 @@ export interface SystemConfig {
   webhookUrl?: string;
   themeLight: ColorScheme;
   themeDark: ColorScheme;
+}
+
+// Gamification
+export type UserLevel = 'Iniciante' | 'Bronze' | 'Prata' | 'Ouro' | 'Master';
+
+export const LEVEL_THRESHOLDS: Record<UserLevel, number> = {
+  Iniciante: 0,
+  Bronze: 100,
+  Prata: 300,
+  Ouro: 600,
+  Master: 1000,
+};
+
+export function getUserLevel(points: number): UserLevel {
+  if (points >= 1000) return 'Master';
+  if (points >= 600) return 'Ouro';
+  if (points >= 300) return 'Prata';
+  if (points >= 100) return 'Bronze';
+  return 'Iniciante';
+}
+
+export function getNextLevelThreshold(points: number): number {
+  if (points >= 1000) return 1000;
+  if (points >= 600) return 1000;
+  if (points >= 300) return 600;
+  if (points >= 100) return 300;
+  return 100;
 }

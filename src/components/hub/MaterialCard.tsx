@@ -1,15 +1,17 @@
 import React from 'react';
-import { Material, Language } from '../../types';
-import { FileText, Image as ImageIcon, Video, Eye, Lock, ChevronRight } from 'lucide-react';
+import { Material, Language, UserProgress } from '../../types';
+import { FileText, Image as ImageIcon, Video, Eye, Lock, ChevronRight, CheckCircle, PlayCircle, Star, Tag } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface MaterialCardProps {
   material: Material;
   onView: (material: Material, lang: Language) => void;
+  progress?: UserProgress;
 }
 
-export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView }) => {
+export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, progress }) => {
   const { t, language } = useLanguage();
+
 
   const getIcon = () => {
     switch (material.type) {
@@ -72,13 +74,48 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView }) 
           {displayTitle}
         </h3>
 
-        <div className="mt-auto pt-6 border-t border-white/5 group-hover:border-white/10 transition-colors">
+
+        {/* Progress badge */}
+        {progress && (
+          <div className="mb-2">
+            {progress.status === 'completed' ? (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, #22c55e 15%, transparent)', color: '#22c55e' }}>
+                <CheckCircle size={10} /> Concluído
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
+                <PlayCircle size={10} /> Em andamento
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Tags */}
+        {material.tags.length > 0 && (
+          <div className="flex flex-wrap gap-1 mb-2">
+            {material.tags.slice(0, 3).map(tag => (
+              <span key={tag} className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', color: 'var(--color-text-muted)' }}>
+                <Tag size={8} /> {tag}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {/* Points badge */}
+        {material.points > 0 && (
+          <div className="flex items-center gap-1 text-[10px] font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
+            <Star size={10} className="fill-yellow-400 text-yellow-400" /> {material.points} XP
+          </div>
+        )}
+
+        <div className="mt-auto pt-4 border-t border-white/5 group-hover:border-white/10 transition-colors">
           <div className="flex items-center justify-between mb-3">
              <p className="text-[10px] uppercase tracking-wider font-bold opacity-70" style={{ color: 'var(--color-text-muted)' }}>Versões</p>
              <div className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" style={{ color: 'var(--color-accent)' }}>
                 <ChevronRight size={16} />
              </div>
           </div>
+
 
           <div className="flex flex-wrap gap-2">
             {languages.map(lang => {

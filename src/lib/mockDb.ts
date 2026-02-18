@@ -1,13 +1,14 @@
 import { supabase } from './supabaseClient';
-import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset } from '../types';
+import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress } from '../types';
+
 
 let isMockMode = false;
 
 const localUsers: UserProfile[] = [
-    { id: 'mock-admin', name: 'Super Admin (Mock)', email: 'admin@demo.com', role: 'super_admin', whatsapp: '11999999999', status: 'active', preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-client', name: 'Cliente Exemplo', email: 'client@demo.com', role: 'client', whatsapp: '11988888888', cro: '12345', status: 'active', preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-distrib', name: 'Distribuidor Demo', email: 'distributor@demo.com', role: 'distributor', whatsapp: '11977777777', status: 'active', preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-consult', name: 'Consultor Demo', email: 'consultant@demo.com', role: 'consultant', whatsapp: '11966666666', status: 'active', preferences: { theme: 'light', language: 'pt-br' } }
+    { id: 'mock-admin', name: 'Super Admin (Mock)', email: 'admin@demo.com', role: 'super_admin', whatsapp: '11999999999', status: 'active', points: 0, preferences: { theme: 'light', language: 'pt-br' } },
+    { id: 'mock-client', name: 'Cliente Exemplo', email: 'client@demo.com', role: 'client', whatsapp: '11988888888', cro: '12345', status: 'active', points: 150, preferences: { theme: 'light', language: 'pt-br' } },
+    { id: 'mock-distrib', name: 'Distribuidor Demo', email: 'distributor@demo.com', role: 'distributor', whatsapp: '11977777777', status: 'active', points: 320, preferences: { theme: 'light', language: 'pt-br' } },
+    { id: 'mock-consult', name: 'Consultor Demo', email: 'consultant@demo.com', role: 'consultant', whatsapp: '11966666666', status: 'active', points: 780, preferences: { theme: 'light', language: 'pt-br' } }
 ];
 
 const mapProfileFromDb = (data: any): UserProfile => ({
@@ -19,6 +20,7 @@ const mapProfileFromDb = (data: any): UserProfile => ({
   cro: data.cro,
   status: data.status,
   allowedTypes: data.allowed_types,
+  points: data.points || 0,
   preferences: data.preferences || { theme: 'light', language: 'pt-br' }
 });
 
@@ -40,7 +42,10 @@ const mapMaterialFromDb = (data: any): Material => {
         allowedRoles: data.allowed_roles,
         assets: assetsObj,
         active: data.active,
-        createdAt: data.created_at
+        createdAt: data.created_at,
+        points: data.points || 0,
+        tags: data.tags || [],
+        category: data.category || undefined,
     };
 };
 
@@ -263,7 +268,127 @@ export const mockDb = {
     }));
   },
 
+
+  // ---- Collections ----
+
+  getCollections: async (role: Role): Promise<Collection[]> => {
+    let query = supabase.from('collections').select('*').order('created_at', { ascending: false });
+    if (role !== 'super_admin') {
+      query = query.eq('active', true).contains('allowed_roles', [role]);
+    }
+    const { data, error } = await query;
+    if (error) throw error;
+    return (data || []).map((c: any) => ({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      coverImage: c.cover_image,
+      allowedRoles: c.allowed_roles,
+      active: c.active,
+      points: c.points || 0,
+      createdAt: c.created_at,
+      updatedAt: c.updated_at,
+    }));
+  },
+
+  getCollectionItems: async (collectionId: string): Promise<CollectionItem[]> => {
+    const { data, error } = await supabase
+      .from('collection_items')
+      .select(`*, materials(*, material_assets(*))`)
+      .eq('collection_id', collectionId)
+      .order('order_index');
+    if (error) throw error;
+    return (data || []).map((item: any) => ({
+      id: item.id,
+      collectionId: item.collection_id,
+      materialId: item.material_id,
+      orderIndex: item.order_index,
+      material: item.materials ? {
+        id: item.materials.id,
+        title: item.materials.title,
+        type: item.materials.type,
+        allowedRoles: item.materials.allowed_roles,
+        assets: (() => {
+          const a: any = {};
+          (item.materials.material_assets || []).forEach((asset: any) => { a[asset.language] = { url: asset.url, subtitleUrl: asset.subtitle_url, status: asset.status }; });
+          return a;
+        })(),
+        active: item.materials.active,
+        createdAt: item.materials.created_at,
+        points: item.materials.points || 0,
+        tags: item.materials.tags || [],
+        category: item.materials.category,
+      } : undefined,
+    }));
+  },
+
+  createCollection: async (collection: Omit<Collection, 'id' | 'createdAt'>): Promise<void> => {
+    const { error } = await supabase.from('collections').insert({
+      title: collection.title,
+      description: collection.description,
+      cover_image: collection.coverImage,
+      allowed_roles: collection.allowedRoles,
+      active: collection.active,
+      points: collection.points,
+    });
+    if (error) throw error;
+  },
+
+  updateCollection: async (collection: Collection): Promise<void> => {
+    const { error } = await supabase.from('collections').update({
+      title: collection.title,
+      description: collection.description,
+      cover_image: collection.coverImage,
+      allowed_roles: collection.allowedRoles,
+      active: collection.active,
+      points: collection.points,
+    }).eq('id', collection.id);
+    if (error) throw error;
+  },
+
+  deleteCollection: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('collections').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  setCollectionItems: async (collectionId: string, materialIds: string[]): Promise<void> => {
+    await supabase.from('collection_items').delete().eq('collection_id', collectionId);
+    if (materialIds.length === 0) return;
+    const items = materialIds.map((materialId, idx) => ({ collection_id: collectionId, material_id: materialId, order_index: idx }));
+    const { error } = await supabase.from('collection_items').insert(items);
+    if (error) throw error;
+  },
+
+  // ---- User Progress ----
+
+  getUserProgress: async (userId: string): Promise<UserProgress[]> => {
+    const { data, error } = await supabase.from('user_progress').select('*').eq('user_id', userId);
+    if (error) throw error;
+    return (data || []).map((p: any) => ({
+      id: p.id,
+      userId: p.user_id,
+      materialId: p.material_id,
+      status: p.status,
+      completedAt: p.completed_at,
+      createdAt: p.created_at,
+    }));
+  },
+
+  upsertProgress: async (userId: string, materialId: string, status: 'started' | 'completed'): Promise<void> => {
+    const payload: any = { user_id: userId, material_id: materialId, status };
+    if (status === 'completed') payload.completed_at = new Date().toISOString();
+    const { error } = await supabase.from('user_progress').upsert(payload, { onConflict: 'user_id,material_id' });
+    if (error) console.error('Error upserting progress:', error);
+  },
+
+  addPoints: async (userId: string, points: number): Promise<void> => {
+    const { data: profile } = await supabase.from('profiles').select('points').eq('id', userId).single();
+    const currentPoints = (profile?.points || 0) + points;
+    await supabase.from('profiles').update({ points: currentPoints }).eq('id', userId);
+  },
+
   login: async () => {},
   register: async () => {},
   loginMock: async () => {},
 };
+
