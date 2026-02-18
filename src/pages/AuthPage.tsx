@@ -121,21 +121,21 @@ export const AuthPage: React.FC = () => {
         {renderLogo()}
 
         <div className="text-center mb-8 relative z-10">
-          {!isLogin && invitedRole ? (
-            <div className="animate-fade-in">
+          {!isLogin && invitedRole ?
+          <div className="animate-fade-in">
               <h2 className="text-3xl font-bold mb-2 tracking-tight" style={{ color: 'var(--color-text-main)' }}>
                 Cadastro de {invitedRole === 'client' ? 'Clientes' : invitedRole === 'distributor' ? 'Distribuidores' : 'Consultores'}
               </h2>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 Acesse materiais exclusivos e acompanhe as novidades da plataforma {config.appName}.
               </p>
-            </div>
-          ) : (
-            <>
+            </div> :
+
+          <>
               <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: 'var(--color-text-main)' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
               <p className="text-lg font-medium bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
             </>
-          )}
+          }
         </div>
 
         <div className="space-y-4 mb-6 relative z-10">
@@ -263,11 +263,11 @@ export const AuthPage: React.FC = () => {
         </form>
 
         <div className="mt-8 text-center text-sm space-y-8 relative z-10">
-          {!invitedRole && (
+          {!invitedRole &&
           <>
-                <button onClick={() => setIsLogin(!isLogin)} className="font-medium block w-full transition-colors underline decoration-transparent hover:decoration-current underline-offset-4" style={{ color: 'var(--color-text-muted)' }}>
-                {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Faça login'}
-                </button>
+                
+
+
 
                 
 
@@ -296,7 +296,7 @@ export const AuthPage: React.FC = () => {
                     </button>
                 </div>
             </>
-          )}
+          }
         </div>
 
         {showSqlSetup && <SqlSetupModal onClose={() => setShowSqlSetup(false)} />}
