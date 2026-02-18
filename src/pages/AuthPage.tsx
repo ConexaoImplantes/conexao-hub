@@ -289,12 +289,12 @@ export const AuthPage: React.FC = () => {
 
 
 
-                <div className="pt-2">
-                    <button onClick={handleSeed} disabled={isSeeding} className="text-[10px] flex items-center justify-center gap-2 hover:opacity-100 transition-colors py-2 px-4 rounded-full mx-auto opacity-50" style={{ color: 'var(--color-text-muted)' }}>
-                        <Database size={12} />
-                        {isSeeding ? 'Criando usuários...' : 'Resetar Banco REAL'}
-                    </button>
-                </div>
+                
+
+
+
+
+
             </>
           }
         </div>
