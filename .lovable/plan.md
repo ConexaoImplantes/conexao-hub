@@ -1,63 +1,142 @@
 
-# Aplicacao da Paleta de Cores - Branding Conexao Digital Implant
+# Análise do Repositório e Plano de Implementação de Features
 
-## Cores Extraidas das Imagens
+## O que foi identificado no repositório
 
-| Cor | Hex | Uso na Marca |
-|-----|-----|-------------|
-| Azul Marinho Profundo | `#0a1e3d` | Fundo principal (backgrounds escuros) |
-| Azul Marinho Medio | `#122a4f` | Superficies/cards no tema escuro |
-| Dourado | `#c9a655` | Cor de destaque (CTAs, destaques, links ativos) |
-| Branco | `#f8fafc` | Texto principal no tema escuro |
-| Cinza Azulado | `#64748b` | Texto secundario |
+Após análise completa do repositório `hubConexao`, foram identificadas **6 grandes features** presentes lá que ainda não existem neste projeto:
 
-## Proposta de Aplicacao
+---
 
-### Tema Escuro (Principal - reflete o branding forte da marca)
+## Features a Implementar
 
-| Variavel | Valor Atual | Valor Proposto | Onde aparece |
-|----------|------------|----------------|-------------|
-| background | `#0f172a` | `#0a1e3d` | Fundo geral da aplicacao |
-| surface | `#1e293b` | `#122a4f` | Cards, modais, header |
-| textMain | `#f8fafc` | `#f8fafc` | Textos principais (mantido) |
-| textMuted | `#94a3b8` | `#8a9bb8` | Textos secundarios, labels |
-| border | `transparent` | `#1e3a5f` | Bordas de cards e inputs |
-| accent | `#6366f1` | `#c9a655` | Botoes, links, badges ativos |
-| success | `#22c55e` | `#22c55e` | Status de sucesso (mantido) |
-| warning | `#eab308` | `#d4aa4f` | Alertas (harmonizado com dourado) |
-| error | `#ef4444` | `#ef4444` | Erros (mantido) |
+### 1. Trilhas de Aprendizagem (Collections)
+O repositório possui um sistema completo de agrupamento de materiais em "trilhas":
+- Página `Collections.tsx` com listagem de trilhas
+- Página `CollectionDetail.tsx` com detalhe de cada trilha e progresso
+- Componente `CollectionCard.tsx` com capa, descrição multilíngue e barra de progresso
+- `CollectionFormModal.tsx` para criação/edição pelo admin
+- Aba `CollectionsTab.tsx` no painel admin
+- **Banco de dados**: requer 2 novas tabelas (`collections` e `collection_items`)
 
-### Tema Claro (Versao profissional e limpa)
+### 2. Sistema de Gamificação (XP e Rankings)
+- Campo `points` nos materiais e coleções
+- Campo `points` e `rank` no perfil do usuário
+- Ranking de usuários mais engajados
+- Barras de progresso visuais
+- Níveis: Iniciante, Bronze, Prata, Ouro, Master
+- **Banco de dados**: requer coluna `points` no perfil e nos materiais
 
-| Variavel | Valor Atual | Valor Proposto | Onde aparece |
-|----------|------------|----------------|-------------|
-| background | `#f8fafc` | `#f0f4f8` | Fundo geral |
-| surface | `#ffffff` | `#ffffff` | Cards e modais (mantido) |
-| textMain | `#0f172a` | `#0a1e3d` | Texto principal (azul marinho da marca) |
-| textMuted | `#64748b` | `#5a6a7e` | Textos secundarios |
-| border | `#e2e8f0` | `#d0d8e4` | Bordas |
-| accent | `#3b82f6` | `#b8952e` | Dourado mais escuro para contraste em fundo claro |
-| success | `#10b981` | `#10b981` | Mantido |
-| warning | `#f59e0b` | `#c9a655` | Harmonizado com dourado |
-| error | `#ef4444` | `#ef4444` | Mantido |
+### 3. Progresso do Usuário por Material
+- Rastreamento de materiais `started` / `completed` por usuário
+- **Banco de dados**: nova tabela `user_progress`
+- Exibição de progresso no card do material
 
-## Alteracoes Tecnicas
+### 4. Sistema de Tags e Categorias nos Materiais
+- Campo `tags: string[]` e `category?: string` nos materiais
+- Componente `TagInput.tsx` para entrada de tags
+- Filtro por tags/categoria no Dashboard
 
-### Arquivo: `src/contexts/BrandContext.tsx`
-- Atualizar o objeto `defaults` com os novos valores de `themeLight` e `themeDark`
+### 5. Sistema de Atalhos de Teclado Globais
+- `ShortcutContext.tsx` com registro/desregistro de atalhos
+- `KeyboardHelpModal.tsx` com modal de ajuda (`?` ou `Shift+?`)
+- Hook `useKeyboardShortcuts.ts`
+- Atalhos úteis: `Ctrl+F` busca, `Escape` fecha modal, `N` novo material, etc.
 
-### Arquivo: `src/index.css`
-- Atualizar as variaveis CSS root (fallback) com os novos valores da paleta
+### 6. Paginação na Lista de Materiais (Admin e Dashboard)
+- Hook `usePagination.ts` pronto no repositório
+- Controles de página: anterior, próxima, salto direto
+- Reset automático ao filtrar
 
-### Arquivo: `src/components/hub/Layout.tsx`
-- Atualizar o gradiente do avatar/logo de `from-blue-500 to-purple-600` para `from-[#0a1e3d] to-[#c9a655]` (azul marinho para dourado)
-- Atualizar o gradiente do avatar do usuario de `from-blue-500 to-purple-500` para o mesmo esquema
+### 7. Melhorias no Analytics (Gráficos com Recharts)
+- Gráfico de área temporal de acessos (`AreaChart`)
+- Gráfico de pizza por tipo de material (`PieChart`)
+- Gráfico de barras por perfil (`BarChart`)
+- Skeleton loader para tabela de analytics (`SkeletonTable`)
 
-### Arquivo: `src/pages/AuthPage.tsx`
-- Atualizar gradientes e cores de destaque na tela de login para usar o azul marinho e dourado da marca
+### 8. SkeletonCards de Loading
+- Componente `SkeletonCard.tsx` para exibir durante carregamento
+- `SkeletonTable.tsx` para a aba de analytics
 
-## Resultado Esperado
-- O tema escuro reflete fielmente o branding sofisticado e premium da Conexao Digital Implant
-- O dourado como cor de destaque traz a identidade visual da marca para botoes e elementos interativos
-- O tema claro mantem a legibilidade com toques sutis do azul marinho e dourado
-- Consistencia visual entre todos os componentes da aplicacao
+---
+
+## Banco de Dados Necessário
+
+Serão criadas as seguintes tabelas via migração:
+
+```text
+collections
+├── id (uuid, PK)
+├── title (jsonb, multilíngue)
+├── description (jsonb, multilíngue)
+├── cover_image (text, nullable)
+├── allowed_roles (app_role[], default: {client})
+├── active (boolean, default: true)
+├── points (integer, default: 0)
+└── created_at / updated_at
+
+collection_items
+├── id (uuid, PK)
+├── collection_id (uuid, FK -> collections)
+├── material_id (uuid, FK -> materials)
+└── order_index (integer)
+
+user_progress
+├── id (uuid, PK)
+├── user_id (uuid)
+├── material_id (uuid, FK -> materials)
+├── status (enum: started | completed)
+└── completed_at (timestamptz)
+```
+
+Além de colunas adicionadas:
+- `points integer DEFAULT 0` na tabela `materials`
+- `points integer DEFAULT 0` na tabela `profiles`
+- `tags text[] DEFAULT '{}'` na tabela `materials`
+- `category text` na tabela `materials`
+
+---
+
+## Plano de Execução (em fases)
+
+### Fase 1 - Banco de dados e Tipos
+- Migração SQL com as novas tabelas e colunas
+- Atualizar `src/types.ts` com os novos campos
+- Políticas RLS para `collections`, `collection_items` e `user_progress`
+
+### Fase 2 - Infrastructure (Contextos e Hooks)
+- Criar `src/contexts/ShortcutContext.tsx`
+- Criar `src/hooks/usePagination.ts`
+- Atualizar `src/App.tsx` para incluir o `ShortcutProvider`
+
+### Fase 3 - Componentes Base
+- Criar `src/components/hub/SkeletonCard.tsx`
+- Criar `src/components/hub/SkeletonTable.tsx`
+- Criar `src/components/hub/TagInput.tsx`
+- Criar `src/components/hub/KeyboardHelpModal.tsx`
+- Criar `src/components/hub/CollectionCard.tsx`
+- Criar `src/components/hub/CollectionFormModal.tsx`
+
+### Fase 4 - Dashboard do Usuário
+- Atualizar `src/pages/Dashboard.tsx` com paginação, tags, skeleton e progresso
+- Criar `src/pages/Collections.tsx` (trilhas para o usuário)
+- Criar `src/pages/CollectionDetail.tsx`
+
+### Fase 5 - Painel Admin
+- Adicionar aba "Coleções" no Admin
+- Atualizar aba Analytics com gráficos (Recharts já instalado)
+- Atualizar formulário de material para incluir tags/pontos
+
+### Fase 6 - Gamificação
+- Acumular XP ao visualizar materiais e completar trilhas
+- Exibir ranking de usuários no Analytics
+- Exibir pontos e nível no perfil do usuário no Layout
+
+---
+
+## Impacto e Compatibilidade
+
+- Nenhuma feature existente será removida — apenas estendida
+- O mockDb continuará funcionando para demonstração
+- O Supabase (Lovable Cloud) terá as tabelas reais
+- Todas as novas tabelas terão RLS configurado corretamente
+- A gamificação é progressiva: usuários existentes começam com 0 pontos
