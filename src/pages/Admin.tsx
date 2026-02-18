@@ -222,7 +222,6 @@ export const Admin: React.FC = () => {
 
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
-      if (user.role === 'super_admin') return false;
       const matchesSearch = user.name.toLowerCase().includes(userSearch.toLowerCase()) || user.email.toLowerCase().includes(userSearch.toLowerCase());
       const matchesRole = userRoleFilter === 'all' || user.role === userRoleFilter;
       const matchesStatus = userStatusFilter === 'all' || user.status === userStatusFilter;
