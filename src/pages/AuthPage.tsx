@@ -224,10 +224,25 @@ export const AuthPage: React.FC = () => {
                       </select>
                     </div>
               }
-                 <div className="group">
+                 {invitedRole &&
+              <div className="rounded-xl p-4 flex items-center gap-3" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
+                        <Shield size={16} />
+                      </div>
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>Perfil pré-definido</p>
+                        <p className="text-sm font-semibold capitalize" style={{ color: 'var(--color-text-main)' }}>
+                          {invitedRole === 'client' ? 'Cliente' : invitedRole === 'distributor' ? 'Distribuidor' : 'Consultor'}
+                        </p>
+                      </div>
+                    </div>
+              }
+                 {role === 'client' &&
+              <div className="group">
                     <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>CRO (Opcional)</label>
                     <input type="text" className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={cro} onChange={(e) => setCro(e.target.value)} />
                  </div>
+              }
               </div>
             </>
           }

@@ -4,7 +4,7 @@ import { mockDb } from '../lib/mockDb';
 import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles } from 'lucide-react';
 import { MaterialFormModal } from '../components/hub/MaterialFormModal';
 import { ViewerModal } from '../components/hub/ViewerModal';
 import { UserCommunicationModal } from '../components/hub/UserCommunicationModal';
@@ -735,23 +735,41 @@ export const Admin: React.FC = () => {
             }
 
                  {settingsTab === 'invites' &&
-            <div className="p-6 rounded-xl shadow-sm animate-fade-in" style={{ backgroundColor: 'var(--color-surface)' }}>
-                      <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>Compartilhe estes links para que novos usuários se cadastrem com o perfil pré-selecionado.</p>
-                      <div className="grid md:grid-cols-2 gap-4">
-                        {(['client', 'distributor', 'consultant'] as Role[]).map((role) => {
+            <div className="p-6 rounded-xl shadow-sm animate-fade-in space-y-6" style={{ backgroundColor: 'var(--color-surface)' }}>
+                      <div className="p-4 rounded-xl flex items-start gap-3" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
+                        <LinkIcon size={16} className="shrink-0 mt-0.5" style={{ color: 'var(--color-accent)' }} />
+                        <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
+                          Compartilhe estes links para que novos usuários se cadastrem com o <strong style={{ color: 'var(--color-text-main)' }}>perfil pré-definido e bloqueado</strong>. O usuário não poderá alterar o tipo de perfil ao se cadastrar pelo link.
+                        </p>
+                      </div>
+                      <div className="grid md:grid-cols-3 gap-4">
+                        {([
+                          { role: 'client' as Role, icon: User, desc: 'Acesso aos materiais. Pode informar o CRO.' },
+                          { role: 'distributor' as Role, icon: Briefcase, desc: 'Distribuidor de produtos e materiais.' },
+                          { role: 'consultant' as Role, icon: Sparkles, desc: 'Consultor especializado da plataforma.' },
+                        ]).map(({ role, icon: Icon, desc }) => {
                   const fullUrl = `${window.location.origin}/?role=${role}`;
                   return (
-                    <div key={role} className="p-4 rounded-lg flex flex-col" style={{ backgroundColor: 'var(--color-bg)' }}>
-                              <span className="text-sm font-semibold mb-2 capitalize" style={{ color: 'var(--color-text-main)' }}>{t(`role.${role}`)}</span>
-                              <div className="mt-auto pt-2 flex gap-2">
-                                <input readOnly value={fullUrl} className="p-2 rounded text-xs truncate flex-1 font-mono outline-none" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }} />
-                                <button onClick={() => window.open(fullUrl, '_blank')} className="p-2 rounded transition-colors" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }} title="Visualizar"><ExternalLink size={14} /></button>
-                                <button onClick={() => handleCopyLink(fullUrl, role)} className={`p-2 rounded text-white transition-colors flex items-center gap-1 text-xs font-bold ${copiedLink === role ? 'bg-green-500' : ''}`} style={copiedLink !== role ? { backgroundColor: 'var(--color-accent)' } : {}} title={t('user.invite.copy')}>
-                                  {copiedLink === role ? <CheckCircle size={14} /> : <Copy size={14} />}
+                    <div key={role} className="p-5 rounded-xl flex flex-col gap-3" style={{ backgroundColor: 'var(--color-bg)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 12%, transparent)', color: 'var(--color-accent)' }}>
+                                  <Icon size={16} />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-bold" style={{ color: 'var(--color-text-main)' }}>{t(`role.${role}`)}</p>
+                                  <p className="text-[11px]" style={{ color: 'var(--color-text-muted)' }}>{desc}</p>
+                                </div>
+                              </div>
+                              <input readOnly value={fullUrl} className="p-2 rounded-lg text-[11px] truncate w-full font-mono outline-none" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }} />
+                              <div className="flex gap-2">
+                                <button onClick={() => window.open(fullUrl, '_blank')} className="flex-1 p-2 rounded-lg flex items-center justify-center gap-1.5 text-xs font-semibold transition-colors" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }} title="Abrir link">
+                                  <ExternalLink size={13} /> Visualizar
+                                </button>
+                                <button onClick={() => handleCopyLink(fullUrl, role)} className={`flex-1 p-2 rounded-lg flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all ${copiedLink === role ? 'bg-green-500' : ''}`} style={copiedLink !== role ? { backgroundColor: 'var(--color-accent)' } : {}}>
+                                  {copiedLink === role ? <><CheckCircle size={13} /> Copiado!</> : <><Copy size={13} /> Copiar Link</>}
                                 </button>
                               </div>
                             </div>);
-
                 })}
                       </div>
                     </div>
