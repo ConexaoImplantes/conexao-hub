@@ -7,8 +7,10 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { BrandProvider } from "./contexts/BrandContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { ShortcutProvider } from "./contexts/ShortcutContext";
 import { Layout } from "./components/hub/Layout";
 import { GlobalEffects } from "./components/hub/GlobalEffects";
+import { KeyboardHelpModal } from "./components/hub/KeyboardHelpModal";
 import { AuthPage } from "./pages/AuthPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
@@ -33,10 +35,13 @@ const AppContent = () => {
   const isAdmin = user.role === 'super_admin';
 
   return (
-    <Layout>
-      <GlobalEffects />
-      {isAdmin ? <Admin /> : <Dashboard />}
-    </Layout>
+    <ShortcutProvider>
+      <Layout>
+        <GlobalEffects />
+        <KeyboardHelpModal />
+        {isAdmin ? <Admin /> : <Dashboard />}
+      </Layout>
+    </ShortcutProvider>
   );
 };
 
@@ -61,3 +66,4 @@ const App = () => (
 );
 
 export default App;
+

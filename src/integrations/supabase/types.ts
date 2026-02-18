@@ -46,6 +46,78 @@ export type Database = {
           },
         ]
       }
+      collection_items: {
+        Row: {
+          collection_id: string
+          id: string
+          material_id: string
+          order_index: number
+        }
+        Insert: {
+          collection_id: string
+          id?: string
+          material_id: string
+          order_index?: number
+        }
+        Update: {
+          collection_id?: string
+          id?: string
+          material_id?: string
+          order_index?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "collection_items_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      collections: {
+        Row: {
+          active: boolean
+          allowed_roles: Database["public"]["Enums"]["app_role"][]
+          cover_image: string | null
+          created_at: string
+          description: Json | null
+          id: string
+          points: number
+          title: Json
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          allowed_roles?: Database["public"]["Enums"]["app_role"][]
+          cover_image?: string | null
+          created_at?: string
+          description?: Json | null
+          id?: string
+          points?: number
+          title?: Json
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          allowed_roles?: Database["public"]["Enums"]["app_role"][]
+          cover_image?: string | null
+          created_at?: string
+          description?: Json | null
+          id?: string
+          points?: number
+          title?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       material_assets: {
         Row: {
           created_at: string
@@ -88,8 +160,11 @@ export type Database = {
         Row: {
           active: boolean
           allowed_roles: Database["public"]["Enums"]["app_role"][]
+          category: string | null
           created_at: string
           id: string
+          points: number
+          tags: string[]
           title: Json
           type: Database["public"]["Enums"]["material_type"]
           updated_at: string
@@ -97,8 +172,11 @@ export type Database = {
         Insert: {
           active?: boolean
           allowed_roles?: Database["public"]["Enums"]["app_role"][]
+          category?: string | null
           created_at?: string
           id?: string
+          points?: number
+          tags?: string[]
           title?: Json
           type?: Database["public"]["Enums"]["material_type"]
           updated_at?: string
@@ -106,8 +184,11 @@ export type Database = {
         Update: {
           active?: boolean
           allowed_roles?: Database["public"]["Enums"]["app_role"][]
+          category?: string | null
           created_at?: string
           id?: string
+          points?: number
+          tags?: string[]
           title?: Json
           type?: Database["public"]["Enums"]["material_type"]
           updated_at?: string
@@ -122,6 +203,7 @@ export type Database = {
           email: string
           id: string
           name: string
+          points: number
           preferences: Json
           status: Database["public"]["Enums"]["app_status"]
           updated_at: string
@@ -134,6 +216,7 @@ export type Database = {
           email: string
           id: string
           name: string
+          points?: number
           preferences?: Json
           status?: Database["public"]["Enums"]["app_status"]
           updated_at?: string
@@ -146,6 +229,7 @@ export type Database = {
           email?: string
           id?: string
           name?: string
+          points?: number
           preferences?: Json
           status?: Database["public"]["Enums"]["app_status"]
           updated_at?: string
@@ -182,6 +266,44 @@ export type Database = {
           webhook_url?: string | null
         }
         Relationships: []
+      }
+      user_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          material_id: string
+          status: Database["public"]["Enums"]["progress_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          material_id: string
+          status?: Database["public"]["Enums"]["progress_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          material_id?: string
+          status?: Database["public"]["Enums"]["progress_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_progress_material_id_fkey"
+            columns: ["material_id"]
+            isOneToOne: false
+            referencedRelation: "materials"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       user_roles: {
         Row: {
@@ -223,6 +345,7 @@ export type Database = {
       app_role: "client" | "distributor" | "consultant" | "super_admin"
       app_status: "pending" | "active" | "inactive" | "rejected"
       material_type: "pdf" | "image" | "video"
+      progress_status: "started" | "completed"
       translation_status: "draft" | "review" | "published"
     }
     CompositeTypes: {
@@ -355,6 +478,7 @@ export const Constants = {
       app_role: ["client", "distributor", "consultant", "super_admin"],
       app_status: ["pending", "active", "inactive", "rejected"],
       material_type: ["pdf", "image", "video"],
+      progress_status: ["started", "completed"],
       translation_status: ["draft", "review", "published"],
     },
   },

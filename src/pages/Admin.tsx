@@ -1,15 +1,19 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
 import { mockDb } from '../lib/mockDb';
-import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog } from '../types';
+import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog, Collection } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers } from 'lucide-react';
 import { MaterialFormModal } from '../components/hub/MaterialFormModal';
 import { ViewerModal } from '../components/hub/ViewerModal';
 import { UserCommunicationModal } from '../components/hub/UserCommunicationModal';
 import { UserEditModal } from '../components/hub/UserEditModal';
 import { ConfirmModal } from '../components/hub/ConfirmModal';
+import { CollectionFormModal } from '../components/hub/CollectionFormModal';
+import { SkeletonTable } from '../components/hub/SkeletonTable';
+import { AreaChart, Area, PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+
 
 const ColorInput = ({ label, value, onChange, hint }: {label: string;value: string;onChange: (val: string) => void;hint: string;}) =>
 <div className="space-y-1.5">
@@ -112,7 +116,7 @@ export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
 
-  const [activeTab, setActiveTab] = useState<'materials' | 'users' | 'settings' | 'analytics'>('materials');
+  const [activeTab, setActiveTab] = useState<'materials' | 'users' | 'settings' | 'analytics' | 'collections'>('materials');
   const [settingsTab, setSettingsTab] = useState<'identity' | 'integrations' | 'themes' | 'invites'>('identity');
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -133,25 +137,36 @@ export const Admin: React.FC = () => {
   const [analyticsTypeFilter, setAnalyticsTypeFilter] = useState<MaterialType | 'all'>('all');
   const [analyticsRoleFilter, setAnalyticsRoleFilter] = useState<Role | 'all'>('all');
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<{type: 'material' | 'user';id: string;} | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<{type: 'material' | 'user' | 'collection';id: string;} | null>(null);
   const [localConfig, setLocalConfig] = useState(config);
+  // Collections state
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [isCollectionFormOpen, setIsCollectionFormOpen] = useState(false);
+  const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
+  const [collectionSearch, setCollectionSearch] = useState('');
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
 
   useEffect(() => {
     if (activeTab === 'materials') loadMaterials();
     if (activeTab === 'users') loadUsers();
     if (activeTab === 'analytics') loadAnalytics();
+    if (activeTab === 'collections') loadCollections();
   }, [activeTab]);
 
   useEffect(() => {setLocalConfig(config);}, [config]);
 
+
   const loadMaterials = () => {mockDb.getMaterials('super_admin').then(setMaterials);};
   const loadUsers = () => {mockDb.getUsers().then(setUsers);};
+  const loadCollections = () => {mockDb.getCollections('super_admin').then(setCollections);};
   const loadAnalytics = async () => {
-    const logs = await mockDb.getAccessLogs();
-    const mats = await mockDb.getMaterials('super_admin');
+    setAnalyticsLoading(true);
+    const [logs, mats] = await Promise.all([mockDb.getAccessLogs(), mockDb.getMaterials('super_admin')]);
     setAccessLogs(logs);
     setMaterials(mats);
+    setAnalyticsLoading(false);
   };
+
 
   const handleOpenCreate = () => {setEditingMaterial(null);setIsFormOpen(true);};
   const handleOpenEdit = (material: Material) => {setEditingMaterial(material);setIsFormOpen(true);};
@@ -172,12 +187,14 @@ export const Admin: React.FC = () => {
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
-      if (itemToDelete.type === 'material') {await mockDb.deleteMaterial(itemToDelete.id);loadMaterials();} else
-      {await mockDb.deleteUser(itemToDelete.id);loadUsers();}
+      if (itemToDelete.type === 'material') {await mockDb.deleteMaterial(itemToDelete.id);loadMaterials();}
+      else if (itemToDelete.type === 'collection') {await mockDb.deleteCollection(itemToDelete.id);loadCollections();}
+      else {await mockDb.deleteUser(itemToDelete.id);loadUsers();}
     } catch (e: any) {alert("Erro ao excluir: " + e.message);}
     setIsConfirmOpen(false);
     setItemToDelete(null);
   };
+
 
   const handleDeleteMaterial = (id: string) => {setItemToDelete({ type: 'material', id });setIsConfirmOpen(true);};
 
@@ -300,9 +317,10 @@ export const Admin: React.FC = () => {
           <h2 className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{t('admin.title')}</h2>
           <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Gerencie materiais, usuários e a aparência da plataforma.</p>
         </div>
-        <div className="flex rounded-lg p-1" style={{ backgroundColor: 'var(--color-bg)' }}>
+        <div className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: 'var(--color-bg)' }}>
           {renderTabButton('materials', t('tab.materials'), ImageIcon)}
           {renderTabButton('users', t('tab.users'), Users)}
+          {renderTabButton('collections', 'Coleções', BookOpen)}
           {renderTabButton('analytics', t('tab.analytics'), BarChart2)}
           {renderTabButton('settings', t('tab.settings'), Settings)}
         </div>
@@ -394,7 +412,49 @@ export const Admin: React.FC = () => {
         </div>
       }
 
+      {/* Collections Tab */}
+      {activeTab === 'collections' &&
+      <div className="animate-fade-in space-y-6">
+        <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 rounded-xl shadow-sm" style={{ backgroundColor: 'var(--color-surface)' }}>
+          <div className="relative flex-1 w-full">
+            <Search className="absolute left-3 top-2.5" size={18} style={{ color: 'var(--color-text-muted)' }} />
+            <input type="text" placeholder="Buscar coleções..." className="w-full pl-10 pr-4 py-2 rounded-lg text-sm outline-none" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)' }} value={collectionSearch} onChange={e => setCollectionSearch(e.target.value)} />
+          </div>
+          <button onClick={() => { setEditingCollection(null); setIsCollectionFormOpen(true); }} className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-bold text-sm whitespace-nowrap" style={{ backgroundColor: 'var(--color-accent)' }}>
+            <PlusCircle size={16} /> Nova Trilha
+          </button>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+          {collections.filter(c => (c.title['pt-br'] || Object.values(c.title)[0] || '').toLowerCase().includes(collectionSearch.toLowerCase())).map(col => {
+            const title = col.title['pt-br'] || Object.values(col.title)[0] || 'Sem título';
+            return (
+              <div key={col.id} className="rounded-2xl border border-white/10 p-5 space-y-3" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)' }}>
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-xl" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}><BookOpen size={20} /></div>
+                    <div>
+                      <p className="font-bold text-sm" style={{ color: 'var(--color-text-main)' }}>{title}</p>
+                      <p className="text-[10px] mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{col.points} XP · {col.active ? 'Ativa' : 'Inativa'}</p>
+                    </div>
+                  </div>
+                  <div className="flex gap-1 shrink-0">
+                    <button onClick={() => { setEditingCollection(col); setIsCollectionFormOpen(true); }} className="p-2 rounded-lg" style={{ color: 'var(--color-accent)' }}><Edit size={16} /></button>
+                    <button onClick={() => { setItemToDelete({ type: 'collection', id: col.id }); setIsConfirmOpen(true); }} className="p-2 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                  </div>
+                </div>
+                <div className="flex gap-1 flex-wrap">
+                  {col.allowedRoles.map(r => (<span key={r} className="text-[10px] px-2 py-0.5 rounded-full font-bold" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>{t(`role.${r}`)}</span>))}
+                </div>
+              </div>
+            );
+          })}
+          {collections.length === 0 && (<div className="col-span-3 py-16 text-center" style={{ color: 'var(--color-text-muted)' }}><Layers size={40} className="mx-auto mb-3 opacity-30" /><p>Nenhuma trilha criada ainda.</p></div>)}
+        </div>
+      </div>
+      }
+
       {/* Analytics Tab */}
+
       {activeTab === 'analytics' &&
       <div className="animate-fade-in space-y-6">
             <div className="p-4 rounded-xl shadow-sm flex flex-col md:flex-row gap-4 items-center" style={{ backgroundColor: 'var(--color-surface)' }}>
@@ -785,7 +845,9 @@ export const Admin: React.FC = () => {
       {userComm && <UserCommunicationModal user={userComm} onClose={() => setUserComm(null)} />}
       {userEditing && <UserEditModal user={userEditing} onClose={() => setUserEditing(null)} onSave={handleSaveUser} />}
       {analyticsDetail && analyticsDetail.material && <AnalyticsDetailModal material={analyticsDetail.material} logs={analyticsDetail.logs} onClose={() => setAnalyticsDetail(null)} lang={language} />}
+      {isCollectionFormOpen && <CollectionFormModal initialData={editingCollection} onClose={() => setIsCollectionFormOpen(false)} onSave={async () => { loadCollections(); }} />}
       <ConfirmModal isOpen={isConfirmOpen} title={t('confirm.delete.title')} message={t('confirm.delete.message')} onConfirm={confirmDelete} onClose={() => setIsConfirmOpen(false)} />
     </div>);
+
 
 };
