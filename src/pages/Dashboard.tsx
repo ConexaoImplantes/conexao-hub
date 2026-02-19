@@ -3,7 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useShortcuts } from '../contexts/ShortcutContext';
 import { mockDb } from '../lib/mockDb';
-import { Material, Language, MaterialType, UserProgress, getUserLevel, getNextLevelThreshold } from '../types';
+import { Material, Language, MaterialType, UserProgress, Collection, getUserLevel, getNextLevelThreshold } from '../types';
 import { MaterialCard } from '../components/hub/MaterialCard';
 import { CollectionCard } from '../components/hub/CollectionCard';
 import { ViewerModal } from '../components/hub/ViewerModal';
@@ -11,9 +11,8 @@ import { SkeletonCardGrid } from '../components/hub/SkeletonCard';
 import { usePagination } from '../hooks/usePagination';
 import {
   Search, Grid, FileText, Image as ImageIcon, Video, Filter, ChevronRight, ChevronLeft,
-  Layers, Sparkles, BookOpen, Tag, Star
+  Layers, Sparkles, BookOpen, Tag, Star, ArrowLeft, Trophy, CheckCircle, PlayCircle, Lock
 } from 'lucide-react';
-import { Collection } from '../types';
 import { Progress } from '../components/ui/progress';
 
 export const Dashboard: React.FC = () => {
@@ -26,11 +25,13 @@ export const Dashboard: React.FC = () => {
   const [collections, setCollections] = useState<Collection[]>([]);
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [collectionItemMap, setCollectionItemMap] = useState<Record<string, string[]>>({});
+  const [collectionMaterialsMap, setCollectionMaterialsMap] = useState<Record<string, Material[]>>({});
   const [viewingMaterial, setViewingMaterial] = useState<{ mat: Material, lang: Language } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<MaterialType | 'all'>('all');
   const [filterTag, setFilterTag] = useState<string>('');
-  const [activeView, setActiveView] = useState<'materials' | 'collections'>('materials');
+  const [activeView, setActiveView] = useState<'materials' | 'collections' | 'collection-detail'>('materials');
+  const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -44,12 +45,18 @@ export const Dashboard: React.FC = () => {
         setMaterials(mats);
         setCollections(cols);
         setUserProgress(progress);
-        // Fetch items for each collection
-        Promise.all(cols.map(c => mockDb.getCollectionItems(c.id).then(items => ({ id: c.id, materialIds: items.map(i => i.materialId) }))))
+        // Fetch items + materials for each collection
+        Promise.all(cols.map(c => mockDb.getCollectionItems(c.id).then(items => ({
+          id: c.id,
+          materialIds: items.map(i => i.materialId),
+          mats: items.map(i => i.material).filter(Boolean) as Material[],
+        }))))
           .then(results => {
-            const map: Record<string, string[]> = {};
-            results.forEach(r => { map[r.id] = r.materialIds; });
-            setCollectionItemMap(map);
+            const idMap: Record<string, string[]> = {};
+            const matMap: Record<string, Material[]> = {};
+            results.forEach(r => { idMap[r.id] = r.materialIds; matMap[r.id] = r.mats; });
+            setCollectionItemMap(idMap);
+            setCollectionMaterialsMap(matMap);
           });
       }).finally(() => setIsLoading(false));
     }
@@ -254,73 +261,171 @@ export const Dashboard: React.FC = () => {
 
       {/* Main content */}
       <div className="flex-1 min-w-0 z-0">
-        {/* Header */}
-        <div className="mb-10 relative group rounded-[2rem] overflow-hidden animate-fade-in">
-          <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)` }}></div>
-          <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
-          <div className="relative z-10 p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 backdrop-blur-sm">
-            <div>
-              <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>
-                {activeView === 'collections' ? 'Trilhas de Aprendizagem' : t('dashboard.title')}
-              </h2>
-              <p className="text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>
-                {activeView === 'collections'
-                  ? 'Complete trilhas, acumule XP e avance de nível.'
-                  : 'Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.'}
-              </p>
-            </div>
 
-            {activeView === 'materials' && (
-              <div className="relative w-full xl:w-96 group/search">
-                <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
-                <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)' }}>
-                  <div className="pl-5 transition-colors" style={{ color: 'var(--color-text-muted)' }}>
-                    <Search size={22} />
+        {/* ─── Collection Detail View ─── */}
+        {activeView === 'collection-detail' && selectedCollection && (() => {
+          const colMaterials = collectionMaterialsMap[selectedCollection.id] || [];
+          const materialIds = collectionItemMap[selectedCollection.id] || [];
+          const completedCount = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId)).length;
+          const progressPct = materialIds.length > 0 ? Math.round((completedCount / materialIds.length) * 100) : 0;
+          const displayTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || '';
+          const displayDesc = selectedCollection.description?.[language] || selectedCollection.description?.['pt-br'] || '';
+
+          return (
+            <div className="animate-fade-in">
+              <button
+                onClick={() => { setActiveView('collections'); setSelectedCollection(null); }}
+                className="mb-6 flex items-center gap-2 text-sm font-semibold transition-all hover:opacity-70"
+                style={{ color: 'var(--color-text-muted)' }}
+              >
+                <ArrowLeft size={16} /> Voltar para Trilhas
+              </button>
+
+              <div className="relative rounded-[2rem] overflow-hidden mb-10">
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 20%, transparent), color-mix(in srgb, var(--color-accent) 5%, transparent))' }} />
+                {selectedCollection.coverImage && (
+                  <img src={selectedCollection.coverImage} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover opacity-20" />
+                )}
+                <div className="relative z-10 p-8 md:p-10">
+                  <div className="flex items-center gap-2 mb-3">
+                    <BookOpen size={20} style={{ color: 'var(--color-accent)' }} />
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>Trilha de Aprendizagem</span>
                   </div>
-                  <input
-                    ref={searchRef}
-                    type="text"
-                    placeholder={t('search.placeholder')}
-                    className="w-full bg-transparent border-none py-4 px-4 placeholder-gray-400 focus:ring-0 text-sm font-medium outline-none"
-                    style={{ color: 'var(--color-text-main)' }}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
+                  <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--color-text-main)' }}>{displayTitle}</h2>
+                  {displayDesc && <p className="text-base mb-6 max-w-2xl" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p>}
+                  <div className="flex flex-wrap items-center gap-6">
+                    <div className="space-y-2 flex-1 min-w-[200px]">
+                      <div className="flex justify-between text-sm font-medium">
+                        <span style={{ color: 'var(--color-text-muted)' }}>{completedCount} de {materialIds.length} concluídos</span>
+                        <span style={{ color: 'var(--color-accent)' }}>{progressPct}%</span>
+                      </div>
+                      <Progress value={progressPct} className="h-2" />
+                    </div>
+                    {selectedCollection.points > 0 && (
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
+                        <Star size={16} className="fill-yellow-400 text-yellow-400" />
+                        {selectedCollection.points} XP ao concluir
+                      </div>
+                    )}
+                    {progressPct === 100 && materialIds.length > 0 && (
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }}>
+                        <Trophy size={16} /> Trilha concluída!
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
-            )}
-          </div>
-        </div>
 
-        {/* Collections view */}
-        {activeView === 'collections' && (
-          isLoading ? (
-            <SkeletonCardGrid count={6} />
-          ) : collections.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
-              <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
-              <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>As trilhas de aprendizagem serão exibidas aqui.</p>
-            </div>
-          ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
-              {collections.map((col, i) => (
-                <div key={col.id} className="animate-slide-up" style={{ animationDelay: `${i * 70}ms` }}>
-                  <CollectionCard
-                    collection={col}
-                    userProgress={userProgress}
-                    materialIds={collectionItemMap[col.id] || []}
-                    onClick={() => setActiveView('materials')}
-                  />
+              {colMaterials.length === 0 ? (
+                <div className="flex flex-col items-center justify-center py-20 rounded-[2rem] border border-white/5 text-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
+                  <BookOpen size={40} className="mb-3 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Esta trilha ainda não tem materiais.</p>
                 </div>
-              ))}
+              ) : (
+                <div className="space-y-3 pb-20">
+                  {colMaterials.map((mat, idx) => {
+                    const prog = userProgress.find(p => p.materialId === mat.id);
+                    const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
+                    const availableLang = langs.find(l => mat.assets[l]?.url) || 'pt-br';
+                    const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
+                    return (
+                      <div key={mat.id} className="flex items-center gap-4 p-4 rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
+                          style={prog?.status === 'completed'
+                            ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }
+                            : { backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }
+                          }>
+                          {prog?.status === 'completed' ? <CheckCircle size={18} /> : idx + 1}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-semibold truncate" style={{ color: 'var(--color-text-main)' }}>{matTitle}</p>
+                          <div className="flex items-center gap-3 mt-0.5">
+                            <span className="text-xs uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{mat.type}</span>
+                            {mat.points > 0 && (
+                              <span className="text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+                                <Star size={10} className="fill-yellow-400 text-yellow-400" />{mat.points} XP
+                              </span>
+                            )}
+                            {prog?.status === 'completed' && <span className="text-xs font-bold" style={{ color: '#22c55e' }}>Concluído</span>}
+                            {prog?.status === 'started' && (
+                              <span className="text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
+                                <PlayCircle size={10} /> Em andamento
+                              </span>
+                            )}
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => handleViewMaterial(mat, availableLang)}
+                          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap"
+                          style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}
+                        >
+                          {prog?.status === 'completed' ? 'Revisar' : prog?.status === 'started' ? 'Continuar' : 'Iniciar'}
+                          <ChevronRight size={14} />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-          )
+          );
+        })()}
+
+        {/* ─── Collections grid ─── */}
+        {activeView === 'collections' && (
+          <>
+            <div className="mb-10 relative group rounded-[2rem] overflow-hidden animate-fade-in">
+              <div className="absolute inset-0 opacity-60" style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)' }} />
+              <div className="relative z-10 p-8 md:p-10">
+                <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
+                <p className="text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
+              </div>
+            </div>
+            {isLoading ? (
+              <SkeletonCardGrid count={6} />
+            ) : collections.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
+                <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
+                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>As trilhas de aprendizagem serão exibidas aqui.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
+                {collections.map((col, i) => (
+                  <div key={col.id} className="animate-slide-up" style={{ animationDelay: `${i * 70}ms` }}>
+                    <CollectionCard
+                      collection={col}
+                      userProgress={userProgress}
+                      materialIds={collectionItemMap[col.id] || []}
+                      onClick={(c) => { setSelectedCollection(c); setActiveView('collection-detail'); }}
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
         )}
 
-        {/* Materials view */}
+        {/* ─── Materials view ─── */}
         {activeView === 'materials' && (
           <>
+            <div className="mb-10 relative group rounded-[2rem] overflow-hidden animate-fade-in">
+              <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)` }} />
+              <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
+              <div className="relative z-10 p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 backdrop-blur-sm">
+                <div>
+                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
+                  <p className="text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
+                </div>
+                <div className="relative w-full xl:w-96 group/search">
+                  <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
+                  <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)' }}>
+                    <div className="pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={22} /></div>
+                    <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-4 px-4 placeholder-gray-400 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                  </div>
+                </div>
+              </div>
+            </div>
             {isLoading ? (
               <SkeletonCardGrid count={12} />
             ) : filteredMaterials.length === 0 ? (
@@ -341,49 +446,17 @@ export const Dashboard: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-6">
                   {paginatedMaterials.map((mat, index) => (
                     <div key={mat.id} className="animate-slide-up" style={{ animationDelay: `${index * 70}ms` }}>
-                      <MaterialCard
-                        material={mat}
-                        onView={handleViewMaterial}
-                        progress={userProgress.find(p => p.materialId === mat.id)}
-                      />
+                      <MaterialCard material={mat} onView={handleViewMaterial} progress={userProgress.find(p => p.materialId === mat.id)} />
                     </div>
                   ))}
                 </div>
-
-                {/* Pagination */}
                 {pagination.totalPages > 1 && (
                   <div className="flex items-center justify-center gap-2 py-8">
-                    <button
-                      onClick={pagination.prevPage}
-                      disabled={!pagination.hasPrev}
-                      className="p-2 rounded-lg transition-all disabled:opacity-30"
-                      style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}
-                    >
-                      <ChevronLeft size={18} />
-                    </button>
-
+                    <button onClick={pagination.prevPage} disabled={!pagination.hasPrev} className="p-2 rounded-lg transition-all disabled:opacity-30" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}><ChevronLeft size={18} /></button>
                     {pagination.pageNumbers.map(page => (
-                      <button
-                        key={page}
-                        onClick={() => pagination.setPage(page)}
-                        className="w-9 h-9 rounded-lg text-sm font-bold transition-all"
-                        style={page === pagination.currentPage
-                          ? { backgroundColor: 'var(--color-accent)', color: 'white' }
-                          : { backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }
-                        }
-                      >
-                        {page}
-                      </button>
+                      <button key={page} onClick={() => pagination.setPage(page)} className="w-9 h-9 rounded-lg text-sm font-bold transition-all" style={page === pagination.currentPage ? { backgroundColor: 'var(--color-accent)', color: 'white' } : { backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>{page}</button>
                     ))}
-
-                    <button
-                      onClick={pagination.nextPage}
-                      disabled={!pagination.hasNext}
-                      className="p-2 rounded-lg transition-all disabled:opacity-30"
-                      style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}
-                    >
-                      <ChevronRight size={18} />
-                    </button>
+                    <button onClick={pagination.nextPage} disabled={!pagination.hasNext} className="p-2 rounded-lg transition-all disabled:opacity-30" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}><ChevronRight size={18} /></button>
                   </div>
                 )}
               </>
