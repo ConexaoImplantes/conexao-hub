@@ -133,13 +133,19 @@ export const mockDb = {
         email: updatedUser.email,
         whatsapp: updatedUser.whatsapp,
         cro: updatedUser.cro,
-        role: updatedUser.role,
         status: updatedUser.status,
         allowed_types: updatedUser.allowedTypes,
         preferences: updatedUser.preferences
       })
       .eq('id', updatedUser.id);
     if (error) throw error;
+
+    // Update role in the separate user_roles table
+    const { error: roleError } = await supabase
+      .from('user_roles')
+      .update({ role: updatedUser.role as any })
+      .eq('user_id', updatedUser.id);
+    if (roleError) throw roleError;
   },
 
   deleteUser: async (userId: string): Promise<void> => {
@@ -154,7 +160,10 @@ export const mockDb = {
         title: material.title,
         type: material.type,
         allowed_roles: material.allowedRoles,
-        active: material.active
+        active: material.active,
+        points: material.points || 0,
+        tags: material.tags || [],
+        category: material.category || null,
       })
       .select()
       .single();
@@ -184,7 +193,10 @@ export const mockDb = {
         title: material.title,
         type: material.type,
         allowed_roles: material.allowedRoles,
-        active: material.active
+        active: material.active,
+        points: material.points || 0,
+        tags: material.tags || [],
+        category: material.category || null,
       })
       .eq('id', material.id);
 

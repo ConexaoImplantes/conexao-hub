@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType, Role, MaterialAsset } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, FileText, Image as ImageIcon, Video, Check, Globe, Users, Shield, Link as LinkIcon, Youtube, AlertCircle, Play } from 'lucide-react';
+import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star } from 'lucide-react';
+import { TagInput } from './TagInput';
 
 interface TypeCardProps {
   value: MaterialType;
@@ -97,6 +98,8 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
   const [assets, setAssets] = useState<Partial<Record<Language, MaterialAsset>>>({});
   const [activeTab, setActiveTab] = useState<Language>('pt-br');
   const [error, setError] = useState<string | null>(null);
+  const [tags, setTags] = useState<string[]>([]);
+  const [points, setPoints] = useState(0);
 
   useEffect(() => {
     if (initialData) {
@@ -105,6 +108,8 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
       setAllowedRoles(initialData.allowedRoles);
       setActive(initialData.active);
       setAssets(initialData.assets);
+      setTags(initialData.tags || []);
+      setPoints(initialData.points || 0);
     }
   }, [initialData]);
 
@@ -172,7 +177,9 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
       type,
       allowedRoles,
       active,
-      assets: cleanedAssets
+      assets: cleanedAssets,
+      tags,
+      points,
     };
 
     await onSave(payload);
@@ -263,6 +270,30 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                     <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm ${active ? 'left-5' : 'left-1'}`} />
                   </div>
                 </div>
+              </div>
+
+              {/* Tags */}
+              <div>
+                <label className="text-xs font-bold uppercase mb-3 flex items-center gap-2 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                  Tags
+                </label>
+                <TagInput tags={tags} onChange={setTags} />
+              </div>
+
+              {/* XP Points */}
+              <div>
+                <label className="text-xs font-bold uppercase mb-2 flex items-center gap-2 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                  <Star size={14} className="text-yellow-400" /> Pontos XP ao visualizar
+                </label>
+                <input
+                  type="number"
+                  min={0}
+                  max={500}
+                  value={points}
+                  onChange={e => setPoints(Number(e.target.value))}
+                  className="w-full p-3 rounded-lg outline-none transition-all"
+                  style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                />
               </div>
             </div>
           </div>
