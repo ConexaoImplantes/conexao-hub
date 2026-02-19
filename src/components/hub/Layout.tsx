@@ -3,7 +3,8 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBrand } from '../../contexts/BrandContext';
-import { Moon, Sun, LogOut, Globe } from 'lucide-react';
+import { Moon, Sun, LogOut, Globe, Star } from 'lucide-react';
+import { getUserLevel } from '../../types';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
@@ -64,7 +65,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         </div>
                         <div className="hidden md:block leading-none">
                             <p className="text-xs font-bold transition-colors" style={{ color: 'var(--color-text-main)' }}>{user?.name.split(' ')[0]}</p>
-                            <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{t(`role.${user?.role}`)}</p>
+                            {user?.role !== 'super_admin' ? (
+                              <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5 flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
+                                <Star size={8} className="fill-yellow-400 text-yellow-400" />
+                                {getUserLevel(user?.points || 0)} · {user?.points || 0} XP
+                              </p>
+                            ) : (
+                              <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5" style={{ color: 'var(--color-text-muted)' }}>{t(`role.${user?.role}`)}</p>
+                            )}
                         </div>
                     </div>
 
