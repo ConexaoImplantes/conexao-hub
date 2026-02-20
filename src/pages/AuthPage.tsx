@@ -98,7 +98,7 @@ export const AuthPage: React.FC = () => {
         {config.logoUrl ?
     <img src={config.logoUrl} alt="Logo" className={`${size === "large" ? "h-28" : "h-16"} drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all duration-500 hover:scale-105`} /> :
 
-    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} bg-gradient-to-br from-amber-700 via-amber-500 to-yellow-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
+    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)', boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
               {config.appName.substring(0, 2).toUpperCase()}
             </div>
     }
