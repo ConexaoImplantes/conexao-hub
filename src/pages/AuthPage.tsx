@@ -252,7 +252,7 @@ export const AuthPage: React.FC = () => {
             </>
           }
 
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ backgroundColor: 'var(--color-accent)', boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--color-accent) 30%, transparent)' }}>
+          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)', boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--color-accent) 30%, transparent)' }}>
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2">
                 {!isLogin && invitedRole && <UserPlus size={20} />}
