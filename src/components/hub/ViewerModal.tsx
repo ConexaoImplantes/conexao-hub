@@ -102,14 +102,14 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
 
 
-                <a
-                href={asset.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-1 text-[10px] bg-white/10 hover:bg-white/20 text-white border border-white/20 px-2 py-1 rounded backdrop-blur-md transition-colors cursor-pointer">
+                
 
-                    <ExternalLink size={10} /> Abrir Externamente
-                </a>
+
+
+
+
+
+
                </>
             }
           </div>
