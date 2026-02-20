@@ -37,14 +37,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             <div
               className="liquid-glass rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 relative overflow-hidden"
               style={levelColor ? {
-                border: `1px solid ${levelColor}30`,
-                boxShadow: `0 0 15px ${levelColor}10, 0 0 30px ${levelColor}05`,
+                border: `1px solid ${levelColor}25`,
+                backgroundColor: `${levelColor}08`,
+                boxShadow: `0 0 20px ${levelColor}08, inset 0 0 30px ${levelColor}05`,
               } : {}}
             >
-              {/* Gradient border glow effect */}
+              {/* Subtle gradient overlay with level color */}
               {levelColor && (
                 <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
-                  background: `linear-gradient(135deg, ${levelColor}15 0%, transparent 40%, transparent 60%, ${levelColor}10 100%)`,
+                  background: `linear-gradient(135deg, ${levelColor}12 0%, transparent 50%, ${levelColor}08 100%)`,
                 }} />
               )}
             <div className="flex items-center space-x-4 group cursor-default">
