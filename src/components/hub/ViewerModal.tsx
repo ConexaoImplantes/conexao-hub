@@ -79,8 +79,8 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       style={{ zIndex: 9999 }}
       onContextMenu={handleContextMenu}>
 
-      <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-start bg-gradient-to-b from-black/90 via-black/50 to-transparent z-50 pointer-events-none">
-        <div className="pointer-events-auto flex flex-col gap-2 max-w-[80%]">
+      <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 flex justify-between items-start bg-gradient-to-b from-black/90 via-black/50 to-transparent z-50 pointer-events-none">
+        <div className="pointer-events-auto flex flex-col gap-2 max-w-[70%] sm:max-w-[80%]">
           <h3 className="font-bold text-lg text-white drop-shadow-md leading-tight line-clamp-2">{displayTitle}</h3>
           <div className="flex items-center gap-2 flex-wrap">
             <span className="text-xs font-bold text-black bg-white px-2 py-0.5 rounded shadow uppercase">{language}</span>
@@ -133,7 +133,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
           }
           if (material.type === 'pdf') {
             return (
-              <div className="w-full h-full max-w-6xl mx-auto pt-20 pb-4 px-4">
+              <div className="w-full h-full max-w-6xl mx-auto pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
                         <iframe src={`${resolvedUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} className="w-full h-full rounded-lg bg-white shadow-2xl" title="PDF Viewer" />
                     </div>);
 

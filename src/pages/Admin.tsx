@@ -208,11 +208,11 @@ const AnalyticsDetailModal = ({
 }: {material: Material;logs: AccessLog[];onClose: () => void;lang: Language;}) => {
   return createPortal(
     <div
-      className="fixed inset-0 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
       style={{ zIndex: 9999 }}>
 
       <div
-        className="rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-slide-up"
+        className="rounded-t-2xl sm:rounded-2xl w-full max-w-2xl shadow-2xl flex flex-col max-h-[95vh] sm:max-h-[90vh] overflow-hidden animate-slide-up"
         style={{ backgroundColor: "var(--color-surface)" }}>
 
         <div
@@ -231,7 +231,7 @@ const AnalyticsDetailModal = ({
             <X size={20} />
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-0">
+        <div className="flex-1 overflow-y-auto overflow-x-auto p-0">
           {logs.length === 0 ?
           <div className="p-12 text-center" style={{ color: "var(--color-text-muted)" }}>
               <Clock size={32} className="mx-auto mb-2 opacity-50" /> Nenhum acesso registrado.
@@ -729,7 +729,51 @@ export const Admin: React.FC = () => {
           </div>
 
           <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-            <div className="overflow-x-auto">
+            {/* Mobile card view */}
+            <div className="block md:hidden divide-y" style={{ borderColor: "var(--color-border)" }}>
+              {filteredMaterials.map((mat) => {
+                const displayTitle = mat.title[language] || mat.title["pt-br"] || Object.values(mat.title)[0] || "Untitled";
+                return (
+                  <div key={mat.id} className="p-4 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                      <div className="min-w-0 flex-1">
+                        <p className="font-medium text-sm truncate" style={{ color: "var(--color-text-main)" }} title={displayTitle}>{displayTitle}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className="text-xs capitalize opacity-75" style={{ color: "var(--color-text-muted)" }}>{mat.type}</span>
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${mat.active ? "bg-green-500/10 text-green-600" : ""}`}
+                            style={!mat.active ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                            {mat.active ? t("active") : t("inactive")}
+                          </span>
+                          <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>
+                            <Star size={10} /> {mat.points || 0}
+                          </span>
+                        </div>
+                      </div>
+                      <div className="flex gap-1 shrink-0">
+                        <button onClick={() => handleView(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-text-muted)" }}><Eye size={16} /></button>
+                        <button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
+                        <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {mat.allowedRoles.map((r) => (
+                        <span key={r} className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>{t(`role.${r}`)}</span>
+                      ))}
+                      {Object.keys(mat.assets).map((lang) => (
+                        <span key={lang} className="text-[10px] px-1.5 py-0.5 rounded uppercase font-semibold" style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>{lang.split("-")[0]}</span>
+                      ))}
+                    </div>
+                  </div>
+                );
+              })}
+              {filteredMaterials.length === 0 && (
+                <div className="p-8 text-center" style={{ color: "var(--color-text-muted)" }}>Nenhum material encontrado.</div>
+              )}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead
                 className="text-xs uppercase font-semibold"
@@ -844,7 +888,7 @@ export const Admin: React.FC = () => {
                 })}
                   {filteredMaterials.length === 0 &&
                 <tr>
-                      <td colSpan={6} className="p-8 text-center" style={{ color: "var(--color-text-muted)" }}>
+                      <td colSpan={7} className="p-8 text-center" style={{ color: "var(--color-text-muted)" }}>
                         Nenhum material encontrado.
                       </td>
                     </tr>
@@ -1029,7 +1073,7 @@ export const Admin: React.FC = () => {
             <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: "var(--color-text-muted)" }}>
               <BarChart2 size={14} /> Visão Geral
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
               <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
                 <div className="icon-box-sm"><Eye size={14} /></div>
                 <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>{t("analytics.total.views")}</p>
@@ -1377,7 +1421,47 @@ export const Admin: React.FC = () => {
           </div>
 
           <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-            <div className="overflow-x-auto">
+            {/* Mobile card view */}
+            <div className="block md:hidden divide-y" style={{ borderColor: "var(--color-border)" }}>
+              {filteredUsers.map((user) => (
+                <div key={user.id} className="p-4 space-y-2">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-bold text-sm" style={{ color: "var(--color-text-main)" }}>{user.name}</p>
+                      <p className="text-xs truncate" style={{ color: "var(--color-text-muted)" }}>{user.email}</p>
+                      {user.whatsapp && <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>{user.whatsapp}</p>}
+                    </div>
+                    <div className="flex gap-1 shrink-0">
+                      {user.status === "pending" && (
+                        <>
+                          <button onClick={() => handleUserStatus(user.id, "active")} className="p-1.5 rounded-lg text-green-500"><CheckCircle size={16} /></button>
+                          <button onClick={() => handleUserStatus(user.id, "rejected")} className="p-1.5 rounded-lg text-red-500"><XCircle size={16} /></button>
+                        </>
+                      )}
+                      <button onClick={() => setUserEditing(user)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
+                      <button onClick={() => handleDeleteUser(user.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>{t(`role.${user.role}`)}</span>
+                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize ${
+                      user.status === "active" ? "bg-green-500/10 text-green-600" :
+                      user.status === "pending" ? "bg-yellow-500/10 text-yellow-600" :
+                      user.status === "rejected" ? "bg-red-500/10 text-red-600" : ""}`}
+                      style={user.status === "inactive" ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                      {t(`user.status.${user.status}`)}
+                    </span>
+                    {user.cro && <span className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>CRO: {user.cro}</span>}
+                  </div>
+                </div>
+              ))}
+              {filteredUsers.length === 0 && (
+                <div className="p-8 text-center" style={{ color: "var(--color-text-muted)" }}>Nenhum usuário encontrado.</div>
+              )}
+            </div>
+
+            {/* Desktop table view */}
+            <div className="hidden md:block overflow-x-auto">
               <table className="w-full text-left">
                 <thead
                 className="text-xs uppercase font-semibold"
@@ -1522,16 +1606,15 @@ export const Admin: React.FC = () => {
       {/* Settings Tab */}
       {activeTab === "settings" &&
       <div className="animate-fade-in pb-12">
-          <div className="flex flex-col md:flex-row gap-8">
+          <div className="flex flex-col md:flex-row gap-6 md:gap-8">
             <aside className="w-full md:w-64 shrink-0">
               <div
-              className="rounded-xl p-2 shadow-sm sticky top-4"
+              className="rounded-xl p-2 shadow-sm md:sticky md:top-4 flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar gap-1"
               style={{ backgroundColor: "var(--color-surface)" }}>
 
                 <p
-                className="px-4 py-2 text-xs font-bold uppercase tracking-wider mb-2"
+                className="hidden md:block px-4 py-2 text-xs font-bold uppercase tracking-wider mb-2"
                 style={{ color: "var(--color-text-muted)" }}>
-
                   Opções
                 </p>
                 {renderSettingsSidebarItem("identity", "Identidade Visual", Type)}
