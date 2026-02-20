@@ -35,12 +35,18 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <header className="sticky top-0 z-40 w-full px-4 pt-4 pointer-events-none">
         <div className="container mx-auto">
             <div
-              className="liquid-glass rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500"
+              className="liquid-glass rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 relative overflow-hidden"
               style={levelColor ? {
-                border: `2px solid ${levelColor}`,
-                boxShadow: `0 0 20px ${levelColor}40, 0 0 40px ${levelColor}15, inset 0 0 20px ${levelColor}08`,
+                border: `1px solid ${levelColor}30`,
+                boxShadow: `0 0 15px ${levelColor}10, 0 0 30px ${levelColor}05`,
               } : {}}
             >
+              {/* Gradient border glow effect */}
+              {levelColor && (
+                <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
+                  background: `linear-gradient(135deg, ${levelColor}15 0%, transparent 40%, transparent 60%, ${levelColor}10 100%)`,
+                }} />
+              )}
             <div className="flex items-center space-x-4 group cursor-default">
                 <div className="relative">
                     <div className="absolute inset-0 blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }}></div>
