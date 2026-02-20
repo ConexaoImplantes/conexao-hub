@@ -1,38 +1,75 @@
+# Remoção de Roxo/Indigo - Substituição por Dourado
+
+## Objetivo
+
+Eliminar completamente todas as referências a cores roxas (purple) do projeto, substituindo-as por tons de dourado (#c9a655 e variações) conforme a identidade visual da Conexão Digital Implant: Azul Marinho Profundo + Dourado.
+
+## Paleta de Substituição
 
 
-# Plano: Concluir material ao fechar o viewer e computar XP
+| Cor Atual                        | Nova Cor                       | Uso                        |
+| -------------------------------- | ------------------------------ | -------------------------- |
+| `purple-500`                     | `amber-600` / `yellow-600`     | Ícones, textos, bordas     |
+| `purple-600`                     | `amber-700` / `yellow-700`     | Gradientes mais escuros    |
+| `purple-500/10`, `purple-500/20` | `amber-500/10`, `amber-500/20` | Backgrounds com opacidade  |
+| `indigo-500`                     | `amber-600`                    | Destaques e acentos        |
+| `indigo-400`                     | `amber-400`                    | Variante clara (dark mode) |
+| `#6366f1` (accent dark)          | `#c9a655`                      | Cor accent do tema escuro  |
+| `pink-500` (blob)                | `amber-400`                    | Efeito decorativo de fundo |
 
-## Problema Atual
-Quando o usuario abre um material da trilha, ele e marcado como "started" e recebe 30% do XP. Porem, ao fechar o viewer (ViewerModal), nada acontece -- o material nunca e marcado como "completed" e os 70% restantes do XP nunca sao concedidos.
 
-## Solucao
+## Arquivos Afetados (7 arquivos)
 
-Alterar o fluxo de fechamento do `ViewerModal` no `Dashboard.tsx` para:
+### 1. `src/contexts/BrandContext.tsx`
 
-1. **Ao fechar o viewer**: marcar o material como `completed` via `mockDb.upsertProgress`
-2. **Conceder XP restante**: os 70% restantes do XP do material (so se ainda nao estava completed)
-3. **Verificar conclusao da trilha**: se o usuario esta dentro de uma trilha e todos os materiais ficaram completos, conceder o bonus XP da trilha
-4. **Atualizar estado local**: refletir imediatamente o progresso na UI sem precisar recarregar
+- Alterar o accent do tema escuro de `#6366f1` para `#c9a655` (dourado)
+
+### 2. `src/lib/mockDb.ts`
+
+- Mesma alteração do accent dark: `#6366f1` para `#c9a655`
+
+### 3. `src/index.css`
+
+- Alterar `--color-accent: #6366f1` na seção `:root` para `#c9a655`
+
+### 4. `src/components/hub/GlobalEffects.tsx`
+
+- `bg-purple-500` para `bg-amber-500` (blob superior esquerdo)
+- `bg-pink-500` para `bg-amber-400` (blob inferior)
+
+### 5. `src/components/hub/Layout.tsx`
+
+- Logo fallback: `from-blue-500 to-purple-600` para `from-blue-900 to-amber-600`
+- Avatar: `from-blue-500 to-purple-500` para `from-blue-900 to-amber-500`
+
+### 6. `src/components/hub/MaterialCard.tsx`
+
+- Ícone de vídeo: `text-purple-500` para `text-amber-600`
+- Gradiente de vídeo: `from-purple-500/20 to-pink-500/5` para `from-amber-500/20 to-yellow-500/5`
+- Hover de vídeo: `border-purple-500/50` e `shadow-purple-500/20` para `border-amber-500/50` e `shadow-amber-500/20`
+
+### 7. `src/components/hub/AssetManagerModal.tsx`
+
+- Label de vídeo: `text-purple-500` para `text-amber-600`
+
+### 8. `src/pages/AuthPage.tsx`
+
+- Logo fallback: `from-blue-500 via-purple-600 to-indigo-600` para `from-blue-900 via-amber-600 to-amber-700`
+- Blob decorativo: `bg-purple-500/20` para `bg-amber-500/20`
+- Texto shimmer: `from-blue-500 to-purple-500` para `from-blue-400 to-amber-500`
+
+### 9. `src/pages/Admin.tsx`
+
+- KPI "Usuários únicos": `bg-purple-500/10 text-purple-500` para `bg-amber-500/10 text-amber-600`
+- KPI "Trilhas Iniciadas": `bg-indigo-500/10 text-indigo-500` para `bg-amber-500/10 text-amber-600`
+- Ícone Integrações: `text-purple-500` para `text-amber-600`
+
+### 10. `src/pages/Dashboard.tsx`
+
+- Card "Dica Pro": todas as referências `indigo-500` e `purple-500` para `amber-500`/`amber-600`
+
+---
 
 ## Detalhes Tecnicos
 
-### Arquivo: `src/pages/Dashboard.tsx`
-
-- Criar funcao `handleCloseViewer` que:
-  - Verifica se o material ja estava `completed` no `userProgress`
-  - Se nao estava, chama `mockDb.upsertProgress(userId, materialId, 'completed')`
-  - Concede os pontos restantes (70% do XP do material) via `mockDb.addPoints`
-  - Atualiza `userProgress` no estado local para refletir `completed`
-  - Se `activeView === 'collection-detail'` e `selectedCollection` existe, verifica se todos os materiais da trilha agora estao completos; se sim, concede o XP bonus da trilha
-  - Fecha o modal (`setViewingMaterial(null)`)
-
-- Substituir o `onClose={() => setViewingMaterial(null)}` do `ViewerModal` por `onClose={handleCloseViewer}`
-
-### Nenhuma alteracao no ViewerModal
-O `ViewerModal` ja chama `onClose` ao fechar. Toda a logica fica no Dashboard.
-
-### Fluxo de XP
-- Abrir material: 30% do XP (ja implementado)
-- Fechar material: 70% do XP restante (novo)
-- Completar todos os materiais de uma trilha: bonus XP da trilha (novo)
-
+Nenhuma funcionalidade sera alterada. Apenas classes CSS Tailwind e valores hexadecimais de cor serao substituidos. A paleta dourada (amber) do Tailwind sera usada como base, complementada pelo dourado personalizado `#c9a655` nas variaveis CSS do tema.
