@@ -126,7 +126,7 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onS
                             onClick={() => toggleType(type)}
                             className={`flex-1 p-3 rounded-lg flex flex-col items-center gap-2 transition-all
                                 ${allowedTypes.includes(type)
-                                    ? 'bg-blue-500/10 text-blue-500'
+                                    ? 'bg-amber-500/10 text-amber-600'
                                     : 'opacity-60 hover:opacity-100'}
                             `}
                             style={!allowedTypes.includes(type) ? { backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' } : {}}

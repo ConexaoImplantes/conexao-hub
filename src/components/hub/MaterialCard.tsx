@@ -15,8 +15,8 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
 
   const getIcon = () => {
     switch (material.type) {
-      case 'pdf': return <FileText size={28} className="text-red-500 drop-shadow-lg" />;
-      case 'image': return <ImageIcon size={28} className="text-blue-500 drop-shadow-lg" />;
+      case 'pdf': return <FileText size={28} className="text-amber-700 drop-shadow-lg" />;
+      case 'image': return <ImageIcon size={28} className="text-amber-500 drop-shadow-lg" />;
       case 'video': return <Video size={28} className="text-amber-600 drop-shadow-lg" />;
     }
   };
@@ -31,19 +31,19 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
 
   const getGradient = () => {
       switch (material.type) {
-        case 'pdf': return 'from-red-500/20 to-orange-500/5';
-        case 'image': return 'from-blue-500/20 to-cyan-500/5';
-        case 'video': return 'from-amber-500/20 to-yellow-500/5';
-        default: return 'from-blue-500/20 to-transparent';
+        case 'pdf': return 'from-amber-600/20 to-yellow-600/5';
+        case 'image': return 'from-amber-500/20 to-yellow-500/5';
+        case 'video': return 'from-amber-400/20 to-yellow-400/5';
+        default: return 'from-amber-500/20 to-transparent';
       }
   }
 
   const getBorderColor = () => {
      switch (material.type) {
-        case 'pdf': return 'group-hover:border-red-500/50 group-hover:shadow-red-500/20';
-        case 'image': return 'group-hover:border-blue-500/50 group-hover:shadow-blue-500/20';
+        case 'pdf': return 'group-hover:border-amber-600/50 group-hover:shadow-amber-600/20';
+        case 'image': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
         case 'video': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
-        default: return 'group-hover:border-blue-500/50 group-hover:shadow-blue-500/20';
+        default: return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
      }
   }
 
