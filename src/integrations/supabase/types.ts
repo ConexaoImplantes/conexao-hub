@@ -82,6 +82,47 @@ export type Database = {
           },
         ]
       }
+      collection_progress: {
+        Row: {
+          collection_id: string
+          completed_at: string | null
+          created_at: string
+          id: string
+          started_at: string
+          status: Database["public"]["Enums"]["progress_status"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          collection_id: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["progress_status"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          collection_id?: string
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          started_at?: string
+          status?: Database["public"]["Enums"]["progress_status"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "collection_progress_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       collections: {
         Row: {
           active: boolean
