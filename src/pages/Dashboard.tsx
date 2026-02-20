@@ -189,18 +189,19 @@ export const Dashboard: React.FC = () => {
   const MenuCategory = ({ type, icon: Icon, label, count, active }: { type: MaterialType | 'all', icon: any, label: string, count: number, active: boolean }) => (
     <button
       onClick={() => setFilterType(type)}
-      className={`group relative w-full text-left px-4 py-3.5 rounded-2xl flex items-center justify-between transition-all duration-500 ease-out overflow-hidden
-        ${active ? 'liquid-glass-gold translate-x-2' : 'bg-transparent hover:opacity-80'}
+      className={`group relative w-full text-left px-2.5 py-2.5 md:px-4 md:py-3.5 rounded-xl md:rounded-2xl flex items-center justify-between transition-all duration-500 ease-out overflow-hidden
+        ${active ? 'liquid-glass-gold md:translate-x-2' : 'bg-transparent hover:opacity-80'}
       `}
       style={!active ? { color: 'var(--color-text-muted)' } : {}}
     >
-      <div className="flex items-center gap-4 relative z-10">
+      <div className="flex items-center gap-2 md:gap-4 relative z-10">
         <div className={`icon-box transition-all duration-300 ${active ? '!bg-white/10 !border-transparent' : ''}`}>
-          <Icon size={18} />
+          <Icon size={16} className="md:hidden" />
+          <Icon size={18} className="hidden md:block" />
         </div>
-        <span className={`text-sm tracking-wide ${active ? 'font-bold' : 'font-medium'}`} style={active ? { color: 'var(--color-text-main)' } : {}}>{label}</span>
+        <span className={`text-xs md:text-sm tracking-wide whitespace-nowrap ${active ? 'font-bold' : 'font-medium'}`} style={active ? { color: 'var(--color-text-main)' } : {}}>{label}</span>
       </div>
-      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all duration-300 ${active ? 'bg-white/10 backdrop-blur-sm' : 'border'}`} style={active ? { color: 'var(--color-accent)' } : { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+      <span className={`text-[10px] font-bold px-2 py-0.5 md:px-2.5 md:py-1 rounded-lg transition-all duration-300 ${active ? 'bg-white/10 backdrop-blur-sm' : 'border'}`} style={active ? { color: 'var(--color-accent)' } : { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         {count}
       </span>
     </button>
@@ -252,10 +253,10 @@ export const Dashboard: React.FC = () => {
                   <Layers size={14} style={{ color: 'var(--color-accent)' }} /> Biblioteca
                 </h3>
               </div>
-              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="all" icon={Grid} label={t('filter.all')} count={counts.all} active={filterType === 'all'} /></div>
-              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="pdf" icon={FileText} label={t('filter.pdf')} count={counts.pdf} active={filterType === 'pdf'} /></div>
-              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="image" icon={ImageIcon} label={t('filter.image')} count={counts.image} active={filterType === 'image'} /></div>
-              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
+              <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="all" icon={Grid} label={t('filter.all')} count={counts.all} active={filterType === 'all'} /></div>
+              <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="pdf" icon={FileText} label={t('filter.pdf')} count={counts.pdf} active={filterType === 'pdf'} /></div>
+              <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="image" icon={ImageIcon} label={t('filter.image')} count={counts.image} active={filterType === 'image'} /></div>
+              <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
 
               {/* Tag filter */}
               {allTags.length > 0 && (
@@ -364,15 +365,15 @@ export const Dashboard: React.FC = () => {
                   <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Esta trilha ainda não tem materiais.</p>
                 </div>
               ) : (
-                <div className="space-y-3 pb-20">
+                <div className="space-y-2 sm:space-y-3 pb-20">
                   {colMaterials.map((mat, idx) => {
                     const prog = userProgress.find(p => p.materialId === mat.id);
                     const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
                     const availableLang = langs.find(l => mat.assets[l]?.url) || 'pt-br';
                     const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
                     return (
-                      <div key={mat.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
-                        <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
+                      <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-xs sm:text-sm"
                           style={prog?.status === 'completed'
                             ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }
                             : { backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }
@@ -380,17 +381,17 @@ export const Dashboard: React.FC = () => {
                           {prog?.status === 'completed' ? <CheckCircle size={18} /> : idx + 1}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold truncate" style={{ color: 'var(--color-text-main)' }}>{matTitle}</p>
-                          <div className="flex items-center gap-3 mt-0.5">
-                            <span className="text-xs uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{mat.type}</span>
+                          <p className="text-sm sm:text-base font-semibold truncate" style={{ color: 'var(--color-text-main)' }}>{matTitle}</p>
+                          <div className="flex items-center gap-2 sm:gap-3 mt-0.5 flex-wrap">
+                            <span className="text-[10px] sm:text-xs uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{mat.type}</span>
                             {mat.points > 0 && (
-                              <span className="text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+                              <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
                                 <Star size={10} className="fill-yellow-400 text-yellow-400" />{mat.points} XP
                               </span>
                             )}
-                            {prog?.status === 'completed' && <span className="text-xs font-bold" style={{ color: '#22c55e' }}>Concluído</span>}
+                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: '#22c55e' }}>Concluído</span>}
                             {prog?.status === 'started' && (
-                              <span className="text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
+                              <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
                                 <PlayCircle size={10} /> Em andamento
                               </span>
                             )}
@@ -398,7 +399,7 @@ export const Dashboard: React.FC = () => {
                         </div>
                         <button
                           onClick={() => handleViewMaterial(mat, availableLang)}
-                          className="liquid-glass-gold flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap w-full sm:w-auto justify-center sm:justify-start"
+                          className="liquid-glass-gold flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap shrink-0"
                           style={{ color: 'var(--color-accent)' }}
                         >
                           {prog?.status === 'completed' ? 'Revisar' : prog?.status === 'started' ? 'Continuar' : 'Iniciar'}

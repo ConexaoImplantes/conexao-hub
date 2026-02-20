@@ -644,16 +644,16 @@ export const Admin: React.FC = () => {
   const renderSettingsSidebarItem = (id: typeof settingsTab, label: string, Icon: any) =>
   <button
     onClick={() => setSettingsTab(id)}
-    className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-1 ${settingsTab === id ? "liquid-glass-gold" : ""}`}
+    className={`shrink-0 md:w-full flex items-center justify-between px-3 py-2.5 md:px-4 md:py-3 rounded-lg text-xs md:text-sm font-medium transition-colors mb-1 whitespace-nowrap ${settingsTab === id ? "liquid-glass-gold" : ""}`}
     style={settingsTab === id ? { color: "var(--color-accent)" } : { color: "var(--color-text-muted)" }}>
 
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-2 md:gap-3">
         <div className={`icon-box-sm ${settingsTab === id ? '!bg-transparent !border-transparent' : ''}`}>
           <Icon size={14} />
         </div>
-        {label}
+        <span className="hidden md:inline">{label}</span>
       </div>
-      {settingsTab === id && <ChevronRight size={16} className="opacity-75" />}
+      {settingsTab === id && <ChevronRight size={16} className="opacity-75 hidden md:block" />}
     </button>;
 
 
