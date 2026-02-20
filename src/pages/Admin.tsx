@@ -362,13 +362,35 @@ export const Admin: React.FC = () => {
   const exportAnalyticsPdf = async () => {
     if (!analyticsRef.current) return;
     try {
-      const canvas = await html2canvas(analyticsRef.current, { scale: 2, useCORS: true, backgroundColor: null });
+      const canvas = await html2canvas(analyticsRef.current, {
+        scale: 2,
+        useCORS: true,
+        logging: false,
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--color-bg').trim() || '#ffffff',
+      });
       const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+      const imgWidth = 277; // A4 landscape width in mm (minus margins)
+      const pageHeight = 190; // A4 landscape height in mm (minus margins)
+      const imgHeight = (canvas.height * imgWidth) / canvas.width;
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
+
+      let heightLeft = imgHeight;
+      let position = 10; // top margin
+
+      pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+      heightLeft -= pageHeight;
+
+      while (heightLeft > 0) {
+        position = heightLeft - imgHeight + 10;
+        pdf.addPage();
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+      }
+
       pdf.save(`metricas_${new Date().toISOString().slice(0, 10)}.pdf`);
     } catch (e) {
-      alert('Erro ao gerar PDF.');
+      console.error('PDF export error:', e);
+      alert('Erro ao gerar PDF. Verifique o console para detalhes.');
     }
   };
   useEffect(() => {
@@ -958,23 +980,24 @@ export const Admin: React.FC = () => {
               <Filter size={16} /> Filtros de Métricas
             </div>
             <select
-              className="w-full md:w-auto p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none focus:ring-2"
-              style={{ color: "var(--color-text-main)" }}
+              className="w-full md:w-auto px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 border appearance-none cursor-pointer"
+              style={{ color: "var(--color-text-main)", backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}
               value={analyticsTypeFilter}
               onChange={(e) => setAnalyticsTypeFilter(e.target.value as any)}
             >
-              <option value="all">{t("filter.all")}</option>
+              <option value="all">Todos os Materiais</option>
               <option value="pdf">{t("material.type.pdf")}</option>
               <option value="image">{t("material.type.image")}</option>
               <option value="video">{t("material.type.video")}</option>
+              <option value="trails">Trilhas</option>
             </select>
             <select
-              className="w-full md:w-auto p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none focus:ring-2"
-              style={{ color: "var(--color-text-main)" }}
+              className="w-full md:w-auto px-3 py-2 rounded-lg text-sm outline-none focus:ring-2 border appearance-none cursor-pointer"
+              style={{ color: "var(--color-text-main)", backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)" }}
               value={analyticsRoleFilter}
               onChange={(e) => setAnalyticsRoleFilter(e.target.value as any)}
             >
-              <option value="all">{t("user.filter.all")}</option>
+              <option value="all">Todos os Perfis</option>
               <option value="client">{t("role.client")}</option>
               <option value="distributor">{t("role.distributor")}</option>
               <option value="consultant">{t("role.consultant")}</option>
