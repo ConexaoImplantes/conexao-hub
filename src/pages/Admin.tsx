@@ -1074,7 +1074,7 @@ export const Admin: React.FC = () => {
             <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: "var(--color-text-muted)" }}>
               <Trophy size={14} /> Rankings
             </h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
                 <div className="px-6 py-4" style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}>
                   <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
@@ -1140,6 +1140,54 @@ export const Admin: React.FC = () => {
                     </div>
                   ))}
                   {activeUsersRanking.length === 0 && (
+                    <p className="text-sm text-center py-4" style={{ color: "var(--color-text-muted)" }}>Sem dados</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="px-6 py-4" style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}>
+                  <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+                    <BookOpen size={18} className="text-emerald-500" />
+                    Ranking de Trilhas
+                  </h3>
+                </div>
+                <div className="p-5 space-y-4">
+                  {collections
+                    .map((col) => {
+                      const colTitle = (col.title as any)[language] || (col.title as any)["pt-br"] || "Sem título";
+                      const started = collectionProgress.filter((p) => p.collectionId === col.id).length;
+                      const completed = collectionProgress.filter((p) => p.collectionId === col.id && p.status === "completed").length;
+                      return { id: col.id, title: colTitle, started, completed, points: col.points || 0 };
+                    })
+                    .sort((a, b) => b.started - a.started)
+                    .slice(0, 5)
+                    .map((trail, index) => {
+                      const rate = trail.started > 0 ? Math.round((trail.completed / trail.started) * 100) : 0;
+                      return (
+                        <div key={trail.id} className="relative">
+                          <div className="flex justify-between text-sm mb-1.5">
+                            <span className="font-medium truncate pr-2 flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+                              <span
+                                className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${index === 0 ? "bg-emerald-100 text-emerald-700" : index === 1 ? "bg-gray-100 text-gray-700" : index === 2 ? "bg-orange-100 text-orange-700" : ""}`}
+                                style={index > 2 ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}
+                              >
+                                {index + 1}
+                              </span>
+                              {trail.title}
+                            </span>
+                            <span className="font-bold text-emerald-600">{trail.started}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ backgroundColor: "var(--color-bg)" }}>
+                              <div className="h-full rounded-full bg-emerald-500" style={{ width: `${rate}%` }}></div>
+                            </div>
+                            <span className="text-[10px] font-bold" style={{ color: "var(--color-text-muted)" }}>{rate}%</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {collections.length === 0 && (
                     <p className="text-sm text-center py-4" style={{ color: "var(--color-text-muted)" }}>Sem dados</p>
                   )}
                 </div>
