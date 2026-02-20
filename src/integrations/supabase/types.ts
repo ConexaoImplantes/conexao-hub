@@ -396,7 +396,33 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      system_config_public: {
+        Row: {
+          app_name: string | null
+          id: number | null
+          logo_url: string | null
+          theme_dark: Json | null
+          theme_light: Json | null
+          updated_at: string | null
+        }
+        Insert: {
+          app_name?: string | null
+          id?: number | null
+          logo_url?: string | null
+          theme_dark?: Json | null
+          theme_light?: Json | null
+          updated_at?: string | null
+        }
+        Update: {
+          app_name?: string | null
+          id?: number | null
+          logo_url?: string | null
+          theme_dark?: Json | null
+          theme_light?: Json | null
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       get_user_role: {
