@@ -250,7 +250,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                     const isSelected = selectedMaterialIds.includes(m.id);
                     return (
                       <button key={m.id} type="button" onClick={() => toggleMaterial(m.id)}
-                      className="w-full flex items-center gap-3 p-2.5 rounded-lg text-sm text-left transition-all my-[16px]"
+                      className="w-full flex items-center gap-3 p-2.5 rounded-lg text-sm text-left transition-all my-[16px] border"
                       style={{ backgroundColor: isSelected ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'var(--color-surface)', color: isSelected ? 'var(--color-accent)' : 'var(--color-text-main)', ...(isSelected ? { boxShadow: '0 0 0 1px var(--color-accent)' } : {}) }}>
                         <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${isSelected ? '' : 'border'}`} style={isSelected ? { backgroundColor: 'var(--color-accent)' } : { borderColor: 'var(--color-border)' }}>
                           {isSelected && <Check size={10} className="text-white" />}
