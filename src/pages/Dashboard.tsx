@@ -140,6 +140,36 @@ export const Dashboard: React.FC = () => {
     setViewingMaterial({ mat, lang });
   };
 
+  const handleCloseViewer = async () => {
+    if (viewingMaterial && user) {
+      const mat = viewingMaterial.mat;
+      const existing = userProgress.find(p => p.materialId === mat.id);
+
+      if (existing?.status !== 'completed') {
+        await mockDb.upsertProgress(user.id, mat.id, 'completed');
+
+        if (mat.points > 0) {
+          const remainingXp = mat.points - Math.floor(mat.points * 0.3);
+          await mockDb.addPoints(user.id, remainingXp);
+        }
+
+        setUserProgress(prev => {
+          const filtered = prev.filter(p => p.materialId !== mat.id);
+          return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
+        });
+
+        if (activeView === 'collection-detail' && selectedCollection) {
+          const materialIds = collectionItemMap[selectedCollection.id] || [];
+          const updatedCompleted = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
+          if (updatedCompleted >= materialIds.length && materialIds.length > 0 && selectedCollection.points > 0) {
+            await mockDb.addPoints(user.id, selectedCollection.points);
+          }
+        }
+      }
+    }
+    setViewingMaterial(null);
+  };
+
   const userLevel = getUserLevel(user?.points || 0);
   const nextThreshold = getNextLevelThreshold(user?.points || 0);
   const levelProgress = nextThreshold > 0 ? Math.min(100, Math.round(((user?.points || 0) / nextThreshold) * 100)) : 100;
@@ -466,7 +496,7 @@ export const Dashboard: React.FC = () => {
       </div>
 
       {viewingMaterial && (
-        <ViewerModal material={viewingMaterial.mat} language={viewingMaterial.lang} onClose={() => setViewingMaterial(null)} />
+        <ViewerModal material={viewingMaterial.mat} language={viewingMaterial.lang} onClose={handleCloseViewer} />
       )}
     </div>
   );
