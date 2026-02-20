@@ -55,7 +55,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
                 <span className="text-xs font-bold uppercase px-2 py-1 rounded border" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', borderColor: 'var(--color-border)' }}>
                   {lang}
                 </span>
-                {material.type === 'video' && <span className="text-xs text-purple-500 font-medium">Video</span>}
+                {material.type === 'video' && <span className="text-xs text-amber-600 font-medium">Video</span>}
               </div>
               <div className="space-y-3">
                 <div>
