@@ -329,6 +329,7 @@ export const Admin: React.FC = () => {
   const [editingLevel, setEditingLevel] = useState<GamificationLevel | null>(null);
   const [newLevelName, setNewLevelName] = useState("");
   const [newLevelPoints, setNewLevelPoints] = useState(0);
+  const [newLevelColor, setNewLevelColor] = useState("#c9a655");
   useEffect(() => {
     if (activeTab === "materials") loadMaterials();
     if (activeTab === "users") loadUsers();
@@ -1949,13 +1950,21 @@ export const Admin: React.FC = () => {
                         className="w-32 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2"
                         style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-main)" }}
                       />
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-semibold" style={{ color: "var(--color-text-muted)" }}>Cor:</label>
+                        <div className="relative h-9 w-9 shrink-0">
+                          <div className="absolute inset-0 rounded-lg shadow-sm border" style={{ backgroundColor: newLevelColor, borderColor: "var(--color-border)" }} />
+                          <input type="color" value={newLevelColor} onChange={(e) => setNewLevelColor(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                        </div>
+                      </div>
                       <button
                         onClick={async () => {
                           if (!newLevelName.trim()) return;
                           const nextOrder = gamificationLevels.length;
-                          await mockDb.createGamificationLevel(newLevelName.trim(), newLevelPoints, nextOrder);
+                          await mockDb.createGamificationLevel(newLevelName.trim(), newLevelPoints, nextOrder, newLevelColor);
                           setNewLevelName("");
                           setNewLevelPoints(0);
+                          setNewLevelColor("#c9a655");
                           loadGamificationLevels();
                         }}
                         className="liquid-glass-gold px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
@@ -1998,6 +2007,10 @@ export const Admin: React.FC = () => {
                                 className="w-28 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
                                 style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
                               />
+                              <div className="relative h-9 w-9 shrink-0">
+                                <div className="absolute inset-0 rounded-lg shadow-sm border" style={{ backgroundColor: editingLevel.color, borderColor: "var(--color-border)" }} />
+                                <input type="color" value={editingLevel.color} onChange={(e) => setEditingLevel({ ...editingLevel, color: e.target.value })} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
+                              </div>
                               <button
                                 onClick={async () => {
                                   await mockDb.updateGamificationLevel(
@@ -2005,6 +2018,7 @@ export const Admin: React.FC = () => {
                                     editingLevel.name,
                                     editingLevel.minPoints,
                                     editingLevel.orderIndex,
+                                    editingLevel.color,
                                   );
                                   setEditingLevel(null);
                                   loadGamificationLevels();
@@ -2077,15 +2091,18 @@ export const Admin: React.FC = () => {
                                 </button>
                               </div>
                               <div
-                                className="liquid-glass-gold w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
-                                style={{ color: "var(--color-accent)" }}
+                                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border"
+                                style={{ backgroundColor: `${level.color}20`, borderColor: level.color, color: level.color }}
                               >
                                 {idx + 1}
                               </div>
                               <div className="flex-1 min-w-0">
-                                <p className="font-semibold text-sm" style={{ color: "var(--color-text-main)" }}>
-                                  {level.name}
-                                </p>
+                                <div className="flex items-center gap-2">
+                                  <p className="font-semibold text-sm" style={{ color: "var(--color-text-main)" }}>
+                                    {level.name}
+                                  </p>
+                                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: level.color }} />
+                                </div>
                                 <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>
                                   {level.minPoints} XP mínimo
                                 </p>

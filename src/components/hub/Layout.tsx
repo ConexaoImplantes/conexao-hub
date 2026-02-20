@@ -1,22 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBrand } from '../../contexts/BrandContext';
 import { Moon, Sun, LogOut, Globe, Star } from 'lucide-react';
 import { getUserLevel } from '../../types';
+import { mockDb, GamificationLevel } from '../../lib/mockDb';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const { theme, toggleTheme } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const { config } = useBrand();
+  const [levels, setLevels] = useState<GamificationLevel[]>([]);
+
+  useEffect(() => {
+    mockDb.getGamificationLevels().then(setLevels).catch(() => {});
+  }, []);
+
+  // Determine current level color for non-admin users
+  const getLevelColor = (): string | null => {
+    if (!user || user.role === 'super_admin' || levels.length === 0) return null;
+    const points = user.points || 0;
+    // Find the highest level the user qualifies for
+    const sorted = [...levels].sort((a, b) => b.minPoints - a.minPoints);
+    const currentLevel = sorted.find(l => points >= l.minPoints);
+    return currentLevel?.color || null;
+  };
+
+  const levelColor = getLevelColor();
 
   return (
     <div className="min-h-screen flex flex-col transition-colors duration-500 relative">
       <header className="sticky top-0 z-40 w-full px-4 pt-4 pointer-events-none">
         <div className="container mx-auto">
-            <div className="liquid-glass rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 hover:shadow-[var(--color-accent)]/5">
+            <div
+              className="liquid-glass rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500"
+              style={levelColor ? {
+                border: `2px solid ${levelColor}`,
+                boxShadow: `0 0 20px ${levelColor}40, 0 0 40px ${levelColor}15, inset 0 0 20px ${levelColor}08`,
+              } : {}}
+            >
             <div className="flex items-center space-x-4 group cursor-default">
                 <div className="relative">
                     <div className="absolute inset-0 blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }}></div>
@@ -66,8 +90,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         <div className="hidden md:block leading-none">
                             <p className="text-xs font-bold transition-colors" style={{ color: 'var(--color-text-main)' }}>{user?.name.split(' ')[0]}</p>
                             {user?.role !== 'super_admin' ? (
-                              <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5 flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
-                                <Star size={8} className="fill-yellow-400 text-yellow-400" />
+                              <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5 flex items-center gap-1" style={{ color: levelColor || 'var(--color-accent)' }}>
+                                <Star size={8} style={levelColor ? { fill: levelColor, color: levelColor } : {}} className={!levelColor ? 'fill-yellow-400 text-yellow-400' : ''} />
                                 {getUserLevel(user?.points || 0)} · {user?.points || 0} XP
                               </p>
                             ) : (

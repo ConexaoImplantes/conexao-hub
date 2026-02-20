@@ -15,6 +15,7 @@ export interface GamificationLevel {
   name: string;
   minPoints: number;
   orderIndex: number;
+  color: string;
   createdAt: string;
   updatedAt: string;
 }
@@ -427,18 +428,21 @@ export const mockDb = {
       name: l.name,
       minPoints: l.min_points,
       orderIndex: l.order_index,
+      color: l.color || '#c9a655',
       createdAt: l.created_at,
       updatedAt: l.updated_at,
     }));
   },
 
-  createGamificationLevel: async (name: string, minPoints: number, orderIndex: number): Promise<void> => {
-    const { error } = await supabase.from('gamification_levels').insert({ name, min_points: minPoints, order_index: orderIndex });
+  createGamificationLevel: async (name: string, minPoints: number, orderIndex: number, color: string = '#c9a655'): Promise<void> => {
+    const { error } = await supabase.from('gamification_levels').insert({ name, min_points: minPoints, order_index: orderIndex, color });
     if (error) throw error;
   },
 
-  updateGamificationLevel: async (id: string, name: string, minPoints: number, orderIndex: number): Promise<void> => {
-    const { error } = await supabase.from('gamification_levels').update({ name, min_points: minPoints, order_index: orderIndex }).eq('id', id);
+  updateGamificationLevel: async (id: string, name: string, minPoints: number, orderIndex: number, color?: string): Promise<void> => {
+    const payload: any = { name, min_points: minPoints, order_index: orderIndex };
+    if (color !== undefined) payload.color = color;
+    const { error } = await supabase.from('gamification_levels').update(payload).eq('id', id);
     if (error) throw error;
   },
 
