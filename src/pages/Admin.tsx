@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { mockDb } from '../lib/mockDb';
+import { mockDb, GamificationLevel } from '../lib/mockDb';
 import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog, Collection } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
@@ -116,7 +116,7 @@ export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
 
-  const [activeTab, setActiveTab] = useState<'materials' | 'users' | 'settings' | 'analytics' | 'collections'>('materials');
+  const [activeTab, setActiveTab] = useState<'materials' | 'users' | 'settings' | 'analytics' | 'collections' | 'gamification'>('materials');
   const [settingsTab, setSettingsTab] = useState<'identity' | 'integrations' | 'themes' | 'invites'>('identity');
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -145,12 +145,17 @@ export const Admin: React.FC = () => {
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [collectionSearch, setCollectionSearch] = useState('');
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
-
+  // Gamification levels state
+  const [gamificationLevels, setGamificationLevels] = useState<GamificationLevel[]>([]);
+  const [editingLevel, setEditingLevel] = useState<GamificationLevel | null>(null);
+  const [newLevelName, setNewLevelName] = useState('');
+  const [newLevelPoints, setNewLevelPoints] = useState(0);
   useEffect(() => {
     if (activeTab === 'materials') loadMaterials();
     if (activeTab === 'users') loadUsers();
     if (activeTab === 'analytics') loadAnalytics();
     if (activeTab === 'collections') loadCollections();
+    if (activeTab === 'gamification') loadGamificationLevels();
   }, [activeTab]);
 
   useEffect(() => {setLocalConfig(config);}, [config]);
@@ -159,6 +164,7 @@ export const Admin: React.FC = () => {
   const loadMaterials = () => {mockDb.getMaterials('super_admin').then(setMaterials);};
   const loadUsers = () => {mockDb.getUsers().then(setUsers);};
   const loadCollections = () => {mockDb.getCollections('super_admin').then(setCollections);};
+  const loadGamificationLevels = () => {mockDb.getGamificationLevels().then(setGamificationLevels).catch(e => console.error(e));};
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
     const [logs, mats] = await Promise.all([mockDb.getAccessLogs(), mockDb.getMaterials('super_admin')]);
@@ -321,6 +327,7 @@ export const Admin: React.FC = () => {
           {renderTabButton('materials', t('tab.materials'), ImageIcon)}
           {renderTabButton('users', t('tab.users'), Users)}
           {renderTabButton('collections', 'Coleções', BookOpen)}
+          {renderTabButton('gamification', 'Gamificação', Trophy)}
           {renderTabButton('analytics', t('tab.analytics'), BarChart2)}
           {renderTabButton('settings', t('tab.settings'), Settings)}
         </div>
@@ -840,7 +847,130 @@ export const Admin: React.FC = () => {
         </div>
       }
 
-      {isFormOpen && <MaterialFormModal initialData={editingMaterial} onClose={() => setIsFormOpen(false)} onSave={handleSaveMaterial} />}
+      {/* Gamification Tab */}
+      {activeTab === 'gamification' &&
+        <div className="rounded-2xl shadow-lg overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
+          <div className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <div>
+              <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Trophy size={20} /> Patentes & XP</h3>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Defina os níveis de gamificação, nomes e pontuação mínima.</p>
+            </div>
+          </div>
+
+          {/* Add new level */}
+          <div className="p-6" style={{ borderBottom: '1px solid var(--color-border)' }}>
+            <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-main)' }}>Adicionar nova patente</h4>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <input
+                type="text"
+                placeholder="Nome da patente"
+                value={newLevelName}
+                onChange={(e) => setNewLevelName(e.target.value)}
+                className="flex-1 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2"
+                style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}
+              />
+              <input
+                type="number"
+                placeholder="XP mínimo"
+                value={newLevelPoints || ''}
+                onChange={(e) => setNewLevelPoints(Number(e.target.value))}
+                className="w-32 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2"
+                style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)' }}
+              />
+              <button
+                onClick={async () => {
+                  if (!newLevelName.trim()) return;
+                  const nextOrder = gamificationLevels.length;
+                  await mockDb.createGamificationLevel(newLevelName.trim(), newLevelPoints, nextOrder);
+                  setNewLevelName('');
+                  setNewLevelPoints(0);
+                  loadGamificationLevels();
+                }}
+                className="px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center gap-2"
+                style={{ backgroundColor: 'var(--color-accent)' }}
+              >
+                <PlusCircle size={16} /> Adicionar
+              </button>
+            </div>
+          </div>
+
+          {/* Levels list */}
+          <div className="p-6">
+            {gamificationLevels.length === 0 ? (
+              <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>
+                <Trophy size={40} className="mx-auto mb-3 opacity-30" />
+                <p>Nenhuma patente configurada.</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {gamificationLevels.map((level) => (
+                  <div key={level.id} className="flex items-center gap-4 p-4 rounded-xl transition-colors" style={{ backgroundColor: 'var(--color-bg)' }}>
+                    {editingLevel?.id === level.id ? (
+                      <>
+                        <input
+                          type="text"
+                          value={editingLevel.name}
+                          onChange={(e) => setEditingLevel({ ...editingLevel, name: e.target.value })}
+                          className="flex-1 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
+                          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                        />
+                        <input
+                          type="number"
+                          value={editingLevel.minPoints}
+                          onChange={(e) => setEditingLevel({ ...editingLevel, minPoints: Number(e.target.value) })}
+                          className="w-28 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
+                          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                        />
+                        <button
+                          onClick={async () => {
+                            await mockDb.updateGamificationLevel(editingLevel.id, editingLevel.name, editingLevel.minPoints, editingLevel.orderIndex);
+                            setEditingLevel(null);
+                            loadGamificationLevels();
+                          }}
+                          className="p-2 rounded-lg transition-colors"
+                          style={{ color: 'var(--color-success)' }}
+                        >
+                          <Check size={18} />
+                        </button>
+                        <button onClick={() => setEditingLevel(null)} className="p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}>
+                          <X size={18} />
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: 'var(--color-accent)' }}>
+                          {level.orderIndex + 1}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-sm" style={{ color: 'var(--color-text-main)' }}>{level.name}</p>
+                          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{level.minPoints} XP mínimo</p>
+                        </div>
+                        <button onClick={() => setEditingLevel(level)} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                          <Edit size={16} />
+                        </button>
+                        <button
+                          onClick={async () => {
+                            if (confirm(`Excluir a patente "${level.name}"?`)) {
+                              await mockDb.deleteGamificationLevel(level.id);
+                              loadGamificationLevels();
+                            }
+                          }}
+                          className="p-2 rounded-lg transition-colors"
+                          style={{ color: 'var(--color-error)' }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+      }
+
+
       {viewingMaterial && <ViewerModal material={viewingMaterial.mat} language={viewingMaterial.lang} onClose={() => setViewingMaterial(null)} />}
       {userComm && <UserCommunicationModal user={userComm} onClose={() => setUserComm(null)} />}
       {userEditing && <UserEditModal user={userEditing} onClose={() => setUserEditing(null)} onSave={handleSaveUser} />}
