@@ -110,7 +110,7 @@ export const AuthPage: React.FC = () => {
       <div className="absolute inset-0 z-[-2]" style={{ backgroundColor: 'var(--color-bg)' }}></div>
       <div className="absolute top-0 left-0 w-full h-full z-[-1] overflow-hidden">
           <div className="absolute top-[20%] left-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }}></div>
-          <div className="absolute bottom-[20%] right-[20%] w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] animate-blob animation-delay-2000"></div>
+          <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob animation-delay-2000" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)' }}></div>
           <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-white/5 rounded-full opacity-20 animate-pulse"></div>
       </div>
 
