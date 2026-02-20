@@ -16,7 +16,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
     <div className="min-h-screen flex flex-col transition-colors duration-500 relative">
       <header className="sticky top-0 z-40 w-full px-4 pt-4 pointer-events-none">
         <div className="container mx-auto">
-            <div className="bg-[var(--color-surface)]/70 dark:bg-[#0f172a]/70 backdrop-blur-xl border border-white/10 dark:border-white/5 shadow-2xl shadow-black/5 rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 hover:shadow-[var(--color-accent)]/5" style={{ backgroundColor: `color-mix(in srgb, var(--color-surface) 70%, transparent)` }}>
+            <div className="liquid-glass rounded-2xl p-3 pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 hover:shadow-[var(--color-accent)]/5">
             <div className="flex items-center space-x-4 group cursor-default">
                 <div className="relative">
                     <div className="absolute inset-0 blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }}></div>
