@@ -4,7 +4,7 @@ import { mockDb, GamificationLevel } from '../lib/mockDb';
 import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog, Collection } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, ChevronUp, ChevronDown, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers } from 'lucide-react';
 import { MaterialFormModal } from '../components/hub/MaterialFormModal';
 import { ViewerModal } from '../components/hub/ViewerModal';
 import { UserCommunicationModal } from '../components/hub/UserCommunicationModal';
@@ -116,8 +116,8 @@ export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
 
-  const [activeTab, setActiveTab] = useState<'materials' | 'users' | 'settings' | 'analytics' | 'collections' | 'gamification'>('materials');
-  const [settingsTab, setSettingsTab] = useState<'identity' | 'integrations' | 'themes' | 'invites'>('identity');
+  const [activeTab, setActiveTab] = useState<'materials' | 'users' | 'settings' | 'analytics' | 'collections'>('materials');
+  const [settingsTab, setSettingsTab] = useState<'identity' | 'integrations' | 'themes' | 'invites' | 'gamification'>('identity');
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
@@ -155,7 +155,7 @@ export const Admin: React.FC = () => {
     if (activeTab === 'users') loadUsers();
     if (activeTab === 'analytics') loadAnalytics();
     if (activeTab === 'collections') loadCollections();
-    if (activeTab === 'gamification') loadGamificationLevels();
+    if (activeTab === 'settings') loadGamificationLevels();
   }, [activeTab]);
 
   useEffect(() => {setLocalConfig(config);}, [config]);
@@ -327,7 +327,6 @@ export const Admin: React.FC = () => {
           {renderTabButton('materials', t('tab.materials'), ImageIcon)}
           {renderTabButton('users', t('tab.users'), Users)}
           {renderTabButton('collections', 'Coleções', BookOpen)}
-          {renderTabButton('gamification', 'Gamificação', Trophy)}
           {renderTabButton('analytics', t('tab.analytics'), BarChart2)}
           {renderTabButton('settings', t('tab.settings'), Settings)}
         </div>
@@ -700,9 +699,10 @@ export const Admin: React.FC = () => {
                  <div className="rounded-xl p-2 shadow-sm sticky top-4" style={{ backgroundColor: 'var(--color-surface)' }}>
                     <p className="px-4 py-2 text-xs font-bold uppercase tracking-wider mb-2" style={{ color: 'var(--color-text-muted)' }}>Opções</p>
                     {renderSettingsSidebarItem('identity', 'Identidade Visual', Type)}
-                    {renderSettingsSidebarItem('integrations', 'Integrações', Webhook)}
-                    {renderSettingsSidebarItem('themes', 'Temas', Palette)}
-                    {renderSettingsSidebarItem('invites', t('user.invite'), Share2)}
+                     {renderSettingsSidebarItem('integrations', 'Integrações', Webhook)}
+                     {renderSettingsSidebarItem('themes', 'Temas', Palette)}
+                     {renderSettingsSidebarItem('gamification', 'Gamificação', Trophy)}
+                     {renderSettingsSidebarItem('invites', t('user.invite'), Share2)}
                  </div>
               </aside>
 
@@ -712,9 +712,10 @@ export const Admin: React.FC = () => {
                      {settingsTab === 'identity' && <><Type size={24} style={{ color: 'var(--color-accent)' }} /> Identidade Visual</>}
                      {settingsTab === 'integrations' && <><Webhook size={24} className="text-purple-500" /> Integrações</>}
                      {settingsTab === 'themes' && <><Palette size={24} className="text-orange-500" /> Personalização de Temas</>}
-                     {settingsTab === 'invites' && <><Share2 size={24} className="text-green-500" /> {t('user.invite')}</>}
+                      {settingsTab === 'invites' && <><Share2 size={24} className="text-green-500" /> {t('user.invite')}</>}
+                      {settingsTab === 'gamification' && <><Trophy size={24} className="text-yellow-500" /> Patentes & XP</>}
                    </h3>
-                   {settingsTab !== 'invites' &&
+                    {settingsTab !== 'invites' && settingsTab !== 'gamification' &&
               <button onClick={handleSaveSettings} className="text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2" style={{ backgroundColor: 'var(--color-accent)' }}>
                         <Save size={18} /> Salvar Alterações
                      </button>
@@ -842,131 +843,82 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
             }
+
+                 {settingsTab === 'gamification' &&
+            <div className="p-6 rounded-xl shadow-sm animate-fade-in" style={{ backgroundColor: 'var(--color-surface)' }}>
+              <p className="text-sm mb-6" style={{ color: 'var(--color-text-muted)' }}>Defina os níveis de gamificação, nomes e pontuação mínima. Use as setas para reordenar.</p>
+
+              {/* Add new level */}
+              <div className="mb-6 pb-6" style={{ borderBottom: '1px solid var(--color-border)' }}>
+                <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-main)' }}>Adicionar nova patente</h4>
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <input type="text" placeholder="Nome da patente" value={newLevelName} onChange={(e) => setNewLevelName(e.target.value)} className="flex-1 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)' }} />
+                  <input type="number" placeholder="XP mínimo" value={newLevelPoints || ''} onChange={(e) => setNewLevelPoints(Number(e.target.value))} className="w-32 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)' }} />
+                  <button onClick={async () => {
+                    if (!newLevelName.trim()) return;
+                    const nextOrder = gamificationLevels.length;
+                    await mockDb.createGamificationLevel(newLevelName.trim(), newLevelPoints, nextOrder);
+                    setNewLevelName(''); setNewLevelPoints(0); loadGamificationLevels();
+                  }} className="px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center gap-2" style={{ backgroundColor: 'var(--color-accent)' }}>
+                    <PlusCircle size={16} /> Adicionar
+                  </button>
+                </div>
+              </div>
+
+              {/* Levels list */}
+              {gamificationLevels.length === 0 ? (
+                <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>
+                  <Trophy size={40} className="mx-auto mb-3 opacity-30" />
+                  <p>Nenhuma patente configurada.</p>
+                </div>
+              ) : (
+                <div className="space-y-2">
+                  {gamificationLevels.map((level, idx) => (
+                    <div key={level.id} className="flex items-center gap-3 p-4 rounded-xl transition-colors" style={{ backgroundColor: 'var(--color-bg)' }}>
+                      {editingLevel?.id === level.id ? (
+                        <>
+                          <input type="text" value={editingLevel.name} onChange={(e) => setEditingLevel({ ...editingLevel, name: e.target.value })} className="flex-1 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
+                          <input type="number" value={editingLevel.minPoints} onChange={(e) => setEditingLevel({ ...editingLevel, minPoints: Number(e.target.value) })} className="w-28 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
+                          <button onClick={async () => { await mockDb.updateGamificationLevel(editingLevel.id, editingLevel.name, editingLevel.minPoints, editingLevel.orderIndex); setEditingLevel(null); loadGamificationLevels(); }} className="p-2 rounded-lg" style={{ color: 'var(--color-success)' }}><Check size={18} /></button>
+                          <button onClick={() => setEditingLevel(null)} className="p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}><X size={18} /></button>
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex flex-col gap-0.5">
+                            <button disabled={idx === 0} onClick={async () => {
+                              const prev = gamificationLevels[idx - 1];
+                              await Promise.all([
+                                mockDb.updateGamificationLevel(level.id, level.name, level.minPoints, prev.orderIndex),
+                                mockDb.updateGamificationLevel(prev.id, prev.name, prev.minPoints, level.orderIndex),
+                              ]);
+                              loadGamificationLevels();
+                            }} className="p-0.5 rounded disabled:opacity-20" style={{ color: 'var(--color-text-muted)' }}><ChevronUp size={14} /></button>
+                            <button disabled={idx === gamificationLevels.length - 1} onClick={async () => {
+                              const next = gamificationLevels[idx + 1];
+                              await Promise.all([
+                                mockDb.updateGamificationLevel(level.id, level.name, level.minPoints, next.orderIndex),
+                                mockDb.updateGamificationLevel(next.id, next.name, next.minPoints, level.orderIndex),
+                              ]);
+                              loadGamificationLevels();
+                            }} className="p-0.5 rounded disabled:opacity-20" style={{ color: 'var(--color-text-muted)' }}><ChevronDown size={14} /></button>
+                          </div>
+                          <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0" style={{ backgroundColor: 'var(--color-accent)' }}>{idx + 1}</div>
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-sm" style={{ color: 'var(--color-text-main)' }}>{level.name}</p>
+                            <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{level.minPoints} XP mínimo</p>
+                          </div>
+                          <button onClick={() => setEditingLevel(level)} className="p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}><Edit size={16} /></button>
+                          <button onClick={async () => { if (confirm(`Excluir a patente "${level.name}"?`)) { await mockDb.deleteGamificationLevel(level.id); loadGamificationLevels(); } }} className="p-2 rounded-lg" style={{ color: 'var(--color-error)' }}><Trash2 size={16} /></button>
+                        </>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+            }
               </div>
            </div>
-        </div>
-      }
-
-      {/* Gamification Tab */}
-      {activeTab === 'gamification' &&
-        <div className="rounded-2xl shadow-lg overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
-          <div className="p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4" style={{ borderBottom: '1px solid var(--color-border)' }}>
-            <div>
-              <h3 className="text-lg font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Trophy size={20} /> Patentes & XP</h3>
-              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Defina os níveis de gamificação, nomes e pontuação mínima.</p>
-            </div>
-          </div>
-
-          {/* Add new level */}
-          <div className="p-6" style={{ borderBottom: '1px solid var(--color-border)' }}>
-            <h4 className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-main)' }}>Adicionar nova patente</h4>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <input
-                type="text"
-                placeholder="Nome da patente"
-                value={newLevelName}
-                onChange={(e) => setNewLevelName(e.target.value)}
-                className="flex-1 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2"
-                style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}
-              />
-              <input
-                type="number"
-                placeholder="XP mínimo"
-                value={newLevelPoints || ''}
-                onChange={(e) => setNewLevelPoints(Number(e.target.value))}
-                className="w-32 px-4 py-2 rounded-lg text-sm outline-none focus:ring-2"
-                style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)' }}
-              />
-              <button
-                onClick={async () => {
-                  if (!newLevelName.trim()) return;
-                  const nextOrder = gamificationLevels.length;
-                  await mockDb.createGamificationLevel(newLevelName.trim(), newLevelPoints, nextOrder);
-                  setNewLevelName('');
-                  setNewLevelPoints(0);
-                  loadGamificationLevels();
-                }}
-                className="px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center gap-2"
-                style={{ backgroundColor: 'var(--color-accent)' }}
-              >
-                <PlusCircle size={16} /> Adicionar
-              </button>
-            </div>
-          </div>
-
-          {/* Levels list */}
-          <div className="p-6">
-            {gamificationLevels.length === 0 ? (
-              <div className="text-center py-12" style={{ color: 'var(--color-text-muted)' }}>
-                <Trophy size={40} className="mx-auto mb-3 opacity-30" />
-                <p>Nenhuma patente configurada.</p>
-              </div>
-            ) : (
-              <div className="space-y-3">
-                {gamificationLevels.map((level) => (
-                  <div key={level.id} className="flex items-center gap-4 p-4 rounded-xl transition-colors" style={{ backgroundColor: 'var(--color-bg)' }}>
-                    {editingLevel?.id === level.id ? (
-                      <>
-                        <input
-                          type="text"
-                          value={editingLevel.name}
-                          onChange={(e) => setEditingLevel({ ...editingLevel, name: e.target.value })}
-                          className="flex-1 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
-                          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
-                        />
-                        <input
-                          type="number"
-                          value={editingLevel.minPoints}
-                          onChange={(e) => setEditingLevel({ ...editingLevel, minPoints: Number(e.target.value) })}
-                          className="w-28 px-3 py-2 rounded-lg text-sm outline-none focus:ring-2"
-                          style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
-                        />
-                        <button
-                          onClick={async () => {
-                            await mockDb.updateGamificationLevel(editingLevel.id, editingLevel.name, editingLevel.minPoints, editingLevel.orderIndex);
-                            setEditingLevel(null);
-                            loadGamificationLevels();
-                          }}
-                          className="p-2 rounded-lg transition-colors"
-                          style={{ color: 'var(--color-success)' }}
-                        >
-                          <Check size={18} />
-                        </button>
-                        <button onClick={() => setEditingLevel(null)} className="p-2 rounded-lg" style={{ color: 'var(--color-text-muted)' }}>
-                          <X size={18} />
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <div className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white" style={{ backgroundColor: 'var(--color-accent)' }}>
-                          {level.orderIndex + 1}
-                        </div>
-                        <div className="flex-1">
-                          <p className="font-semibold text-sm" style={{ color: 'var(--color-text-main)' }}>{level.name}</p>
-                          <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>{level.minPoints} XP mínimo</p>
-                        </div>
-                        <button onClick={() => setEditingLevel(level)} className="p-2 rounded-lg transition-colors" style={{ color: 'var(--color-text-muted)' }}>
-                          <Edit size={16} />
-                        </button>
-                        <button
-                          onClick={async () => {
-                            if (confirm(`Excluir a patente "${level.name}"?`)) {
-                              await mockDb.deleteGamificationLevel(level.id);
-                              loadGamificationLevels();
-                            }
-                          }}
-                          className="p-2 rounded-lg transition-colors"
-                          style={{ color: 'var(--color-error)' }}
-                        >
-                          <Trash2 size={16} />
-                        </button>
-                      </>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
         </div>
       }
 
