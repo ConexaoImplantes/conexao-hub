@@ -46,6 +46,7 @@ import {
   Video,
   ExternalLink,
   AlertCircle,
+  Download,
   Check,
   X,
   BarChart2,
@@ -1345,6 +1346,33 @@ export const Admin: React.FC = () => {
                 <option value="rejected">{t("user.status.rejected")}</option>
               </select>
             </div>
+            <button
+              onClick={() => {
+                const headers = ['Nome', 'Email', 'WhatsApp', 'CRO', 'Perfil', 'Status', 'Pontos'];
+                const rows = filteredUsers.map(u => [
+                  u.name,
+                  u.email,
+                  u.whatsapp || '',
+                  u.cro || '',
+                  u.role,
+                  u.status,
+                  String(u.points),
+                ].map(v => `"${v.replace(/"/g, '""')}"`).join(','));
+                const csv = [headers.join(','), ...rows].join('\n');
+                const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `usuarios_${new Date().toISOString().slice(0, 10)}.csv`;
+                a.click();
+                URL.revokeObjectURL(url);
+              }}
+              className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
+              style={{ color: "var(--color-accent)" }}
+            >
+              <Download size={18} />
+              <span className="hidden md:inline">Exportar CSV</span>
+            </button>
           </div>
 
           <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
