@@ -80,6 +80,7 @@ export const mockDb = {
   },
 
   getSystemConfig: async (): Promise<SystemConfig> => {
+    // Admin reads from full table, others read from public view (no webhook_url)
     const { data, error } = await supabase.from('system_config').select('*').eq('id', 1).single();
 
     const defaults: SystemConfig = {
