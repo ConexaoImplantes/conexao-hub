@@ -70,8 +70,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     <select
                         value={language}
                         onChange={(e) => setLanguage(e.target.value as any)}
-                        className="bg-transparent border-none text-xs focus:ring-0 cursor-pointer font-bold outline-none uppercase pr-2 transition-colors"
-                        style={{ color: 'var(--color-text-main)' }}
+                        className="border-none text-xs focus:ring-0 cursor-pointer font-bold outline-none uppercase pr-2 transition-colors"
+                        style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-surface)' }}
                     >
                         <option value="pt-br">PT</option>
                         <option value="en-us">EN</option>
