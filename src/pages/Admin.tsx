@@ -326,7 +326,7 @@ export const Admin: React.FC = () => {
         <div className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: 'var(--color-bg)' }}>
           {renderTabButton('materials', t('tab.materials'), ImageIcon)}
           {renderTabButton('users', t('tab.users'), Users)}
-          {renderTabButton('collections', 'Coleções', BookOpen)}
+          {renderTabButton('collections', 'Trilhas', BookOpen)}
           {renderTabButton('analytics', t('tab.analytics'), BarChart2)}
           {renderTabButton('settings', t('tab.settings'), Settings)}
         </div>
