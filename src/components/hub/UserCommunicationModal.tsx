@@ -60,7 +60,7 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
         <div className="p-4 border-b flex justify-between items-center" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
           <div className="flex items-center gap-3">
              <div className="p-2 rounded-lg border" style={{ backgroundColor: 'var(--color-bg)', borderColor: 'var(--color-border)' }}>
-                {mode === 'email' ? <Mail className="text-blue-500" size={20} /> : <MessageCircle className="text-green-500" size={20} />}
+                {mode === 'email' ? <Mail className="text-amber-600" size={20} /> : <MessageCircle className="text-green-500" size={20} />}
              </div>
              <div>
                <h3 className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>{t('comm.title')}</h3>
@@ -75,7 +75,7 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
         <div className="flex border-b" style={{ borderColor: 'var(--color-border)' }}>
           <button
             onClick={() => setMode('email')}
-            className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === 'email' ? 'border-b-2 border-blue-500 text-blue-500' : ''}`}
+            className={`flex-1 py-3 text-sm font-medium transition-colors ${mode === 'email' ? 'border-b-2 border-amber-500 text-amber-600' : ''}`}
             style={mode !== 'email' ? { backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' } : { backgroundColor: 'var(--color-surface)' }}
           >
             {t('comm.type.email')}

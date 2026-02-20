@@ -98,7 +98,7 @@ export const AuthPage: React.FC = () => {
         {config.logoUrl ?
     <img src={config.logoUrl} alt="Logo" className={`${size === "large" ? "h-28" : "h-16"} drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all duration-500 hover:scale-105`} /> :
 
-    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} bg-gradient-to-br from-blue-900 via-amber-600 to-amber-700 rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
+    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} bg-gradient-to-br from-amber-700 via-amber-500 to-yellow-600 rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ boxShadow: '0 25px 50px -12px var(--color-accent)' }}>
               {config.appName.substring(0, 2).toUpperCase()}
             </div>
     }
@@ -133,7 +133,7 @@ export const AuthPage: React.FC = () => {
 
           <>
               <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: 'var(--color-text-main)' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
-              <p className="text-lg font-medium bg-gradient-to-r from-blue-400 to-amber-500 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
+              <p className="text-lg font-medium bg-gradient-to-r from-amber-400 to-yellow-600 bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]">{config.appName}</p>
             </>
           }
         </div>

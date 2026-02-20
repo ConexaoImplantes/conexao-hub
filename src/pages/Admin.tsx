@@ -495,7 +495,7 @@ export const Admin: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
-                    <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500"><Eye size={24} /></div>
+                    <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600"><Eye size={24} /></div>
                     <div><p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('analytics.total.views')}</p><p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{filteredLogs.length}</p></div>
                 </div>
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
@@ -540,7 +540,7 @@ export const Admin: React.FC = () => {
 
                 <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
                      <div className="px-6 py-4 flex justify-between items-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 30%, transparent)' }}>
-                         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Users size={18} className="text-blue-500" />{t('analytics.rank.users')}</h3>
+                         <h3 className="font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}><Users size={18} className="text-amber-600" />{t('analytics.rank.users')}</h3>
                     </div>
                     <div className="p-4 space-y-3">
                         {activeUsersRanking.map((user, index) =>
@@ -876,7 +876,7 @@ export const Admin: React.FC = () => {
                         </div>
 
                         <div className="space-y-6">
-                          <div className="flex items-center gap-2 font-semibold pb-2 border-b" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}><Moon size={18} className="text-blue-400" /> Tema Dark</div>
+                          <div className="flex items-center gap-2 font-semibold pb-2 border-b" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }}><Moon size={18} className="text-amber-400" /> Tema Dark</div>
                           <ThemeEditorSection title="Estrutura Base">
                               <ColorInput label="Background" value={localConfig.themeDark.background} onChange={(v) => setLocalConfig({ ...localConfig, themeDark: { ...localConfig.themeDark, background: v } })} hint="Fundo geral" />
                               <ColorInput label="Surface" value={localConfig.themeDark.surface} onChange={(v) => setLocalConfig({ ...localConfig, themeDark: { ...localConfig.themeDark, surface: v } })} hint="Cards e headers" />
