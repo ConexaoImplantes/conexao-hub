@@ -16,7 +16,7 @@ import {
 import { Progress } from '../components/ui/progress';
 
 export const Dashboard: React.FC = () => {
-  const { user } = useAuth();
+  const { user, addUserPoints } = useAuth();
   const { t, language } = useLanguage();
   const { registerShortcut, unregisterShortcut } = useShortcuts();
   const searchRef = useRef<HTMLInputElement>(null);
@@ -133,7 +133,11 @@ export const Dashboard: React.FC = () => {
       const existing = userProgress.find(p => p.materialId === mat.id);
       if (!existing) {
         await mockDb.upsertProgress(user.id, mat.id, 'started');
-        if (mat.points > 0) await mockDb.addPoints(user.id, Math.floor(mat.points * 0.3));
+        if (mat.points > 0) {
+          const startXp = Math.floor(mat.points * 0.3);
+          await mockDb.addPoints(user.id, startXp);
+          addUserPoints(startXp);
+        }
         setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, status: 'started', createdAt: new Date().toISOString() }]);
       }
     }
@@ -151,6 +155,7 @@ export const Dashboard: React.FC = () => {
         if (mat.points > 0) {
           const remainingXp = mat.points - Math.floor(mat.points * 0.3);
           await mockDb.addPoints(user.id, remainingXp);
+          addUserPoints(remainingXp);
         }
 
         setUserProgress(prev => {
@@ -163,6 +168,7 @@ export const Dashboard: React.FC = () => {
           const updatedCompleted = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
           if (updatedCompleted >= materialIds.length && materialIds.length > 0 && selectedCollection.points > 0) {
             await mockDb.addPoints(user.id, selectedCollection.points);
+            addUserPoints(selectedCollection.points);
           }
         }
       }

@@ -12,6 +12,7 @@ interface AuthContextType {
   logout: () => void;
   isLoading: boolean;
   isDbMissing: boolean;
+  addUserPoints: (points: number) => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -180,9 +181,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setUser(null);
     }
   };
+  const addUserPoints = (points: number) => {
+    setUser(prev => prev ? { ...prev, points: (prev.points || 0) + points } : prev);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, loginMock, register, logout, isLoading, isDbMissing }}>
+    <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, loginMock, register, logout, isLoading, isDbMissing, addUserPoints }}>
       {!isLoading && children}
     </AuthContext.Provider>
   );
