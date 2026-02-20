@@ -563,10 +563,10 @@ export const Admin: React.FC = () => {
   const renderTabButton = (id: typeof activeTab, label: string, Icon: any) => (
     <button
       onClick={() => setActiveTab(id)}
-      className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === id ? "shadow-sm" : ""}`}
+      className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === id ? "liquid-glass-gold shadow-sm" : ""}`}
       style={
         activeTab === id
-          ? { backgroundColor: "var(--color-surface)", color: "var(--color-accent)" }
+          ? { color: "var(--color-accent)" }
           : { color: "var(--color-text-muted)" }
       }
     >
@@ -578,8 +578,8 @@ export const Admin: React.FC = () => {
   const renderSettingsSidebarItem = (id: typeof settingsTab, label: string, Icon: any) => (
     <button
       onClick={() => setSettingsTab(id)}
-      className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-1 ${settingsTab === id ? "text-white shadow-lg" : ""}`}
-      style={settingsTab === id ? { backgroundColor: "var(--color-accent)" } : { color: "var(--color-text-muted)" }}
+      className={`w-full flex items-center justify-between px-4 py-3 rounded-lg text-sm font-medium transition-colors mb-1 ${settingsTab === id ? "liquid-glass-gold" : ""}`}
+      style={settingsTab === id ? { color: "var(--color-accent)" } : { color: "var(--color-text-muted)" }}
     >
       <div className="flex items-center gap-3">
         <Icon size={18} />
@@ -652,8 +652,8 @@ export const Admin: React.FC = () => {
             </div>
             <button
               onClick={handleOpenCreate}
-              className="text-white px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
-              style={{ backgroundColor: "var(--color-accent)" }}
+              className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
+              style={{ color: "var(--color-accent)" }}
             >
               <Plus size={20} />
               <span className="hidden md:inline">{t("add.material")}</span>
@@ -811,8 +811,8 @@ export const Admin: React.FC = () => {
                 setEditingCollection(null);
                 setIsCollectionFormOpen(true);
               }}
-              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-bold text-sm whitespace-nowrap"
-              style={{ backgroundColor: "var(--color-accent)" }}
+              className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap"
+              style={{ color: "var(--color-accent)" }}
             >
               <PlusCircle size={16} /> Nova Trilha
             </button>
@@ -1544,8 +1544,8 @@ export const Admin: React.FC = () => {
                 {settingsTab !== "invites" && settingsTab !== "gamification" && (
                   <button
                     onClick={handleSaveSettings}
-                    className="text-white px-5 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
-                    style={{ backgroundColor: "var(--color-accent)" }}
+                    className="liquid-glass-gold px-5 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
+                    style={{ color: "var(--color-accent)" }}
                   >
                     <Save size={18} /> Salvar Alterações
                   </button>
@@ -1901,8 +1901,8 @@ export const Admin: React.FC = () => {
                             </button>
                             <button
                               onClick={() => handleCopyLink(fullUrl, role)}
-                              className={`flex-1 p-2 rounded-lg flex items-center justify-center gap-1.5 text-xs font-bold text-white transition-all ${copiedLink === role ? "bg-green-500" : ""}`}
-                              style={copiedLink !== role ? { backgroundColor: "var(--color-accent)" } : {}}
+                              className={`flex-1 p-2 rounded-lg flex items-center justify-center gap-1.5 text-xs font-bold transition-all ${copiedLink === role ? "bg-green-500 text-white" : "liquid-glass-gold"}`}
+                              style={copiedLink !== role ? { color: "var(--color-accent)" } : {}}
                             >
                               {copiedLink === role ? (
                                 <>
@@ -1962,8 +1962,8 @@ export const Admin: React.FC = () => {
                           setNewLevelPoints(0);
                           loadGamificationLevels();
                         }}
-                        className="px-4 py-2 rounded-lg text-sm font-medium text-white flex items-center gap-2"
-                        style={{ backgroundColor: "var(--color-accent)" }}
+                        className="liquid-glass-gold px-4 py-2 rounded-lg text-sm font-medium flex items-center gap-2"
+                        style={{ color: "var(--color-accent)" }}
                       >
                         <PlusCircle size={16} /> Adicionar
                       </button>
@@ -2081,8 +2081,8 @@ export const Admin: React.FC = () => {
                                 </button>
                               </div>
                               <div
-                                className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold text-white shrink-0"
-                                style={{ backgroundColor: "var(--color-accent)" }}
+                                className="liquid-glass-gold w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0"
+                                style={{ color: "var(--color-accent)" }}
                               >
                                 {idx + 1}
                               </div>
