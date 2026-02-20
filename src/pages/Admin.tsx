@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { createPortal } from "react-dom";
 import { mockDb, GamificationLevel, CollectionProgress } from "../lib/mockDb";
 import {
@@ -86,6 +86,8 @@ import {
   ResponsiveContainer,
   Legend,
 } from "recharts";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
 
 const ColorInput = ({
   label,
@@ -331,6 +333,44 @@ export const Admin: React.FC = () => {
   const [newLevelName, setNewLevelName] = useState("");
   const [newLevelPoints, setNewLevelPoints] = useState(0);
   const [newLevelColor, setNewLevelColor] = useState("#c9a655");
+  const analyticsRef = useRef<HTMLDivElement>(null);
+
+  const exportAnalyticsCsv = () => {
+    const headers = ['Material', 'Tipo', 'Visualizações', 'Usuários Únicos', 'Último Acesso'];
+    const rows = aggregatedMetrics.map(item => {
+      const title = item.material?.title[language] || item.material?.title['pt-br'] || '';
+      return [title, item.material?.type || '', String(item.views), String(item.uniqueUsers), item.lastAccess ? new Date(item.lastAccess).toLocaleString('pt-BR') : 'N/A']
+        .map(v => `"${String(v).replace(/"/g, '""')}"`).join(',');
+    });
+    const rankHeaders = ['Posição', 'Usuário', 'Perfil', 'Acessos'];
+    const rankRows = activeUsersRanking.map((u, i) =>
+      [String(i + 1), u.name, u.role, String(u.count)].map(v => `"${v}"`).join(',')
+    );
+    const csv = [
+      '=== MÉTRICAS DE MATERIAIS ===', headers.join(','), ...rows, '',
+      '=== RANKING DE USUÁRIOS ===', rankHeaders.join(','), ...rankRows
+    ].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `metricas_${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const exportAnalyticsPdf = async () => {
+    if (!analyticsRef.current) return;
+    try {
+      const canvas = await html2canvas(analyticsRef.current, { scale: 2, useCORS: true, backgroundColor: null });
+      const imgData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF({ orientation: 'landscape', unit: 'px', format: [canvas.width / 2, canvas.height / 2] });
+      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width / 2, canvas.height / 2);
+      pdf.save(`metricas_${new Date().toISOString().slice(0, 10)}.pdf`);
+    } catch (e) {
+      alert('Erro ao gerar PDF.');
+    }
+  };
   useEffect(() => {
     if (activeTab === "materials") loadMaterials();
     if (activeTab === "users") loadUsers();
@@ -939,7 +979,27 @@ export const Admin: React.FC = () => {
               <option value="distributor">{t("role.distributor")}</option>
               <option value="consultant">{t("role.consultant")}</option>
             </select>
+            <div className="flex gap-2">
+              <button
+                onClick={exportAnalyticsCsv}
+                className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap text-sm"
+                style={{ color: "var(--color-accent)" }}
+              >
+                <Download size={16} />
+                <span className="hidden md:inline">CSV</span>
+              </button>
+              <button
+                onClick={exportAnalyticsPdf}
+                className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap text-sm"
+                style={{ color: "var(--color-accent)" }}
+              >
+                <FileText size={16} />
+                <span className="hidden md:inline">PDF</span>
+              </button>
+            </div>
           </div>
+
+          <div ref={analyticsRef}>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div
@@ -1299,6 +1359,7 @@ export const Admin: React.FC = () => {
                 </table>
               </div>
             </div>
+          </div>
           </div>
         </div>
       )}
