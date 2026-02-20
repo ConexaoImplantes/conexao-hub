@@ -17,7 +17,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
     switch (material.type) {
       case 'pdf': return <FileText size={28} className="text-red-500 drop-shadow-lg" />;
       case 'image': return <ImageIcon size={28} className="text-blue-500 drop-shadow-lg" />;
-      case 'video': return <Video size={28} className="text-purple-500 drop-shadow-lg" />;
+      case 'video': return <Video size={28} className="text-amber-600 drop-shadow-lg" />;
     }
   };
 
@@ -33,7 +33,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
       switch (material.type) {
         case 'pdf': return 'from-red-500/20 to-orange-500/5';
         case 'image': return 'from-blue-500/20 to-cyan-500/5';
-        case 'video': return 'from-purple-500/20 to-pink-500/5';
+        case 'video': return 'from-amber-500/20 to-yellow-500/5';
         default: return 'from-blue-500/20 to-transparent';
       }
   }
@@ -42,7 +42,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
      switch (material.type) {
         case 'pdf': return 'group-hover:border-red-500/50 group-hover:shadow-red-500/20';
         case 'image': return 'group-hover:border-blue-500/50 group-hover:shadow-blue-500/20';
-        case 'video': return 'group-hover:border-purple-500/50 group-hover:shadow-purple-500/20';
+        case 'video': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
         default: return 'group-hover:border-blue-500/50 group-hover:shadow-blue-500/20';
      }
   }

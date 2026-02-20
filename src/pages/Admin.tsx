@@ -499,7 +499,7 @@ export const Admin: React.FC = () => {
                     <div><p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('analytics.total.views')}</p><p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{filteredLogs.length}</p></div>
                 </div>
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
-                    <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500"><Users size={24} /></div>
+                    <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600"><Users size={24} /></div>
                     <div><p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('analytics.unique.users')}</p><p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{new Set(filteredLogs.map((l) => l.userId)).size}</p></div>
                 </div>
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
@@ -609,7 +609,7 @@ export const Admin: React.FC = () => {
               {/* Trail KPIs */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
                 <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
-                  <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500"><Target size={24} /></div>
+                  <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-600"><Target size={24} /></div>
                   <div>
                     <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Trilhas Iniciadas</p>
                     <p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{collectionProgress.length}</p>
@@ -807,7 +807,7 @@ export const Admin: React.FC = () => {
                  <div className="flex justify-between items-center mb-2">
                    <h3 className="text-xl font-bold flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}>
                      {settingsTab === 'identity' && <><Type size={24} style={{ color: 'var(--color-accent)' }} /> Identidade Visual</>}
-                     {settingsTab === 'integrations' && <><Webhook size={24} className="text-purple-500" /> Integrações</>}
+                     {settingsTab === 'integrations' && <><Webhook size={24} className="text-amber-600" /> Integrações</>}
                      {settingsTab === 'themes' && <><Palette size={24} className="text-orange-500" /> Personalização de Temas</>}
                       {settingsTab === 'invites' && <><Share2 size={24} className="text-green-500" /> {t('user.invite')}</>}
                       {settingsTab === 'gamification' && <><Trophy size={24} className="text-yellow-500" /> Patentes & XP</>}

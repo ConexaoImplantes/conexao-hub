@@ -276,10 +276,10 @@ export const Dashboard: React.FC = () => {
               )}
 
               <div className="hidden md:block mt-4 pt-4 px-2 border-t border-white/5">
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 border border-indigo-500/20 p-5 group transition-all duration-300 hover:shadow-lg hover:shadow-indigo-500/10 hover:border-indigo-500/40">
-                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-indigo-500/20 rounded-full blur-2xl group-hover:bg-indigo-500/30 transition-colors duration-500"></div>
+                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/10 to-yellow-500/10 border border-amber-500/20 p-5 group transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 hover:border-amber-500/40">
+                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-2xl group-hover:bg-amber-500/30 transition-colors duration-500"></div>
                   <div className="relative z-10">
-                    <div className="flex items-center gap-2 text-indigo-500 dark:text-indigo-400 mb-2">
+                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
                       <Sparkles size={16} className="animate-pulse" />
                       <span className="text-xs font-bold uppercase tracking-wide">Dica Pro</span>
                     </div>
