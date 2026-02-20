@@ -203,6 +203,64 @@ All colors MUST be HSL.
     inset 0 -1px 0 rgba(168, 135, 58, 0.06);
 }
 
+/* Icon Box – standardized icon container: dark rounded square + gold icon */
+.icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.75rem;
+  background-color: color-mix(in srgb, var(--color-bg) 80%, black);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.dark .icon-box {
+  background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+  border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.icon-box-sm {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background-color: color-mix(in srgb, var(--color-bg) 80%, black);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.dark .icon-box-sm {
+  background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+  border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
+.icon-box-lg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 0.875rem;
+  background-color: color-mix(in srgb, var(--color-bg) 80%, black);
+  border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+  color: var(--color-accent);
+  flex-shrink: 0;
+  transition: all 0.3s ease;
+}
+
+.dark .icon-box-lg {
+  background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+  border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+}
+
 @layer base {
   * {
     @apply border-border;

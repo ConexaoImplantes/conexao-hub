@@ -35,8 +35,8 @@ export const KeyboardHelpModal: React.FC = () => {
       >
         <div className="px-6 py-4 flex items-center justify-between border-b" style={{ borderColor: 'var(--color-border)' }}>
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
-              <Keyboard size={18} />
+            <div className="icon-box-sm">
+              <Keyboard size={16} />
             </div>
             <div>
               <h3 className="font-bold text-base" style={{ color: 'var(--color-text-main)' }}>Atalhos de Teclado</h3>

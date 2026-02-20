@@ -20,7 +20,7 @@ export const ConfirmModal: React.FC<ConfirmModalProps> = ({ isOpen, title, messa
     <div className="fixed inset-0 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in" style={{ zIndex: 10000 }}>
       <div className="rounded-xl w-full max-w-md shadow-2xl border overflow-hidden animate-slide-up" style={{ backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         <div className="p-6 flex flex-col items-center text-center">
-          <div className="w-12 h-12 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mb-4 text-red-600 dark:text-red-400">
+          <div className="icon-box-lg !border-red-500/30 !text-red-500" style={{ backgroundColor: 'rgba(239,68,68,0.1)' }}>
             <AlertTriangle size={24} />
           </div>
           <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>{title}</h3>
