@@ -246,16 +246,16 @@ export const Dashboard: React.FC = () => {
 
           {/* Material filters (only in materials view) */}
           {activeView === 'materials' && (
-            <div className="backdrop-blur-xl border border-white/10 p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 30%, transparent)' }}>
+            <div className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 30%, transparent)' }}>
               <div className="hidden md:flex items-center justify-between px-4 py-3 mb-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
                   <Layers size={14} style={{ color: 'var(--color-accent)' }} /> Biblioteca
                 </h3>
               </div>
-              <div className="min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="all" icon={Grid} label={t('filter.all')} count={counts.all} active={filterType === 'all'} /></div>
-              <div className="min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="pdf" icon={FileText} label={t('filter.pdf')} count={counts.pdf} active={filterType === 'pdf'} /></div>
-              <div className="min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="image" icon={ImageIcon} label={t('filter.image')} count={counts.image} active={filterType === 'image'} /></div>
-              <div className="min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
+              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="all" icon={Grid} label={t('filter.all')} count={counts.all} active={filterType === 'all'} /></div>
+              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="pdf" icon={FileText} label={t('filter.pdf')} count={counts.pdf} active={filterType === 'pdf'} /></div>
+              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="image" icon={ImageIcon} label={t('filter.image')} count={counts.image} active={filterType === 'image'} /></div>
+              <div className="min-w-[120px] sm:min-w-[160px] md:min-w-0 flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
 
               {/* Tag filter */}
               {allTags.length > 0 && (
@@ -323,17 +323,17 @@ export const Dashboard: React.FC = () => {
                 <ArrowLeft size={16} /> Voltar para Trilhas
               </button>
 
-              <div className="relative rounded-[2rem] overflow-hidden mb-10">
+              <div className="relative rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden mb-6 sm:mb-10">
                 <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 20%, transparent), color-mix(in srgb, var(--color-accent) 5%, transparent))' }} />
                 {selectedCollection.coverImage && (
                   <img src={selectedCollection.coverImage} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover opacity-20" />
                 )}
-                <div className="relative z-10 p-8 md:p-10">
+                <div className="relative z-10 p-5 sm:p-8 md:p-10">
                   <div className="flex items-center gap-2 mb-3">
                     <BookOpen size={20} style={{ color: 'var(--color-accent)' }} />
                     <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>Trilha de Aprendizagem</span>
                   </div>
-                  <h2 className="text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--color-text-main)' }}>{displayTitle}</h2>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--color-text-main)' }}>{displayTitle}</h2>
                   {displayDesc && <p className="text-base mb-6 max-w-2xl" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p>}
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="space-y-2 flex-1 min-w-[200px]">
@@ -371,7 +371,7 @@ export const Dashboard: React.FC = () => {
                     const availableLang = langs.find(l => mat.assets[l]?.url) || 'pt-br';
                     const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
                     return (
-                      <div key={mat.id} className="flex items-center gap-4 p-4 rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
+                      <div key={mat.id} className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
                         <div className="w-10 h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
                           style={prog?.status === 'completed'
                             ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }
@@ -398,7 +398,7 @@ export const Dashboard: React.FC = () => {
                         </div>
                         <button
                           onClick={() => handleViewMaterial(mat, availableLang)}
-                          className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap"
+                          className="liquid-glass-gold flex items-center gap-2 px-3 sm:px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap w-full sm:w-auto justify-center sm:justify-start"
                           style={{ color: 'var(--color-accent)' }}
                         >
                           {prog?.status === 'completed' ? 'Revisar' : prog?.status === 'started' ? 'Continuar' : 'Iniciar'}
@@ -416,11 +416,11 @@ export const Dashboard: React.FC = () => {
         {/* ─── Collections grid ─── */}
         {activeView === 'collections' && (
           <>
-            <div className="mb-10 relative group rounded-[2rem] overflow-hidden animate-fade-in">
+            <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
               <div className="absolute inset-0 opacity-60" style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)' }} />
-              <div className="relative z-10 p-8 md:p-10">
-                <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
-                <p className="text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
+              <div className="relative z-10 p-5 sm:p-8 md:p-10">
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
+                <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
               </div>
             </div>
             {isLoading ? (
@@ -451,19 +451,19 @@ export const Dashboard: React.FC = () => {
         {/* ─── Materials view ─── */}
         {activeView === 'materials' && (
           <>
-            <div className="mb-10 relative group rounded-[2rem] overflow-hidden animate-fade-in">
+            <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
               <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)` }} />
               <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
-              <div className="relative z-10 p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-8 backdrop-blur-sm">
+              <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 sm:gap-8 backdrop-blur-sm">
                 <div>
-                  <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
-                  <p className="text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
+                  <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
+                  <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
                 </div>
                 <div className="relative w-full xl:w-96 group/search">
                   <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
                   <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)' }}>
-                    <div className="pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={22} /></div>
-                    <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-4 px-4 placeholder-gray-400 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    <div className="pl-4 sm:pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={20} className="sm:hidden" /><Search size={22} className="hidden sm:block" /></div>
+                    <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 placeholder-gray-400 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   </div>
                 </div>
               </div>
