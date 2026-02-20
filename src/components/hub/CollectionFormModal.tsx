@@ -22,7 +22,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
   const [coverImage, setCoverImage] = useState('');
   const [allowedRoles, setAllowedRoles] = useState<Role[]>(['client']);
   const [active, setActive] = useState(true);
-  const [points, setPoints] = useState(0);
+  // Points are auto-calculated from selected materials
   const [activeTab, setActiveTab] = useState<Language>('pt-br');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -40,7 +40,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
       setCoverImage(initialData.coverImage || '');
       setAllowedRoles(initialData.allowedRoles);
       setActive(initialData.active);
-      setPoints(initialData.points);
+      // points are auto-calculated
       // Load existing items
       mockDb.getCollectionItems(initialData.id).then((items) => {
         setSelectedMaterialIds(items.sort((a, b) => a.orderIndex - b.orderIndex).map((i) => i.materialId));
@@ -86,13 +86,18 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
         if (descriptions[lang]?.trim()) cleanedDescs[lang] = descriptions[lang]!.trim();
       });
 
+      const calculatedPoints = selectedMaterialIds.reduce((sum, id) => {
+        const mat = allMaterials.find((m) => m.id === id);
+        return sum + (mat?.points || 0);
+      }, 0);
+
       const payload: any = {
         title: cleanedTitles,
         description: Object.keys(cleanedDescs).length > 0 ? cleanedDescs : undefined,
         coverImage: coverImage.trim() || undefined,
         allowedRoles,
         active,
-        points
+        points: calculatedPoints
       };
 
       if (initialData) {
@@ -156,18 +161,18 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
               </div>
             </div>
 
-            {/* XP Points */}
+            {/* XP Points (auto-calculated) */}
             <div>
               <label className="text-xs font-bold uppercase mb-2 flex items-center gap-2 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                <Star size={14} className="text-yellow-400" /> Pontos XP ao concluir
+                <Star size={14} className="text-yellow-400" /> XP Total da Trilha
               </label>
-              <input
-                type="number" min={0} max={1000}
-                value={points}
-                onChange={(e) => setPoints(Number(e.target.value))}
-                className="w-full p-3 rounded-lg outline-none transition-all"
-                style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
-
+              <div className="w-full p-3 rounded-lg text-lg font-bold" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-accent)' }}>
+                {selectedMaterialIds.reduce((sum, id) => {
+                  const mat = allMaterials.find((m) => m.id === id);
+                  return sum + (mat?.points || 0);
+                }, 0)} XP
+              </div>
+              <p className="text-[11px] mt-1" style={{ color: 'var(--color-text-muted)' }}>Calculado automaticamente pela soma dos materiais.</p>
             </div>
 
             {/* Cover image */}
