@@ -570,7 +570,9 @@ export const Admin: React.FC = () => {
           : { color: "var(--color-text-muted)" }
       }
     >
-      <Icon size={16} />
+      <div className={`icon-box-sm ${activeTab === id ? '!bg-transparent !border-transparent' : ''}`}>
+        <Icon size={14} />
+      </div>
       <span className="hidden sm:inline">{label}</span>
     </button>
   );
@@ -582,7 +584,9 @@ export const Admin: React.FC = () => {
       style={settingsTab === id ? { color: "var(--color-accent)" } : { color: "var(--color-text-muted)" }}
     >
       <div className="flex items-center gap-3">
-        <Icon size={18} />
+        <div className={`icon-box-sm ${settingsTab === id ? '!bg-transparent !border-transparent' : ''}`}>
+          <Icon size={14} />
+        </div>
         {label}
       </div>
       {settingsTab === id && <ChevronRight size={16} className="opacity-75" />}
@@ -835,11 +839,7 @@ export const Admin: React.FC = () => {
                     <div className="flex items-start justify-between gap-2">
                       <div className="flex items-center gap-3">
                         <div
-                          className="p-2 rounded-xl"
-                          style={{
-                            backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)",
-                            color: "var(--color-accent)",
-                          }}
+                          className="icon-box"
                         >
                           <BookOpen size={20} />
                         </div>
@@ -944,7 +944,7 @@ export const Admin: React.FC = () => {
               className="p-6 rounded-xl shadow-sm flex items-center gap-4"
               style={{ backgroundColor: "var(--color-surface)" }}
             >
-              <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-500">
+              <div className="icon-box-lg">
                 <Eye size={24} />
               </div>
               <div>
@@ -960,7 +960,7 @@ export const Admin: React.FC = () => {
               className="p-6 rounded-xl shadow-sm flex items-center gap-4"
               style={{ backgroundColor: "var(--color-surface)" }}
             >
-              <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center text-purple-500">
+              <div className="icon-box-lg">
                 <Users size={24} />
               </div>
               <div>
@@ -976,7 +976,7 @@ export const Admin: React.FC = () => {
               className="p-6 rounded-xl shadow-sm flex items-center gap-4"
               style={{ backgroundColor: "var(--color-surface)" }}
             >
-              <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center text-green-500">
+              <div className="icon-box-lg">
                 <TrendingUp size={24} />
               </div>
               <div>
@@ -1159,7 +1159,7 @@ export const Admin: React.FC = () => {
           {/* ===== TRAIL METRICS SECTION ===== */}
           <div className="pt-4">
             <h3 className="text-lg font-bold flex items-center gap-2 mb-4" style={{ color: "var(--color-text-main)" }}>
-              <BookOpen size={20} style={{ color: "var(--color-accent)" }} /> Métricas de Trilhas
+              <div className="icon-box-sm"><BookOpen size={14} /></div> Métricas de Trilhas
             </h3>
 
             {/* Trail KPIs */}
@@ -1168,7 +1168,7 @@ export const Admin: React.FC = () => {
                 className="p-6 rounded-xl shadow-sm flex items-center gap-4"
                 style={{ backgroundColor: "var(--color-surface)" }}
               >
-                <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500">
+                <div className="icon-box-lg">
                   <Target size={24} />
                 </div>
                 <div>
@@ -1184,7 +1184,7 @@ export const Admin: React.FC = () => {
                 className="p-6 rounded-xl shadow-sm flex items-center gap-4"
                 style={{ backgroundColor: "var(--color-surface)" }}
               >
-                <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500">
+                <div className="icon-box-lg">
                   <Award size={24} />
                 </div>
                 <div>
@@ -1200,7 +1200,7 @@ export const Admin: React.FC = () => {
                 className="p-6 rounded-xl shadow-sm flex items-center gap-4"
                 style={{ backgroundColor: "var(--color-surface)" }}
               >
-                <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500">
+                <div className="icon-box-lg">
                   <TrendingUp size={24} />
                 </div>
                 <div>
@@ -1517,27 +1517,27 @@ export const Admin: React.FC = () => {
                 <h3 className="text-xl font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
                   {settingsTab === "identity" && (
                     <>
-                      <Type size={24} style={{ color: "var(--color-accent)" }} /> Identidade Visual
+                      <div className="icon-box"><Type size={20} /></div> Identidade Visual
                     </>
                   )}
                   {settingsTab === "integrations" && (
                     <>
-                      <Webhook size={24} className="text-purple-500" /> Integrações
+                      <div className="icon-box"><Webhook size={20} /></div> Integrações
                     </>
                   )}
                   {settingsTab === "themes" && (
                     <>
-                      <Palette size={24} className="text-orange-500" /> Personalização de Temas
+                      <div className="icon-box"><Palette size={20} /></div> Personalização de Temas
                     </>
                   )}
                   {settingsTab === "invites" && (
                     <>
-                      <Share2 size={24} className="text-green-500" /> {t("user.invite")}
+                      <div className="icon-box"><Share2 size={20} /></div> {t("user.invite")}
                     </>
                   )}
                   {settingsTab === "gamification" && (
                     <>
-                      <Trophy size={24} className="text-yellow-500" /> Patentes & XP
+                      <div className="icon-box"><Trophy size={20} /></div> Patentes & XP
                     </>
                   )}
                 </h3>
@@ -1867,11 +1867,7 @@ export const Admin: React.FC = () => {
                         >
                           <div className="flex items-center gap-3">
                             <div
-                              className="p-2 rounded-lg"
-                              style={{
-                                backgroundColor: "color-mix(in srgb, var(--color-accent) 12%, transparent)",
-                                color: "var(--color-accent)",
-                              }}
+                              className="icon-box-sm"
                             >
                               <Icon size={16} />
                             </div>

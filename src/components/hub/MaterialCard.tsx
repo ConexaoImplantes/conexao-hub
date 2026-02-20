@@ -15,9 +15,9 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
 
   const getIcon = () => {
     switch (material.type) {
-      case 'pdf': return <FileText size={28} className="text-amber-700 drop-shadow-lg" />;
-      case 'image': return <ImageIcon size={28} className="text-amber-500 drop-shadow-lg" />;
-      case 'video': return <Video size={28} className="text-amber-600 drop-shadow-lg" />;
+      case 'pdf': return <FileText size={24} />;
+      case 'image': return <ImageIcon size={24} />;
+      case 'video': return <Video size={24} />;
     }
   };
 
@@ -61,7 +61,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         <div className="flex justify-between items-start mb-5">
           <div className="relative">
             <div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative p-3.5 rounded-2xl shadow-sm border border-white/10 group-hover:scale-110 transition-transform duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 80%, transparent)' }}>
+            <div className="icon-box-lg relative group-hover:scale-110 transition-transform duration-500">
                 {getIcon()}
             </div>
           </div>

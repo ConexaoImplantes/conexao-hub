@@ -195,7 +195,7 @@ export const Dashboard: React.FC = () => {
       style={!active ? { color: 'var(--color-text-muted)' } : {}}
     >
       <div className="flex items-center gap-4 relative z-10">
-        <div className={`p-2 rounded-xl transition-all duration-300 ${active ? 'bg-white/10' : 'border'}`} style={active ? { color: 'var(--color-accent)' } : { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
+        <div className={`icon-box transition-all duration-300 ${active ? '!bg-white/10 !border-transparent' : ''}`}>
           <Icon size={18} />
         </div>
         <span className={`text-sm tracking-wide ${active ? 'font-bold' : 'font-medium'}`} style={active ? { color: 'var(--color-text-main)' } : {}}>{label}</span>
