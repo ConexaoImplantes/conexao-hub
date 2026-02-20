@@ -170,6 +170,37 @@ All colors MUST be HSL.
     inset 0 -1px 0 rgba(255, 255, 255, 0.03);
 }
 
+/* Dark mode gold buttons */
+.dark button:not([data-no-gold]):not(.no-gold),
+.dark [role="button"]:not([data-no-gold]):not(.no-gold) {
+  --btn-gold: #c9a655;
+  --btn-gold-light: #e8d48b;
+  --btn-gold-dark: #a8873a;
+  background-color: hsl(222.2 84% 6.5%);
+  border: 1px solid var(--btn-gold);
+  color: var(--btn-gold-light);
+}
+
+.dark button:not([data-no-gold]):not(.no-gold):hover,
+.dark [role="button"]:not([data-no-gold]):not(.no-gold):hover {
+  border-color: var(--btn-gold-light);
+  color: var(--btn-gold-light);
+  box-shadow: 0 0 12px rgba(201, 166, 85, 0.15);
+}
+
+.dark button:not([data-no-gold]):not(.no-gold) svg,
+.dark [role="button"]:not([data-no-gold]):not(.no-gold) svg {
+  color: var(--btn-gold);
+}
+
+/* Exclude specific elements from gold styling */
+.dark button.no-gold,
+.dark button[data-no-gold] {
+  border: revert;
+  background-color: revert;
+  color: revert;
+}
+
 @layer base {
   * {
     @apply border-border;
