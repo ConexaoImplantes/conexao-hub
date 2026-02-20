@@ -161,6 +161,7 @@ export type Database = {
       }
       gamification_levels: {
         Row: {
+          color: string
           created_at: string
           id: string
           min_points: number
@@ -169,6 +170,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          color?: string
           created_at?: string
           id?: string
           min_points?: number
@@ -177,6 +179,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          color?: string
           created_at?: string
           id?: string
           min_points?: number
