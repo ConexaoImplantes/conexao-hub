@@ -23,7 +23,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     {config.logoUrl ? (
                     <img src={config.logoUrl} alt="Logo" className="relative h-9 w-auto object-contain transition-transform duration-500 group-hover:scale-105" />
                     ) : (
-                    <div className="relative w-10 h-10 bg-gradient-to-br from-amber-700 to-yellow-500 rounded-xl flex items-center justify-center text-white font-bold shadow-lg transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110">
+                    <div className="relative w-10 h-10 rounded-xl flex items-center justify-center text-white font-bold shadow-lg transition-transform duration-500 group-hover:rotate-6 group-hover:scale-110" style={{ background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)' }}>
                         {config.appName.substring(0, 2).toUpperCase()}
                     </div>
                     )}
@@ -60,7 +60,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                 <div className="flex items-center gap-3 pl-2">
                     <div className="flex items-center gap-3 rounded-full p-1 pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-amber-700 to-yellow-500 flex items-center justify-center text-white text-sm font-bold shadow-md ring-2 ring-white/20 transition-all">
+                        <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-sm font-bold shadow-md ring-2 ring-white/20 transition-all" style={{ background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)' }}>
                             {user?.name.charAt(0)}
                         </div>
                         <div className="hidden md:block leading-none">
