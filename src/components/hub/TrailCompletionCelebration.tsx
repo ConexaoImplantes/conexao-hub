@@ -16,6 +16,8 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
   bonusXp,
   onClose,
 }) => {
+  const [showModal, setShowModal] = React.useState(false);
+
   const fireConfetti = useCallback(() => {
     const gold = ['#c9a655', '#e8d48b', '#a8873a', '#d4af37', '#ffd700'];
 
@@ -29,6 +31,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
       gravity: 0.8,
       ticks: 300,
       shapes: ['circle', 'square'],
+      zIndex: 99999,
     });
 
     // Left cannon
@@ -41,6 +44,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
         colors: gold,
         startVelocity: 50,
         ticks: 250,
+        zIndex: 99999,
       });
     }, 200);
 
@@ -54,6 +58,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
         colors: gold,
         startVelocity: 50,
         ticks: 250,
+        zIndex: 99999,
       });
     }, 400);
 
@@ -67,6 +72,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
         startVelocity: 30,
         gravity: 1.2,
         ticks: 300,
+        zIndex: 99999,
       });
     }, 600);
 
@@ -81,19 +87,24 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
         gravity: 0.6,
         ticks: 200,
         scalar: 0.8,
+        zIndex: 99999,
       });
     }, 900);
   }, []);
 
   useEffect(() => {
     if (isOpen) {
-      // Small delay so modal is visible first
-      const timer = setTimeout(fireConfetti, 300);
-      return () => clearTimeout(timer);
+      // Fire confetti immediately
+      fireConfetti();
+      // Show modal after confetti has started (1.2s delay)
+      const timer = setTimeout(() => setShowModal(true), 1200);
+      return () => { clearTimeout(timer); setShowModal(false); };
+    } else {
+      setShowModal(false);
     }
   }, [isOpen, fireConfetti]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !showModal) return null;
 
   return createPortal(
     <div
