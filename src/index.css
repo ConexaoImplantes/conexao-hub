@@ -170,6 +170,39 @@ All colors MUST be HSL.
     inset 0 -1px 0 rgba(255, 255, 255, 0.03);
 }
 
+/* Liquid Glass Gold – translucent golden interactive state */
+.liquid-glass-gold {
+  background: linear-gradient(
+    135deg,
+    rgba(201, 166, 85, 0.25) 0%,
+    rgba(232, 212, 139, 0.15) 40%,
+    rgba(168, 135, 58, 0.20) 70%,
+    rgba(201, 166, 85, 0.18) 100%
+  );
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+  border: 1px solid rgba(201, 166, 85, 0.30);
+  box-shadow:
+    0 4px 20px rgba(201, 166, 85, 0.12),
+    inset 0 1px 0 rgba(232, 212, 139, 0.25),
+    inset 0 -1px 0 rgba(168, 135, 58, 0.10);
+}
+
+.dark .liquid-glass-gold {
+  background: linear-gradient(
+    135deg,
+    rgba(201, 166, 85, 0.18) 0%,
+    rgba(232, 212, 139, 0.08) 40%,
+    rgba(168, 135, 58, 0.14) 70%,
+    rgba(201, 166, 85, 0.10) 100%
+  );
+  border: 1px solid rgba(201, 166, 85, 0.22);
+  box-shadow:
+    0 4px 20px rgba(201, 166, 85, 0.08),
+    inset 0 1px 0 rgba(232, 212, 139, 0.12),
+    inset 0 -1px 0 rgba(168, 135, 58, 0.06);
+}
+
 @layer base {
   * {
     @apply border-border;

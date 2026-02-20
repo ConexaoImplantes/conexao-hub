@@ -184,17 +184,17 @@ export const Dashboard: React.FC = () => {
     <button
       onClick={() => setFilterType(type)}
       className={`group relative w-full text-left px-4 py-3.5 rounded-2xl flex items-center justify-between transition-all duration-500 ease-out overflow-hidden
-        ${active ? 'text-white shadow-lg translate-x-2' : 'bg-transparent hover:opacity-80'}
+        ${active ? 'liquid-glass-gold translate-x-2' : 'bg-transparent hover:opacity-80'}
       `}
-      style={active ? { background: `linear-gradient(to right, var(--color-accent), color-mix(in srgb, var(--color-accent) 80%, transparent))`, boxShadow: `0 10px 25px -5px color-mix(in srgb, var(--color-accent) 30%, transparent)` } : { color: 'var(--color-text-muted)' }}
+      style={!active ? { color: 'var(--color-text-muted)' } : {}}
     >
       <div className="flex items-center gap-4 relative z-10">
-        <div className={`p-2 rounded-xl transition-all duration-300 ${active ? 'bg-white/20 text-white' : 'border'}`} style={!active ? { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' } : {}}>
+        <div className={`p-2 rounded-xl transition-all duration-300 ${active ? 'bg-white/10' : 'border'}`} style={active ? { color: 'var(--color-accent)' } : { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
           <Icon size={18} />
         </div>
-        <span className={`text-sm tracking-wide ${active ? 'font-bold' : 'font-medium'}`}>{label}</span>
+        <span className={`text-sm tracking-wide ${active ? 'font-bold' : 'font-medium'}`} style={active ? { color: 'var(--color-text-main)' } : {}}>{label}</span>
       </div>
-      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all duration-300 ${active ? 'bg-white/20 text-white backdrop-blur-sm' : 'border'}`} style={!active ? { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' } : {}}>
+      <span className={`text-[10px] font-bold px-2.5 py-1 rounded-lg transition-all duration-300 ${active ? 'bg-white/10 backdrop-blur-sm' : 'border'}`} style={active ? { color: 'var(--color-accent)' } : { backgroundColor: 'var(--color-surface)', borderColor: 'var(--color-border)' }}>
         {count}
       </span>
     </button>
@@ -224,15 +224,15 @@ export const Dashboard: React.FC = () => {
           <div className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
             <button
               onClick={() => setActiveView('materials')}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all"
-              style={activeView === 'materials' ? { backgroundColor: 'var(--color-accent)', color: 'white' } : { color: 'var(--color-text-muted)' }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'materials' ? 'liquid-glass-gold' : ''}`}
+              style={activeView === 'materials' ? { color: 'var(--color-accent)' } : { color: 'var(--color-text-muted)' }}
             >
               <Grid size={14} /> Materiais
             </button>
             <button
               onClick={() => setActiveView('collections')}
-              className="flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all"
-              style={activeView === 'collections' ? { backgroundColor: 'var(--color-accent)', color: 'white' } : { color: 'var(--color-text-muted)' }}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'collections' ? 'liquid-glass-gold' : ''}`}
+              style={activeView === 'collections' ? { color: 'var(--color-accent)' } : { color: 'var(--color-text-muted)' }}
             >
               <BookOpen size={14} /> Trilhas
             </button>
@@ -262,9 +262,9 @@ export const Dashboard: React.FC = () => {
                       <button
                         key={tag}
                         onClick={() => setFilterTag(filterTag === tag ? '' : tag)}
-                        className="px-2 py-0.5 rounded-full text-xs font-bold transition-all"
+                        className={`px-2 py-0.5 rounded-full text-xs font-bold transition-all ${filterTag === tag ? 'liquid-glass-gold' : ''}`}
                         style={filterTag === tag
-                          ? { backgroundColor: 'var(--color-accent)', color: 'white' }
+                          ? { color: 'var(--color-accent)' }
                           : { backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }
                         }
                       >
@@ -392,8 +392,8 @@ export const Dashboard: React.FC = () => {
                         </div>
                         <button
                           onClick={() => handleViewMaterial(mat, availableLang)}
-                          className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap"
-                          style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}
+                          className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap"
+                          style={{ color: 'var(--color-accent)' }}
                         >
                           {prog?.status === 'completed' ? 'Revisar' : prog?.status === 'started' ? 'Continuar' : 'Iniciar'}
                           <ChevronRight size={14} />
@@ -490,7 +490,7 @@ export const Dashboard: React.FC = () => {
                   <div className="flex items-center justify-center gap-2 py-8">
                     <button onClick={pagination.prevPage} disabled={!pagination.hasPrev} className="p-2 rounded-lg transition-all disabled:opacity-30" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}><ChevronLeft size={18} /></button>
                     {pagination.pageNumbers.map(page => (
-                      <button key={page} onClick={() => pagination.setPage(page)} className="w-9 h-9 rounded-lg text-sm font-bold transition-all" style={page === pagination.currentPage ? { backgroundColor: 'var(--color-accent)', color: 'white' } : { backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>{page}</button>
+                      <button key={page} onClick={() => pagination.setPage(page)} className={`w-9 h-9 rounded-lg text-sm font-bold transition-all ${page === pagination.currentPage ? 'liquid-glass-gold' : ''}`} style={page === pagination.currentPage ? { color: 'var(--color-accent)' } : { backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>{page}</button>
                     ))}
                     <button onClick={pagination.nextPage} disabled={!pagination.hasNext} className="p-2 rounded-lg transition-all disabled:opacity-30" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}><ChevronRight size={18} /></button>
                   </div>
