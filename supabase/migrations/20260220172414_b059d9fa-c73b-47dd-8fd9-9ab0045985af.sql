@@ -1,0 +1,2 @@
+ALTER TABLE system_config ALTER COLUMN theme_dark SET DEFAULT '{"error": "#ef4444", "accent": "#c9a655", "border": "transparent", "success": "#22c55e", "surface": "#1e293b", "warning": "#eab308", "textMain": "#f8fafc", "textMuted": "#94a3b8", "background": "#0f172a"}'::jsonb;
+ALTER TABLE system_config ALTER COLUMN theme_light SET DEFAULT '{"error": "#ef4444", "accent": "#c9a655", "border": "#e2e8f0", "success": "#10b981", "surface": "#ffffff", "warning": "#f59e0b", "textMain": "#0f172a", "textMuted": "#64748b", "background": "#f8fafc"}'::jsonb;

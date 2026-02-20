@@ -16,7 +16,7 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const defaults: SystemConfig = {
       appName: 'Hub Conexão',
-      themeLight: { background: '#f8fafc', surface: '#ffffff', textMain: '#0f172a', textMuted: '#64748b', border: '#e2e8f0', accent: '#3b82f6', success: '#10b981', warning: '#f59e0b', error: '#ef4444' },
+      themeLight: { background: '#f8fafc', surface: '#ffffff', textMain: '#0f172a', textMuted: '#64748b', border: '#e2e8f0', accent: '#c9a655', success: '#10b981', warning: '#f59e0b', error: '#ef4444' },
       themeDark: { background: '#0f172a', surface: '#1e293b', textMain: '#f8fafc', textMuted: '#94a3b8', border: 'transparent', accent: '#c9a655', success: '#22c55e', warning: '#eab308', error: '#ef4444' }
   };
 
