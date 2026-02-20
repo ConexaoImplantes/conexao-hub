@@ -4,7 +4,7 @@ import { mockDb, GamificationLevel } from '../lib/mockDb';
 import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog, Collection } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, ChevronUp, ChevronDown, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, ChevronUp, ChevronDown, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers, Star } from 'lucide-react';
 import { MaterialFormModal } from '../components/hub/MaterialFormModal';
 import { ViewerModal } from '../components/hub/ViewerModal';
 import { UserCommunicationModal } from '../components/hub/UserCommunicationModal';
@@ -368,6 +368,7 @@ export const Admin: React.FC = () => {
                     <th className="p-4 text-center">{t('status')}</th>
                     <th className="p-4">{t('permissions')}</th>
                     <th className="p-4">Assets</th>
+                    <th className="p-4 text-center">XP</th>
                     <th className="p-4 text-right">{t('actions')}</th>
                   </tr>
                 </thead>
@@ -396,6 +397,11 @@ export const Admin: React.FC = () => {
                           <span key={lang} className="text-[10px] px-1.5 py-0.5 rounded uppercase font-semibold" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>{lang.split('-')[0]}</span>
                           )}
                           </div>
+                        </td>
+                        <td className="p-4 text-center">
+                          <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
+                            <Star size={12} /> {mat.points || 0}
+                          </span>
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex justify-end gap-1">
