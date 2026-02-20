@@ -1,142 +1,38 @@
 
-# Análise do Repositório e Plano de Implementação de Features
 
-## O que foi identificado no repositório
+# Plano: Concluir material ao fechar o viewer e computar XP
 
-Após análise completa do repositório `hubConexao`, foram identificadas **6 grandes features** presentes lá que ainda não existem neste projeto:
+## Problema Atual
+Quando o usuario abre um material da trilha, ele e marcado como "started" e recebe 30% do XP. Porem, ao fechar o viewer (ViewerModal), nada acontece -- o material nunca e marcado como "completed" e os 70% restantes do XP nunca sao concedidos.
 
----
+## Solucao
 
-## Features a Implementar
+Alterar o fluxo de fechamento do `ViewerModal` no `Dashboard.tsx` para:
 
-### 1. Trilhas de Aprendizagem (Collections)
-O repositório possui um sistema completo de agrupamento de materiais em "trilhas":
-- Página `Collections.tsx` com listagem de trilhas
-- Página `CollectionDetail.tsx` com detalhe de cada trilha e progresso
-- Componente `CollectionCard.tsx` com capa, descrição multilíngue e barra de progresso
-- `CollectionFormModal.tsx` para criação/edição pelo admin
-- Aba `CollectionsTab.tsx` no painel admin
-- **Banco de dados**: requer 2 novas tabelas (`collections` e `collection_items`)
+1. **Ao fechar o viewer**: marcar o material como `completed` via `mockDb.upsertProgress`
+2. **Conceder XP restante**: os 70% restantes do XP do material (so se ainda nao estava completed)
+3. **Verificar conclusao da trilha**: se o usuario esta dentro de uma trilha e todos os materiais ficaram completos, conceder o bonus XP da trilha
+4. **Atualizar estado local**: refletir imediatamente o progresso na UI sem precisar recarregar
 
-### 2. Sistema de Gamificação (XP e Rankings)
-- Campo `points` nos materiais e coleções
-- Campo `points` e `rank` no perfil do usuário
-- Ranking de usuários mais engajados
-- Barras de progresso visuais
-- Níveis: Iniciante, Bronze, Prata, Ouro, Master
-- **Banco de dados**: requer coluna `points` no perfil e nos materiais
+## Detalhes Tecnicos
 
-### 3. Progresso do Usuário por Material
-- Rastreamento de materiais `started` / `completed` por usuário
-- **Banco de dados**: nova tabela `user_progress`
-- Exibição de progresso no card do material
+### Arquivo: `src/pages/Dashboard.tsx`
 
-### 4. Sistema de Tags e Categorias nos Materiais
-- Campo `tags: string[]` e `category?: string` nos materiais
-- Componente `TagInput.tsx` para entrada de tags
-- Filtro por tags/categoria no Dashboard
+- Criar funcao `handleCloseViewer` que:
+  - Verifica se o material ja estava `completed` no `userProgress`
+  - Se nao estava, chama `mockDb.upsertProgress(userId, materialId, 'completed')`
+  - Concede os pontos restantes (70% do XP do material) via `mockDb.addPoints`
+  - Atualiza `userProgress` no estado local para refletir `completed`
+  - Se `activeView === 'collection-detail'` e `selectedCollection` existe, verifica se todos os materiais da trilha agora estao completos; se sim, concede o XP bonus da trilha
+  - Fecha o modal (`setViewingMaterial(null)`)
 
-### 5. Sistema de Atalhos de Teclado Globais
-- `ShortcutContext.tsx` com registro/desregistro de atalhos
-- `KeyboardHelpModal.tsx` com modal de ajuda (`?` ou `Shift+?`)
-- Hook `useKeyboardShortcuts.ts`
-- Atalhos úteis: `Ctrl+F` busca, `Escape` fecha modal, `N` novo material, etc.
+- Substituir o `onClose={() => setViewingMaterial(null)}` do `ViewerModal` por `onClose={handleCloseViewer}`
 
-### 6. Paginação na Lista de Materiais (Admin e Dashboard)
-- Hook `usePagination.ts` pronto no repositório
-- Controles de página: anterior, próxima, salto direto
-- Reset automático ao filtrar
+### Nenhuma alteracao no ViewerModal
+O `ViewerModal` ja chama `onClose` ao fechar. Toda a logica fica no Dashboard.
 
-### 7. Melhorias no Analytics (Gráficos com Recharts)
-- Gráfico de área temporal de acessos (`AreaChart`)
-- Gráfico de pizza por tipo de material (`PieChart`)
-- Gráfico de barras por perfil (`BarChart`)
-- Skeleton loader para tabela de analytics (`SkeletonTable`)
+### Fluxo de XP
+- Abrir material: 30% do XP (ja implementado)
+- Fechar material: 70% do XP restante (novo)
+- Completar todos os materiais de uma trilha: bonus XP da trilha (novo)
 
-### 8. SkeletonCards de Loading
-- Componente `SkeletonCard.tsx` para exibir durante carregamento
-- `SkeletonTable.tsx` para a aba de analytics
-
----
-
-## Banco de Dados Necessário
-
-Serão criadas as seguintes tabelas via migração:
-
-```text
-collections
-├── id (uuid, PK)
-├── title (jsonb, multilíngue)
-├── description (jsonb, multilíngue)
-├── cover_image (text, nullable)
-├── allowed_roles (app_role[], default: {client})
-├── active (boolean, default: true)
-├── points (integer, default: 0)
-└── created_at / updated_at
-
-collection_items
-├── id (uuid, PK)
-├── collection_id (uuid, FK -> collections)
-├── material_id (uuid, FK -> materials)
-└── order_index (integer)
-
-user_progress
-├── id (uuid, PK)
-├── user_id (uuid)
-├── material_id (uuid, FK -> materials)
-├── status (enum: started | completed)
-└── completed_at (timestamptz)
-```
-
-Além de colunas adicionadas:
-- `points integer DEFAULT 0` na tabela `materials`
-- `points integer DEFAULT 0` na tabela `profiles`
-- `tags text[] DEFAULT '{}'` na tabela `materials`
-- `category text` na tabela `materials`
-
----
-
-## Plano de Execução (em fases)
-
-### Fase 1 - Banco de dados e Tipos
-- Migração SQL com as novas tabelas e colunas
-- Atualizar `src/types.ts` com os novos campos
-- Políticas RLS para `collections`, `collection_items` e `user_progress`
-
-### Fase 2 - Infrastructure (Contextos e Hooks)
-- Criar `src/contexts/ShortcutContext.tsx`
-- Criar `src/hooks/usePagination.ts`
-- Atualizar `src/App.tsx` para incluir o `ShortcutProvider`
-
-### Fase 3 - Componentes Base
-- Criar `src/components/hub/SkeletonCard.tsx`
-- Criar `src/components/hub/SkeletonTable.tsx`
-- Criar `src/components/hub/TagInput.tsx`
-- Criar `src/components/hub/KeyboardHelpModal.tsx`
-- Criar `src/components/hub/CollectionCard.tsx`
-- Criar `src/components/hub/CollectionFormModal.tsx`
-
-### Fase 4 - Dashboard do Usuário
-- Atualizar `src/pages/Dashboard.tsx` com paginação, tags, skeleton e progresso
-- Criar `src/pages/Collections.tsx` (trilhas para o usuário)
-- Criar `src/pages/CollectionDetail.tsx`
-
-### Fase 5 - Painel Admin
-- Adicionar aba "Coleções" no Admin
-- Atualizar aba Analytics com gráficos (Recharts já instalado)
-- Atualizar formulário de material para incluir tags/pontos
-
-### Fase 6 - Gamificação
-- Acumular XP ao visualizar materiais e completar trilhas
-- Exibir ranking de usuários no Analytics
-- Exibir pontos e nível no perfil do usuário no Layout
-
----
-
-## Impacto e Compatibilidade
-
-- Nenhuma feature existente será removida — apenas estendida
-- O mockDb continuará funcionando para demonstração
-- O Supabase (Lovable Cloud) terá as tabelas reais
-- Todas as novas tabelas terão RLS configurado corretamente
-- A gamificação é progressiva: usuários existentes começam com 0 pontos
