@@ -999,367 +999,236 @@ export const Admin: React.FC = () => {
             </div>
           </div>
 
-          <div ref={analyticsRef}>
+          <div ref={analyticsRef} className="space-y-8">
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div
-              className="p-6 rounded-xl shadow-sm flex items-center gap-4"
-              style={{ backgroundColor: "var(--color-surface)" }}
-            >
-              <div className="icon-box-lg">
-                <Eye size={24} />
+          {/* === ALL KPI CARDS === */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: "var(--color-text-muted)" }}>
+              <BarChart2 size={14} /> Visão Geral
+            </h3>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="icon-box-sm"><Eye size={14} /></div>
+                <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>{t("analytics.total.views")}</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{filteredLogs.length}</p>
               </div>
-              <div>
-                <p className="text-sm font-medium" style={{ color: "var(--color-text-muted)" }}>
-                  {t("analytics.total.views")}
-                </p>
-                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-                  {filteredLogs.length}
-                </p>
+              <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="icon-box-sm"><Users size={14} /></div>
+                <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>{t("analytics.unique.users")}</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{new Set(filteredLogs.map((l) => l.userId)).size}</p>
               </div>
-            </div>
-            <div
-              className="p-6 rounded-xl shadow-sm flex items-center gap-4"
-              style={{ backgroundColor: "var(--color-surface)" }}
-            >
-              <div className="icon-box-lg">
-                <Users size={24} />
-              </div>
-              <div>
-                <p className="text-sm font-medium" style={{ color: "var(--color-text-muted)" }}>
-                  {t("analytics.unique.users")}
-                </p>
-                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-                  {new Set(filteredLogs.map((l) => l.userId)).size}
-                </p>
-              </div>
-            </div>
-            <div
-              className="p-6 rounded-xl shadow-sm flex items-center gap-4"
-              style={{ backgroundColor: "var(--color-surface)" }}
-            >
-              <div className="icon-box-lg">
-                <TrendingUp size={24} />
-              </div>
-              <div>
-                <p className="text-sm font-medium" style={{ color: "var(--color-text-muted)" }}>
-                  {t("analytics.top.material")}
-                </p>
-                <p className="text-lg font-bold truncate max-w-[200px]" style={{ color: "var(--color-text-main)" }}>
+              <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="icon-box-sm"><TrendingUp size={14} /></div>
+                <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>{t("analytics.top.material")}</p>
+                <p className="text-base font-bold truncate" style={{ color: "var(--color-text-main)" }}>
                   {aggregatedMetrics[0]?.material
                     ? aggregatedMetrics[0].material.title[language] || aggregatedMetrics[0].material.title["pt-br"]
                     : "N/A"}
                 </p>
               </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-              <div
-                className="px-6 py-4 flex justify-between items-center"
-                style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}
-              >
-                <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
-                  <Trophy size={18} className="text-yellow-500" />
-                  {t("analytics.rank.materials")}
-                </h3>
+              <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="icon-box-sm"><Target size={14} /></div>
+                <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>Trilhas Iniciadas</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{collectionProgress.length}</p>
               </div>
-              <div className="p-4 space-y-3">
-                {aggregatedMetrics.slice(0, 5).map((item, index) => {
-                  const mat = item.material;
-                  if (!mat) return null;
-                  const title = mat.title[language] || mat.title["pt-br"];
-                  const percentage = Math.round((item.views / filteredLogs.length) * 100) || 0;
-                  return (
-                    <div key={item.id} className="relative">
-                      <div className="flex justify-between text-sm mb-1">
-                        <span
-                          className="font-medium truncate pr-2 flex items-center gap-2"
-                          style={{ color: "var(--color-text-main)" }}
-                        >
-                          <span
-                            className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${index === 0 ? "bg-yellow-100 text-yellow-700" : index === 1 ? "bg-gray-100 text-gray-700" : index === 2 ? "bg-orange-100 text-orange-700" : ""}`}
-                            style={
-                              index > 2 ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}
-                            }
-                          >
-                            {index + 1}
-                          </span>
-                          {title}
-                        </span>
-                        <span className="font-bold" style={{ color: "var(--color-accent)" }}>
-                          {item.views}
-                        </span>
-                      </div>
-                      <div
-                        className="w-full rounded-full h-1.5 overflow-hidden"
-                        style={{ backgroundColor: "var(--color-bg)" }}
-                      >
-                        <div
-                          className="h-full rounded-full"
-                          style={{ width: `${percentage}%`, backgroundColor: "var(--color-accent)" }}
-                        ></div>
-                      </div>
-                    </div>
-                  );
-                })}
-                {aggregatedMetrics.length === 0 && (
-                  <p className="text-sm text-center py-4" style={{ color: "var(--color-text-muted)" }}>
-                    Sem dados
-                  </p>
-                )}
+              <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="icon-box-sm"><Award size={14} /></div>
+                <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>Trilhas Concluídas</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{collectionProgress.filter((p) => p.status === "completed").length}</p>
               </div>
-            </div>
-
-            <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-              <div
-                className="px-6 py-4 flex justify-between items-center"
-                style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}
-              >
-                <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
-                  <Users size={18} className="text-blue-500" />
-                  {t("analytics.rank.users")}
-                </h3>
-              </div>
-              <div className="p-4 space-y-3">
-                {activeUsersRanking.map((user, index) => (
-                  <div key={index} className="flex items-center justify-between p-2 rounded-lg transition-colors">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs"
-                        style={{
-                          backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)",
-                          color: "var(--color-accent)",
-                        }}
-                      >
-                        {user.name.charAt(0)}
-                      </div>
-                      <div>
-                        <p className="text-sm font-medium" style={{ color: "var(--color-text-main)" }}>
-                          {user.name}
-                        </p>
-                        <p className="text-[10px] uppercase font-bold" style={{ color: "var(--color-text-muted)" }}>
-                          {t(`role.${user.role}`)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <p className="text-sm font-bold" style={{ color: "var(--color-text-main)" }}>
-                        {user.count}
-                      </p>
-                      <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>
-                        acessos
-                      </p>
-                    </div>
-                  </div>
-                ))}
-                {activeUsersRanking.length === 0 && (
-                  <p className="text-sm text-center py-4" style={{ color: "var(--color-text-muted)" }}>
-                    Sem dados
-                  </p>
-                )}
+              <div className="p-5 rounded-xl shadow-sm flex flex-col gap-2" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="icon-box-sm"><TrendingUp size={14} /></div>
+                <p className="text-xs font-medium" style={{ color: "var(--color-text-muted)" }}>Taxa de Conclusão</p>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
+                  {collectionProgress.length > 0 ? Math.round((collectionProgress.filter((p) => p.status === "completed").length / collectionProgress.length) * 100) : 0}%
+                </p>
               </div>
             </div>
           </div>
 
-          <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-            <div className="px-6 py-4">
-              <h3 className="font-bold" style={{ color: "var(--color-text-main)" }}>
-                Desempenho Geral
-              </h3>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full text-left">
-                <thead
-                  className="text-xs uppercase font-semibold"
-                  style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}
-                >
-                  <tr>
-                    <th className="p-4">{t("title")}</th>
-                    <th className="p-4">{t("type")}</th>
-                    <th className="p-4 text-center">{t("analytics.col.views")}</th>
-                    <th className="p-4 text-center">{t("analytics.col.users")}</th>
-                    <th className="p-4 text-right">{t("analytics.col.last_access")}</th>
-                    <th className="p-4 text-right">Detalhes</th>
-                  </tr>
-                </thead>
-                <tbody className="text-sm">
-                  {aggregatedMetrics.map((item) => {
+          {/* === RANKINGS === */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: "var(--color-text-muted)" }}>
+              <Trophy size={14} /> Rankings
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="px-6 py-4" style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}>
+                  <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+                    <Trophy size={18} className="text-yellow-500" />
+                    {t("analytics.rank.materials")}
+                  </h3>
+                </div>
+                <div className="p-5 space-y-4">
+                  {aggregatedMetrics.slice(0, 5).map((item, index) => {
                     const mat = item.material;
                     if (!mat) return null;
-                    const displayTitle =
-                      mat.title[language] || mat.title["pt-br"] || Object.values(mat.title)[0] || "Untitled";
+                    const title = mat.title[language] || mat.title["pt-br"];
+                    const percentage = Math.round((item.views / filteredLogs.length) * 100) || 0;
                     return (
-                      <tr key={item.id} className="transition-colors" style={{ color: "var(--color-text-main)" }}>
-                        <td className="p-4 font-medium max-w-xs truncate" title={displayTitle}>
-                          {displayTitle}
-                        </td>
-                        <td className="p-4 capitalize opacity-75">{mat.type}</td>
-                        <td className="p-4 text-center font-bold">{item.views}</td>
-                        <td className="p-4 text-center">{item.uniqueUsers}</td>
-                        <td className="p-4 text-right tabular-nums" style={{ color: "var(--color-text-muted)" }}>
-                          {item.lastAccess ? new Date(item.lastAccess).toLocaleDateString(language) : "-"}
-                        </td>
-                        <td className="p-4 text-right">
-                          <button
-                            onClick={() => openAnalyticsDetail(item.id)}
-                            className="p-2 rounded-lg transition-colors"
-                            style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}
-                          >
-                            <BarChart2 size={16} />
-                          </button>
-                        </td>
-                      </tr>
+                      <div key={item.id} className="relative">
+                        <div className="flex justify-between text-sm mb-1.5">
+                          <span className="font-medium truncate pr-2 flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+                            <span
+                              className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${index === 0 ? "bg-yellow-100 text-yellow-700" : index === 1 ? "bg-gray-100 text-gray-700" : index === 2 ? "bg-orange-100 text-orange-700" : ""}`}
+                              style={index > 2 ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}
+                            >
+                              {index + 1}
+                            </span>
+                            {title}
+                          </span>
+                          <span className="font-bold" style={{ color: "var(--color-accent)" }}>{item.views}</span>
+                        </div>
+                        <div className="w-full rounded-full h-1.5 overflow-hidden" style={{ backgroundColor: "var(--color-bg)" }}>
+                          <div className="h-full rounded-full" style={{ width: `${percentage}%`, backgroundColor: "var(--color-accent)" }}></div>
+                        </div>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                  {aggregatedMetrics.length === 0 && (
+                    <p className="text-sm text-center py-4" style={{ color: "var(--color-text-muted)" }}>Sem dados</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="px-6 py-4" style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}>
+                  <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
+                    <Users size={18} className="text-blue-500" />
+                    {t("analytics.rank.users")}
+                  </h3>
+                </div>
+                <div className="p-5 space-y-2">
+                  {activeUsersRanking.map((user, index) => (
+                    <div key={index} className="flex items-center justify-between p-2.5 rounded-lg transition-colors">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs" style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>
+                          {user.name.charAt(0)}
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium" style={{ color: "var(--color-text-main)" }}>{user.name}</p>
+                          <p className="text-[10px] uppercase font-bold" style={{ color: "var(--color-text-muted)" }}>{t(`role.${user.role}`)}</p>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-bold" style={{ color: "var(--color-text-main)" }}>{user.count}</p>
+                        <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>acessos</p>
+                      </div>
+                    </div>
+                  ))}
+                  {activeUsersRanking.length === 0 && (
+                    <p className="text-sm text-center py-4" style={{ color: "var(--color-text-muted)" }}>Sem dados</p>
+                  )}
+                </div>
+              </div>
             </div>
           </div>
 
-          {/* ===== TRAIL METRICS SECTION ===== */}
-          <div className="pt-4">
-            <h3 className="text-lg font-bold flex items-center gap-2 mb-4" style={{ color: "var(--color-text-main)" }}>
-              <div className="icon-box-sm"><BookOpen size={14} /></div> Métricas de Trilhas
+          {/* === TABLES === */}
+          <div>
+            <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: "var(--color-text-muted)" }}>
+              <FileText size={14} /> Detalhamento
             </h3>
-
-            {/* Trail KPIs */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-              <div
-                className="p-6 rounded-xl shadow-sm flex items-center gap-4"
-                style={{ backgroundColor: "var(--color-surface)" }}
-              >
-                <div className="icon-box-lg">
-                  <Target size={24} />
+            <div className="space-y-6">
+              <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="px-6 py-4">
+                  <h3 className="font-bold" style={{ color: "var(--color-text-main)" }}>Desempenho Geral</h3>
                 </div>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: "var(--color-text-muted)" }}>
-                    Trilhas Iniciadas
-                  </p>
-                  <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-                    {collectionProgress.length}
-                  </p>
-                </div>
-              </div>
-              <div
-                className="p-6 rounded-xl shadow-sm flex items-center gap-4"
-                style={{ backgroundColor: "var(--color-surface)" }}
-              >
-                <div className="icon-box-lg">
-                  <Award size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: "var(--color-text-muted)" }}>
-                    Trilhas Concluídas
-                  </p>
-                  <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-                    {collectionProgress.filter((p) => p.status === "completed").length}
-                  </p>
-                </div>
-              </div>
-              <div
-                className="p-6 rounded-xl shadow-sm flex items-center gap-4"
-                style={{ backgroundColor: "var(--color-surface)" }}
-              >
-                <div className="icon-box-lg">
-                  <TrendingUp size={24} />
-                </div>
-                <div>
-                  <p className="text-sm font-medium" style={{ color: "var(--color-text-muted)" }}>
-                    Taxa de Conclusão
-                  </p>
-                  <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-                    {collectionProgress.length > 0
-                      ? Math.round(
-                          (collectionProgress.filter((p) => p.status === "completed").length /
-                            collectionProgress.length) *
-                            100,
-                        )
-                      : 0}
-                    %
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Trail Performance Table */}
-            <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
-              <div className="px-6 py-4">
-                <h3 className="font-bold" style={{ color: "var(--color-text-main)" }}>
-                  Desempenho por Trilha
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="w-full text-left">
-                  <thead
-                    className="text-xs uppercase font-semibold"
-                    style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}
-                  >
-                    <tr>
-                      <th className="p-4">Trilha</th>
-                      <th className="p-4 text-center">Materiais</th>
-                      <th className="p-4 text-center">Iniciaram</th>
-                      <th className="p-4 text-center">Concluíram</th>
-                      <th className="p-4 text-center">Taxa</th>
-                      <th className="p-4 text-center">XP Total</th>
-                    </tr>
-                  </thead>
-                  <tbody className="text-sm">
-                    {collections.map((col) => {
-                      const colTitle = (col.title as any)[language] || (col.title as any)["pt-br"] || "Sem título";
-                      const started = collectionProgress.filter((p) => p.collectionId === col.id).length;
-                      const completed = collectionProgress.filter(
-                        (p) => p.collectionId === col.id && p.status === "completed",
-                      ).length;
-                      const rate = started > 0 ? Math.round((completed / started) * 100) : 0;
-                      return (
-                        <tr key={col.id} className="transition-colors" style={{ color: "var(--color-text-main)" }}>
-                          <td className="p-4 font-medium max-w-xs truncate">{colTitle}</td>
-                          <td className="p-4 text-center" style={{ color: "var(--color-text-muted)" }}>
-                            {col.itemCount || "—"}
-                          </td>
-                          <td className="p-4 text-center font-bold">{started}</td>
-                          <td className="p-4 text-center font-bold text-emerald-600">{completed}</td>
-                          <td className="p-4 text-center">
-                            <div className="flex items-center justify-center gap-2">
-                              <div
-                                className="w-16 rounded-full h-1.5 overflow-hidden"
-                                style={{ backgroundColor: "var(--color-bg)" }}
-                              >
-                                <div className="h-full rounded-full bg-emerald-500" style={{ width: `${rate}%` }}></div>
-                              </div>
-                              <span className="text-xs font-bold" style={{ color: "var(--color-text-muted)" }}>
-                                {rate}%
-                              </span>
-                            </div>
-                          </td>
-                          <td className="p-4 text-center">
-                            <span
-                              className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full"
-                              style={{
-                                backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)",
-                                color: "var(--color-accent)",
-                              }}
-                            >
-                              <Star size={12} /> {col.points || 0}
-                            </span>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                    {collections.length === 0 && (
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="text-xs uppercase font-semibold" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>
                       <tr>
-                        <td colSpan={6} className="p-8 text-center" style={{ color: "var(--color-text-muted)" }}>
-                          Nenhuma trilha cadastrada.
-                        </td>
+                        <th className="p-4">{t("title")}</th>
+                        <th className="p-4">{t("type")}</th>
+                        <th className="p-4 text-center">{t("analytics.col.views")}</th>
+                        <th className="p-4 text-center">{t("analytics.col.users")}</th>
+                        <th className="p-4 text-right">{t("analytics.col.last_access")}</th>
+                        <th className="p-4 text-right">Detalhes</th>
                       </tr>
-                    )}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody className="text-sm">
+                      {aggregatedMetrics.map((item) => {
+                        const mat = item.material;
+                        if (!mat) return null;
+                        const displayTitle = mat.title[language] || mat.title["pt-br"] || Object.values(mat.title)[0] || "Untitled";
+                        return (
+                          <tr key={item.id} className="transition-colors" style={{ color: "var(--color-text-main)" }}>
+                            <td className="p-4 font-medium max-w-xs truncate" title={displayTitle}>{displayTitle}</td>
+                            <td className="p-4 capitalize opacity-75">{mat.type}</td>
+                            <td className="p-4 text-center font-bold">{item.views}</td>
+                            <td className="p-4 text-center">{item.uniqueUsers}</td>
+                            <td className="p-4 text-right tabular-nums" style={{ color: "var(--color-text-muted)" }}>
+                              {item.lastAccess ? new Date(item.lastAccess).toLocaleDateString(language) : "-"}
+                            </td>
+                            <td className="p-4 text-right">
+                              <button onClick={() => openAnalyticsDetail(item.id)} className="p-2 rounded-lg transition-colors" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>
+                                <BarChart2 size={16} />
+                              </button>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
+                <div className="px-6 py-4">
+                  <h3 className="font-bold" style={{ color: "var(--color-text-main)" }}>Desempenho por Trilha</h3>
+                </div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="text-xs uppercase font-semibold" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>
+                      <tr>
+                        <th className="p-4">Trilha</th>
+                        <th className="p-4 text-center">Materiais</th>
+                        <th className="p-4 text-center">Iniciaram</th>
+                        <th className="p-4 text-center">Concluíram</th>
+                        <th className="p-4 text-center">Taxa</th>
+                        <th className="p-4 text-center">XP Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      {collections.map((col) => {
+                        const colTitle = (col.title as any)[language] || (col.title as any)["pt-br"] || "Sem título";
+                        const started = collectionProgress.filter((p) => p.collectionId === col.id).length;
+                        const completed = collectionProgress.filter((p) => p.collectionId === col.id && p.status === "completed").length;
+                        const rate = started > 0 ? Math.round((completed / started) * 100) : 0;
+                        return (
+                          <tr key={col.id} className="transition-colors" style={{ color: "var(--color-text-main)" }}>
+                            <td className="p-4 font-medium max-w-xs truncate">{colTitle}</td>
+                            <td className="p-4 text-center" style={{ color: "var(--color-text-muted)" }}>{col.itemCount || "—"}</td>
+                            <td className="p-4 text-center font-bold">{started}</td>
+                            <td className="p-4 text-center font-bold text-emerald-600">{completed}</td>
+                            <td className="p-4 text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="w-16 rounded-full h-1.5 overflow-hidden" style={{ backgroundColor: "var(--color-bg)" }}>
+                                  <div className="h-full rounded-full bg-emerald-500" style={{ width: `${rate}%` }}></div>
+                                </div>
+                                <span className="text-xs font-bold" style={{ color: "var(--color-text-muted)" }}>{rate}%</span>
+                              </div>
+                            </td>
+                            <td className="p-4 text-center">
+                              <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>
+                                <Star size={12} /> {col.points || 0}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {collections.length === 0 && (
+                        <tr>
+                          <td colSpan={6} className="p-8 text-center" style={{ color: "var(--color-text-muted)" }}>Nenhuma trilha cadastrada.</td>
+                        </tr>
+                      )}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </div>
           </div>
+
           </div>
         </div>
       )}
