@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { createPortal } from 'react-dom';
-import { mockDb, GamificationLevel } from '../lib/mockDb';
+import { mockDb, GamificationLevel, CollectionProgress } from '../lib/mockDb';
 import { Material, Language, ColorScheme, UserProfile, Role, UserStatus, MaterialType, AccessLog, Collection } from '../types';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, ChevronUp, ChevronDown, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers, Star } from 'lucide-react';
+import { Plus, Trash2, Edit, Eye, EyeOff, Settings, Palette, Type, Image as ImageIcon, Save, Monitor, Moon, Sun, Users, Share2, CheckCircle, XCircle, Ban, MessageCircle, Copy, Link as LinkIcon, Webhook, ChevronRight, ChevronUp, ChevronDown, Search, Filter, FileText, Video, ExternalLink, AlertCircle, Check, X, BarChart2, TrendingUp, Calendar, Clock, Trophy, User, Briefcase, Sparkles, BookOpen, PlusCircle, Layers, Star, Target, Award } from 'lucide-react';
 import { MaterialFormModal } from '../components/hub/MaterialFormModal';
 import { ViewerModal } from '../components/hub/ViewerModal';
 import { UserCommunicationModal } from '../components/hub/UserCommunicationModal';
@@ -145,6 +145,7 @@ export const Admin: React.FC = () => {
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [collectionSearch, setCollectionSearch] = useState('');
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [collectionProgress, setCollectionProgress] = useState<CollectionProgress[]>([]);
   // Gamification levels state
   const [gamificationLevels, setGamificationLevels] = useState<GamificationLevel[]>([]);
   const [editingLevel, setEditingLevel] = useState<GamificationLevel | null>(null);
@@ -167,9 +168,16 @@ export const Admin: React.FC = () => {
   const loadGamificationLevels = () => {mockDb.getGamificationLevels().then(setGamificationLevels).catch(e => console.error(e));};
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
-    const [logs, mats] = await Promise.all([mockDb.getAccessLogs(), mockDb.getMaterials('super_admin')]);
+    const [logs, mats, cols, colProgress] = await Promise.all([
+      mockDb.getAccessLogs(),
+      mockDb.getMaterials('super_admin'),
+      mockDb.getCollections('super_admin'),
+      mockDb.getAllCollectionProgress(),
+    ]);
     setAccessLogs(logs);
     setMaterials(mats);
+    setCollections(cols);
+    setCollectionProgress(colProgress);
     setAnalyticsLoading(false);
   };
 
@@ -590,6 +598,89 @@ export const Admin: React.FC = () => {
                     </tbody>
                 </table>
                 </div>
+            </div>
+
+            {/* ===== TRAIL METRICS SECTION ===== */}
+            <div className="pt-4">
+              <h3 className="text-lg font-bold flex items-center gap-2 mb-4" style={{ color: 'var(--color-text-main)' }}>
+                <BookOpen size={20} style={{ color: 'var(--color-accent)' }} /> Métricas de Trilhas
+              </h3>
+
+              {/* Trail KPIs */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+                <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
+                  <div className="w-12 h-12 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-500"><Target size={24} /></div>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Trilhas Iniciadas</p>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{collectionProgress.length}</p>
+                  </div>
+                </div>
+                <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
+                  <div className="w-12 h-12 rounded-full bg-emerald-500/10 flex items-center justify-center text-emerald-500"><Award size={24} /></div>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Trilhas Concluídas</p>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>{collectionProgress.filter(p => p.status === 'completed').length}</p>
+                  </div>
+                </div>
+                <div className="p-6 rounded-xl shadow-sm flex items-center gap-4" style={{ backgroundColor: 'var(--color-surface)' }}>
+                  <div className="w-12 h-12 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500"><TrendingUp size={24} /></div>
+                  <div>
+                    <p className="text-sm font-medium" style={{ color: 'var(--color-text-muted)' }}>Taxa de Conclusão</p>
+                    <p className="text-2xl font-bold" style={{ color: 'var(--color-text-main)' }}>
+                      {collectionProgress.length > 0 ? Math.round((collectionProgress.filter(p => p.status === 'completed').length / collectionProgress.length) * 100) : 0}%
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Trail Performance Table */}
+              <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: 'var(--color-surface)' }}>
+                <div className="px-6 py-4"><h3 className="font-bold" style={{ color: 'var(--color-text-main)' }}>Desempenho por Trilha</h3></div>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-left">
+                    <thead className="text-xs uppercase font-semibold" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
+                      <tr>
+                        <th className="p-4">Trilha</th>
+                        <th className="p-4 text-center">Materiais</th>
+                        <th className="p-4 text-center">Iniciaram</th>
+                        <th className="p-4 text-center">Concluíram</th>
+                        <th className="p-4 text-center">Taxa</th>
+                        <th className="p-4 text-center">XP Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="text-sm">
+                      {collections.map((col) => {
+                        const colTitle = (col.title as any)[language] || (col.title as any)['pt-br'] || 'Sem título';
+                        const started = collectionProgress.filter(p => p.collectionId === col.id).length;
+                        const completed = collectionProgress.filter(p => p.collectionId === col.id && p.status === 'completed').length;
+                        const rate = started > 0 ? Math.round((completed / started) * 100) : 0;
+                        return (
+                          <tr key={col.id} className="transition-colors" style={{ color: 'var(--color-text-main)' }}>
+                            <td className="p-4 font-medium max-w-xs truncate">{colTitle}</td>
+                            <td className="p-4 text-center" style={{ color: 'var(--color-text-muted)' }}>{col.itemCount || '—'}</td>
+                            <td className="p-4 text-center font-bold">{started}</td>
+                            <td className="p-4 text-center font-bold text-emerald-600">{completed}</td>
+                            <td className="p-4 text-center">
+                              <div className="flex items-center justify-center gap-2">
+                                <div className="w-16 rounded-full h-1.5 overflow-hidden" style={{ backgroundColor: 'var(--color-bg)' }}>
+                                  <div className="h-full rounded-full bg-emerald-500" style={{ width: `${rate}%` }}></div>
+                                </div>
+                                <span className="text-xs font-bold" style={{ color: 'var(--color-text-muted)' }}>{rate}%</span>
+                              </div>
+                            </td>
+                            <td className="p-4 text-center">
+                              <span className="inline-flex items-center gap-1 text-xs font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
+                                <Star size={12} /> {col.points || 0}
+                              </span>
+                            </td>
+                          </tr>
+                        );
+                      })}
+                      {collections.length === 0 && <tr><td colSpan={6} className="p-8 text-center" style={{ color: 'var(--color-text-muted)' }}>Nenhuma trilha cadastrada.</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
         </div>
       }

@@ -1,6 +1,15 @@
 import { supabase } from './supabaseClient';
 import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress } from '../types';
 
+export interface CollectionProgress {
+  id: string;
+  userId: string;
+  collectionId: string;
+  status: 'started' | 'completed';
+  startedAt: string;
+  completedAt?: string;
+}
+
 export interface GamificationLevel {
   id: string;
   name: string;
@@ -436,6 +445,43 @@ export const mockDb = {
   deleteGamificationLevel: async (id: string): Promise<void> => {
     const { error } = await supabase.from('gamification_levels').delete().eq('id', id);
     if (error) throw error;
+  },
+
+  // ---- Collection Progress ----
+
+  getCollectionProgress: async (userId?: string): Promise<CollectionProgress[]> => {
+    let query = supabase.from('collection_progress').select('*');
+    if (userId) query = query.eq('user_id', userId);
+    const { data, error } = await query;
+    if (error) { console.error('Error fetching collection progress:', error); return []; }
+    return (data || []).map((p: any) => ({
+      id: p.id,
+      userId: p.user_id,
+      collectionId: p.collection_id,
+      status: p.status,
+      startedAt: p.started_at,
+      completedAt: p.completed_at,
+    }));
+  },
+
+  getAllCollectionProgress: async (): Promise<CollectionProgress[]> => {
+    const { data, error } = await supabase.from('collection_progress').select('*');
+    if (error) { console.error('Error fetching all collection progress:', error); return []; }
+    return (data || []).map((p: any) => ({
+      id: p.id,
+      userId: p.user_id,
+      collectionId: p.collection_id,
+      status: p.status,
+      startedAt: p.started_at,
+      completedAt: p.completed_at,
+    }));
+  },
+
+  upsertCollectionProgress: async (userId: string, collectionId: string, status: 'started' | 'completed'): Promise<void> => {
+    const payload: any = { user_id: userId, collection_id: collectionId, status };
+    if (status === 'completed') payload.completed_at = new Date().toISOString();
+    const { error } = await supabase.from('collection_progress').upsert(payload, { onConflict: 'user_id,collection_id' });
+    if (error) console.error('Error upserting collection progress:', error);
   },
 
   login: async () => {},
