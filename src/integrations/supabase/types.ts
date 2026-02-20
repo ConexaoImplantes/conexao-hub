@@ -118,6 +118,33 @@ export type Database = {
         }
         Relationships: []
       }
+      gamification_levels: {
+        Row: {
+          created_at: string
+          id: string
+          min_points: number
+          name: string
+          order_index: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          min_points?: number
+          name: string
+          order_index?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          min_points?: number
+          name?: string
+          order_index?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       material_assets: {
         Row: {
           created_at: string

@@ -1,6 +1,15 @@
 import { supabase } from './supabaseClient';
 import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress } from '../types';
 
+export interface GamificationLevel {
+  id: string;
+  name: string;
+  minPoints: number;
+  orderIndex: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
 
 let isMockMode = false;
 
@@ -397,6 +406,36 @@ export const mockDb = {
     const { data: profile } = await supabase.from('profiles').select('points').eq('id', userId).single();
     const currentPoints = (profile?.points || 0) + points;
     await supabase.from('profiles').update({ points: currentPoints }).eq('id', userId);
+  },
+
+  // ---- Gamification Levels ----
+
+  getGamificationLevels: async (): Promise<GamificationLevel[]> => {
+    const { data, error } = await supabase.from('gamification_levels').select('*').order('order_index');
+    if (error) throw error;
+    return (data || []).map((l: any) => ({
+      id: l.id,
+      name: l.name,
+      minPoints: l.min_points,
+      orderIndex: l.order_index,
+      createdAt: l.created_at,
+      updatedAt: l.updated_at,
+    }));
+  },
+
+  createGamificationLevel: async (name: string, minPoints: number, orderIndex: number): Promise<void> => {
+    const { error } = await supabase.from('gamification_levels').insert({ name, min_points: minPoints, order_index: orderIndex });
+    if (error) throw error;
+  },
+
+  updateGamificationLevel: async (id: string, name: string, minPoints: number, orderIndex: number): Promise<void> => {
+    const { error } = await supabase.from('gamification_levels').update({ name, min_points: minPoints, order_index: orderIndex }).eq('id', id);
+    if (error) throw error;
+  },
+
+  deleteGamificationLevel: async (id: string): Promise<void> => {
+    const { error } = await supabase.from('gamification_levels').delete().eq('id', id);
+    if (error) throw error;
   },
 
   login: async () => {},
