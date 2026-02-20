@@ -42,21 +42,21 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
       setActive(initialData.active);
       setPoints(initialData.points);
       // Load existing items
-      mockDb.getCollectionItems(initialData.id).then(items => {
-        setSelectedMaterialIds(items.sort((a, b) => a.orderIndex - b.orderIndex).map(i => i.materialId));
+      mockDb.getCollectionItems(initialData.id).then((items) => {
+        setSelectedMaterialIds(items.sort((a, b) => a.orderIndex - b.orderIndex).map((i) => i.materialId));
       });
     }
   }, [initialData]);
 
   const toggleRole = (role: Role) => {
-    setAllowedRoles(prev => prev.includes(role) ? prev.filter(r => r !== role) : [...prev, role]);
+    setAllowedRoles((prev) => prev.includes(role) ? prev.filter((r) => r !== role) : [...prev, role]);
   };
 
   const toggleMaterial = (id: string) => {
-    setSelectedMaterialIds(prev => prev.includes(id) ? prev.filter(m => m !== id) : [...prev, id]);
+    setSelectedMaterialIds((prev) => prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]);
   };
 
-  const filteredMaterials = allMaterials.filter(m => {
+  const filteredMaterials = allMaterials.filter((m) => {
     const title = m.title['pt-br'] || Object.values(m.title)[0] || '';
     return title.toLowerCase().includes(matSearch.toLowerCase());
   });
@@ -66,7 +66,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
     setError(null);
 
     const cleanedTitles: Partial<Record<Language, string>> = {};
-    languages.forEach(lang => {
+    languages.forEach((lang) => {
       if (titles[lang]?.trim()) cleanedTitles[lang] = titles[lang]!.trim();
     });
 
@@ -82,7 +82,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
     setIsSaving(true);
     try {
       const cleanedDescs: Partial<Record<Language, string>> = {};
-      languages.forEach(lang => {
+      languages.forEach((lang) => {
         if (descriptions[lang]?.trim()) cleanedDescs[lang] = descriptions[lang]!.trim();
       });
 
@@ -92,7 +92,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
         coverImage: coverImage.trim() || undefined,
         allowedRoles,
         active,
-        points,
+        points
       };
 
       if (initialData) {
@@ -103,7 +103,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
         await mockDb.createCollection(payload);
         // Re-fetch to get the id
         const cols = await mockDb.getCollections('super_admin');
-        const newCol = cols.find(c => (c.title as any)['pt-br'] === cleanedTitles['pt-br']);
+        const newCol = cols.find((c) => (c.title as any)['pt-br'] === cleanedTitles['pt-br']);
         if (newCol) await mockDb.setCollectionItems(newCol.id, selectedMaterialIds);
       }
 
@@ -130,11 +130,11 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
           <button onClick={onClose} style={{ color: 'var(--color-text-muted)' }}><X size={24} /></button>
         </div>
 
-        {error && (
-          <div className="bg-red-50 dark:bg-red-900/20 px-6 py-3 flex items-center gap-2 text-sm text-red-600 font-medium">
+        {error &&
+        <div className="bg-red-50 dark:bg-red-900/20 px-6 py-3 flex items-center gap-2 text-sm text-red-600 font-medium">
             <AlertCircle size={16} />{error}
           </div>
-        )}
+        }
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-hidden flex flex-col md:flex-row min-h-0">
           {/* Left panel */}
@@ -145,14 +145,14 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                 <Users size={14} /> Perfis de acesso
               </label>
               <div className="space-y-2">
-                {allRoles.map(role => (
-                  <button key={role} type="button" onClick={() => toggleRole(role)}
-                    className="w-full flex items-center justify-between p-3 rounded-lg transition-all text-sm"
-                    style={{ backgroundColor: 'var(--color-surface)', color: allowedRoles.includes(role) ? 'var(--color-accent)' : 'var(--color-text-muted)', ...(allowedRoles.includes(role) ? { boxShadow: '0 0 0 1px var(--color-accent)' } : {}) }}>
+                {allRoles.map((role) =>
+                <button key={role} type="button" onClick={() => toggleRole(role)}
+                className="w-full flex items-center justify-between p-3 rounded-lg transition-all text-sm"
+                style={{ backgroundColor: 'var(--color-surface)', color: allowedRoles.includes(role) ? 'var(--color-accent)' : 'var(--color-text-muted)', ...(allowedRoles.includes(role) ? { boxShadow: '0 0 0 1px var(--color-accent)' } : {}) }}>
                     <span className="font-medium">{t(`role.${role}`)}</span>
                     {allowedRoles.includes(role) && <Check size={16} />}
                   </button>
-                ))}
+                )}
               </div>
             </div>
 
@@ -164,10 +164,10 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
               <input
                 type="number" min={0} max={1000}
                 value={points}
-                onChange={e => setPoints(Number(e.target.value))}
+                onChange={(e) => setPoints(Number(e.target.value))}
                 className="w-full p-3 rounded-lg outline-none transition-all"
-                style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
-              />
+                style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
+
             </div>
 
             {/* Cover image */}
@@ -179,13 +179,13 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                 type="text"
                 placeholder="https://..."
                 value={coverImage}
-                onChange={e => setCoverImage(e.target.value)}
+                onChange={(e) => setCoverImage(e.target.value)}
                 className="w-full p-3 rounded-lg outline-none text-sm font-mono"
-                style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
-              />
-              {coverImage && (
-                <img src={coverImage} alt="Preview" className="mt-2 w-full h-24 object-cover rounded-lg" onError={e => (e.currentTarget.style.display = 'none')} />
-              )}
+                style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
+
+              {coverImage &&
+              <img src={coverImage} alt="Preview" className="mt-2 w-full h-24 object-cover rounded-lg" onError={(e) => e.currentTarget.style.display = 'none'} />
+              }
             </div>
 
             {/* Status */}
@@ -206,17 +206,17 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
           <div className="flex-1 flex flex-col min-h-0">
             {/* Language tabs */}
             <div className="flex px-6 pt-4 gap-6 overflow-x-auto shrink-0 border-b" style={{ borderColor: 'var(--color-border)' }}>
-              {languages.map(lang => {
+              {languages.map((lang) => {
                 const flag = lang === 'pt-br' ? '🇧🇷' : lang === 'en-us' ? '🇺🇸' : '🇪🇸';
                 const label = lang === 'pt-br' ? 'Português' : lang === 'en-us' ? 'English' : 'Español';
                 return (
                   <button key={lang} type="button" onClick={() => setActiveTab(lang)}
-                    className="pb-4 px-1 relative font-medium text-sm transition-colors whitespace-nowrap flex items-center gap-2 outline-none"
-                    style={{ color: activeTab === lang ? 'var(--color-accent)' : 'var(--color-text-muted)' }}>
+                  className="pb-4 px-1 relative font-medium text-sm transition-colors whitespace-nowrap flex items-center gap-2 outline-none"
+                  style={{ color: activeTab === lang ? 'var(--color-accent)' : 'var(--color-text-muted)' }}>
                     <span>{flag}</span> {label}
                     {activeTab === lang && <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: 'var(--color-accent)' }} />}
-                  </button>
-                );
+                  </button>);
+
               })}
             </div>
 
@@ -226,15 +226,15 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                   Título {activeTab === 'pt-br' && <span className="text-red-500">*</span>}
                 </span>
                 <input type="text" placeholder={`Título da trilha (${activeTab})`}
-                  className="w-full p-3 rounded-lg outline-none" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
-                  value={titles[activeTab] || ''} onChange={e => setTitles(prev => ({ ...prev, [activeTab]: e.target.value }))} />
+                className="w-full p-3 rounded-lg outline-none" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                value={titles[activeTab] || ''} onChange={(e) => setTitles((prev) => ({ ...prev, [activeTab]: e.target.value }))} />
               </label>
 
               <label className="block">
                 <span className="text-sm font-semibold mb-1.5 block" style={{ color: 'var(--color-text-main)' }}>Descrição</span>
                 <textarea rows={3} placeholder="Descrição da trilha..."
-                  className="w-full p-3 rounded-lg outline-none resize-none text-sm" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
-                  value={descriptions[activeTab] || ''} onChange={e => setDescriptions(prev => ({ ...prev, [activeTab]: e.target.value }))} />
+                className="w-full p-3 rounded-lg outline-none resize-none text-sm" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                value={descriptions[activeTab] || ''} onChange={(e) => setDescriptions((prev) => ({ ...prev, [activeTab]: e.target.value }))} />
               </label>
 
               {/* Materials selection */}
@@ -242,23 +242,23 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                 <p className="text-sm font-semibold mb-2" style={{ color: 'var(--color-text-main)' }}>
                   Materiais da Trilha <span className="text-xs font-normal ml-1" style={{ color: 'var(--color-text-muted)' }}>({selectedMaterialIds.length} selecionados)</span>
                 </p>
-                <input type="text" placeholder="Buscar material..." value={matSearch} onChange={e => setMatSearch(e.target.value)}
-                  className="w-full p-2 mb-2 rounded-lg text-sm outline-none" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
-                <div className="space-y-1 max-h-48 overflow-y-auto">
-                  {filteredMaterials.map(m => {
+                <input type="text" placeholder="Buscar material..." value={matSearch} onChange={(e) => setMatSearch(e.target.value)}
+                className="w-full p-2 mb-2 rounded-lg text-sm outline-none" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }} />
+                <div className="space-y-1 max-h-48 overflow-y-auto px-[24px] py-[24px] my-[8px] mx-[8px]">
+                  {filteredMaterials.map((m) => {
                     const title = m.title['pt-br'] || Object.values(m.title)[0] || 'Sem título';
                     const isSelected = selectedMaterialIds.includes(m.id);
                     return (
                       <button key={m.id} type="button" onClick={() => toggleMaterial(m.id)}
-                        className="w-full flex items-center gap-3 p-2.5 rounded-lg text-sm text-left transition-all"
-                        style={{ backgroundColor: isSelected ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'var(--color-surface)', color: isSelected ? 'var(--color-accent)' : 'var(--color-text-main)', ...(isSelected ? { boxShadow: '0 0 0 1px var(--color-accent)' } : {}) }}>
+                      className="w-full flex items-center gap-3 p-2.5 rounded-lg text-sm text-left transition-all"
+                      style={{ backgroundColor: isSelected ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'var(--color-surface)', color: isSelected ? 'var(--color-accent)' : 'var(--color-text-main)', ...(isSelected ? { boxShadow: '0 0 0 1px var(--color-accent)' } : {}) }}>
                         <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${isSelected ? '' : 'border'}`} style={isSelected ? { backgroundColor: 'var(--color-accent)' } : { borderColor: 'var(--color-border)' }}>
                           {isSelected && <Check size={10} className="text-white" />}
                         </div>
                         <span className="truncate flex-1">{title}</span>
                         <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>{m.type}</span>
-                      </button>
-                    );
+                      </button>);
+
                   })}
                 </div>
               </div>
@@ -267,8 +267,8 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
             <div className="p-4 flex justify-end gap-3 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]" style={{ backgroundColor: 'var(--color-surface)' }}>
               <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Cancelar</button>
               <button type="submit" disabled={isSaving}
-                className="px-6 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 shadow-lg transition-all disabled:opacity-60"
-                style={{ backgroundColor: 'var(--color-accent)' }}>
+              className="px-6 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 shadow-lg transition-all disabled:opacity-60"
+              style={{ backgroundColor: 'var(--color-accent)' }}>
                 <Save size={18} />{isSaving ? 'Salvando...' : 'Salvar Trilha'}
               </button>
             </div>
