@@ -980,8 +980,8 @@ export const Admin: React.FC = () => {
               <Filter size={16} /> Filtros de Métricas
             </div>
             <select
-              className="w-full md:w-auto pl-3 pr-8 py-2.5 rounded-lg text-sm outline-none focus:ring-2 border cursor-pointer bg-no-repeat bg-[length:12px] bg-[right_10px_center]"
-              style={{ color: "var(--color-text-main)", backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
+              className="w-full md:w-auto pl-3 pr-8 py-2.5 rounded-lg text-sm outline-none focus:ring-2 border cursor-pointer appearance-none bg-no-repeat bg-[length:12px] bg-[right_10px_center]"
+              style={{ color: "var(--color-text-main)", backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
               value={analyticsTypeFilter}
               onChange={(e) => setAnalyticsTypeFilter(e.target.value as any)}
             >
@@ -992,8 +992,8 @@ export const Admin: React.FC = () => {
               <option value="trails">Trilhas</option>
             </select>
             <select
-              className="w-full md:w-auto pl-3 pr-8 py-2.5 rounded-lg text-sm outline-none focus:ring-2 border cursor-pointer bg-no-repeat bg-[length:12px] bg-[right_10px_center]"
-              style={{ color: "var(--color-text-main)", backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
+              className="w-full md:w-auto pl-3 pr-8 py-2.5 rounded-lg text-sm outline-none focus:ring-2 border cursor-pointer appearance-none bg-no-repeat bg-[length:12px] bg-[right_10px_center]"
+              style={{ color: "var(--color-text-main)", backgroundColor: "var(--color-surface)", borderColor: "var(--color-border)", backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")` }}
               value={analyticsRoleFilter}
               onChange={(e) => setAnalyticsRoleFilter(e.target.value as any)}
             >
