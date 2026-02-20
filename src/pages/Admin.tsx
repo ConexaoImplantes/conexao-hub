@@ -923,6 +923,7 @@ export const Admin: React.FC = () => {
       }
 
 
+      {isFormOpen && <MaterialFormModal initialData={editingMaterial} onClose={() => setIsFormOpen(false)} onSave={handleSaveMaterial} />}
       {viewingMaterial && <ViewerModal material={viewingMaterial.mat} language={viewingMaterial.lang} onClose={() => setViewingMaterial(null)} />}
       {userComm && <UserCommunicationModal user={userComm} onClose={() => setUserComm(null)} />}
       {userEditing && <UserEditModal user={userEditing} onClose={() => setUserEditing(null)} onSave={handleSaveUser} />}
