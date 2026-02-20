@@ -12,7 +12,6 @@ interface MaterialCardProps {
 export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, progress }) => {
   const { t, language } = useLanguage();
 
-
   const getIcon = () => {
     switch (material.type) {
       case 'pdf': return <FileText size={24} />;
@@ -47,7 +46,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
      }
   }
 
-  const displayTitle = material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled';
+  const displayTitle = material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || t('untitled');
   const languages: Language[] = ['pt-br', 'en-us', 'es-es'];
 
   return (
@@ -74,23 +73,20 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           {displayTitle}
         </h3>
 
-
-        {/* Progress badge */}
         {progress && (
           <div className="mb-2">
             {progress.status === 'completed' ? (
               <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, #22c55e 15%, transparent)', color: '#22c55e' }}>
-                <CheckCircle size={10} /> Concluído
+                <CheckCircle size={10} /> {t('progress.completed')}
               </span>
             ) : (
               <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
-                <PlayCircle size={10} /> Em andamento
+                <PlayCircle size={10} /> {t('progress.in.progress')}
               </span>
             )}
           </div>
         )}
 
-        {/* Tags */}
         {material.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {material.tags.slice(0, 3).map(tag => (
@@ -101,7 +97,6 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           </div>
         )}
 
-        {/* Points badge */}
         {material.points > 0 && (
           <div className="flex items-center gap-1 text-[10px] font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
             <Star size={10} className="fill-yellow-400 text-yellow-400" /> {material.points} XP
@@ -110,35 +105,19 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
 
         <div className="mt-auto pt-4 border-t border-white/5 group-hover:border-white/10 transition-colors">
           <div className="flex items-center justify-between mb-3">
-             <p className="text-[10px] uppercase tracking-wider font-bold opacity-70" style={{ color: 'var(--color-text-muted)' }}>Versões</p>
+             <p className="text-[10px] uppercase tracking-wider font-bold opacity-70" style={{ color: 'var(--color-text-muted)' }}>{t('versions')}</p>
              <div className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" style={{ color: 'var(--color-accent)' }}>
                 <ChevronRight size={16} />
              </div>
           </div>
 
-
           <div className="flex flex-wrap gap-2">
             {languages.map(lang => {
               const hasAsset = !!material.assets[lang];
               return (
-                <button
-                  key={lang}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    if (hasAsset) onView(material, lang);
-                  }}
-                  disabled={!hasAsset}
-                  className={`
-                    relative overflow-hidden px-3 py-1.5 text-xs rounded-lg transition-all duration-300 flex items-center gap-1.5 font-bold group/btn
-                    ${hasAsset
-                      ? 'border border-transparent hover:border-[var(--color-accent)]/30 hover:shadow-lg'
-                      : 'opacity-30 cursor-not-allowed border border-transparent'}
-                  `}
-                  style={{
-                    backgroundColor: hasAsset ? 'var(--color-bg)' : 'color-mix(in srgb, var(--color-bg) 30%, transparent)',
-                    color: hasAsset ? 'var(--color-text-main)' : 'var(--color-text-muted)'
-                  }}
-                >
+                <button key={lang} onClick={(e) => { e.stopPropagation(); if (hasAsset) onView(material, lang); }} disabled={!hasAsset}
+                  className={`relative overflow-hidden px-3 py-1.5 text-xs rounded-lg transition-all duration-300 flex items-center gap-1.5 font-bold group/btn ${hasAsset ? 'border border-transparent hover:border-[var(--color-accent)]/30 hover:shadow-lg' : 'opacity-30 cursor-not-allowed border border-transparent'}`}
+                  style={{ backgroundColor: hasAsset ? 'var(--color-bg)' : 'color-mix(in srgb, var(--color-bg) 30%, transparent)', color: hasAsset ? 'var(--color-text-main)' : 'var(--color-text-muted)' }}>
                   {hasAsset && <div className="absolute inset-0 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out z-0" style={{ backgroundColor: 'var(--color-accent)' }}></div>}
                   <span className="relative z-10 flex items-center gap-1 group-hover/btn:text-white">
                       {lang.toUpperCase().split('-')[0]}

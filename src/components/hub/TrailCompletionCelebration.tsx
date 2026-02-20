@@ -2,6 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import confetti from 'canvas-confetti';
 import { Trophy, Star, X } from 'lucide-react';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface TrailCompletionCelebrationProps {
   isOpen: boolean;
@@ -17,6 +18,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
   onClose,
 }) => {
   const [showModal, setShowModal] = React.useState(false);
+  const { t } = useLanguage();
 
   const fireConfetti = useCallback(() => {
     const gold = ['#c9a655', '#e8d48b', '#a8873a', '#d4af37', '#ffd700'];
@@ -156,11 +158,11 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Trilha Concluída!
+            {t('trail.celebration.title')}
           </h2>
 
           <p className="text-sm mb-4" style={{ color: 'var(--color-text-muted)' }}>
-            Parabéns! Você completou a trilha
+            {t('trail.celebration.congrats')}
           </p>
 
           <p className="text-lg font-bold mb-6" style={{ color: 'var(--color-text-main)' }}>
@@ -174,7 +176,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
             >
               <Star size={18} className="fill-yellow-400 text-yellow-400" />
               <span className="font-bold text-sm" style={{ color: 'var(--color-accent)' }}>
-                +{bonusXp} XP de bônus!
+                +{bonusXp} {t('trail.celebration.bonus')}
               </span>
             </div>
           )}
@@ -189,7 +191,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
               boxShadow: '0 8px 24px rgba(201,166,85,0.3)',
             }}
           >
-            Continuar
+            {t('trail.celebration.continue')}
           </button>
         </div>
       </div>
