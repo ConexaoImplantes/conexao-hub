@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useRef } from 'react';
+import React, { useEffect, useState, useMemo, useRef, useCallback } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useShortcuts } from '../contexts/ShortcutContext';
@@ -14,6 +14,7 @@ import {
   Layers, Sparkles, BookOpen, Tag, Star, ArrowLeft, Trophy, CheckCircle, PlayCircle, Lock
 } from 'lucide-react';
 import { Progress } from '../components/ui/progress';
+import { TrailCompletionCelebration } from '../components/hub/TrailCompletionCelebration';
 
 export const Dashboard: React.FC = () => {
   const { user, addUserPoints } = useAuth();
@@ -33,6 +34,7 @@ export const Dashboard: React.FC = () => {
   const [activeView, setActiveView] = useState<'materials' | 'collections' | 'collection-detail'>('materials');
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [celebration, setCelebration] = useState<{ trailName: string; bonusXp: number } | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -166,9 +168,13 @@ export const Dashboard: React.FC = () => {
         if (activeView === 'collection-detail' && selectedCollection) {
           const materialIds = collectionItemMap[selectedCollection.id] || [];
           const updatedCompleted = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
-          if (updatedCompleted >= materialIds.length && materialIds.length > 0 && selectedCollection.points > 0) {
-            await mockDb.addPoints(user.id, selectedCollection.points);
-            addUserPoints(selectedCollection.points);
+          if (updatedCompleted >= materialIds.length && materialIds.length > 0) {
+            if (selectedCollection.points > 0) {
+              await mockDb.addPoints(user.id, selectedCollection.points);
+              addUserPoints(selectedCollection.points);
+            }
+            const trailTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || 'Trilha';
+            setCelebration({ trailName: trailTitle, bonusXp: selectedCollection.points });
           }
         }
       }
@@ -504,6 +510,13 @@ export const Dashboard: React.FC = () => {
       {viewingMaterial && (
         <ViewerModal material={viewingMaterial.mat} language={viewingMaterial.lang} onClose={handleCloseViewer} />
       )}
+
+      <TrailCompletionCelebration
+        isOpen={!!celebration}
+        trailName={celebration?.trailName || ''}
+        bonusXp={celebration?.bonusXp || 0}
+        onClose={() => setCelebration(null)}
+      />
     </div>
   );
 };
