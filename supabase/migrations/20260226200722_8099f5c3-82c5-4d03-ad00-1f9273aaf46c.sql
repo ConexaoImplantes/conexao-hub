@@ -1,0 +1,1 @@
+ALTER VIEW public.system_config_public SET (security_invoker = on);
