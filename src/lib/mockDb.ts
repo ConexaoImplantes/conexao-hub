@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
-import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress } from '../types';
+import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress, ThemeModeConfig } from '../types';
+import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE, mergeScheme } from './themeDefaults';
 
 export interface CollectionProgress {
   id: string;
@@ -80,13 +81,13 @@ export const mockDb = {
   },
 
   getSystemConfig: async (): Promise<SystemConfig> => {
-    // Admin reads from full table, others read from public view (no webhook_url)
     const { data, error } = await supabase.from('system_config').select('*').eq('id', 1).single();
 
     const defaults: SystemConfig = {
         appName: 'Hub Conexão',
-        themeLight: { background: '#f8fafc', surface: '#ffffff', textMain: '#0f172a', textMuted: '#64748b', border: '#e2e8f0', accent: '#c9a655', success: '#10b981', warning: '#f59e0b', error: '#ef4444' },
-        themeDark: { background: '#0f172a', surface: '#1e293b', textMain: '#f8fafc', textMuted: '#94a3b8', border: 'transparent', accent: '#c9a655', success: '#22c55e', warning: '#eab308', error: '#ef4444' }
+        themeLight: DEFAULT_LIGHT,
+        themeDark: DEFAULT_DARK,
+        themeMode: DEFAULT_THEME_MODE,
     };
 
     if (error || !data) {
@@ -97,8 +98,9 @@ export const mockDb = {
       appName: data.app_name,
       logoUrl: data.logo_url,
       webhookUrl: data.webhook_url,
-      themeLight: data.theme_light as unknown as ColorScheme,
-      themeDark: data.theme_dark as unknown as ColorScheme
+      themeLight: mergeScheme(data.theme_light as unknown as Partial<ColorScheme>, DEFAULT_LIGHT),
+      themeDark: mergeScheme(data.theme_dark as unknown as Partial<ColorScheme>, DEFAULT_DARK),
+      themeMode: (data as any).theme_mode ? { ...DEFAULT_THEME_MODE, ...(data as any).theme_mode } : DEFAULT_THEME_MODE,
     };
   },
 
@@ -111,8 +113,9 @@ export const mockDb = {
         webhook_url: config.webhookUrl,
         theme_light: config.themeLight as any,
         theme_dark: config.themeDark as any,
+        theme_mode: config.themeMode as any,
         updated_at: new Date().toISOString()
-      })
+      } as any)
       .eq('id', 1);
 
     if (error) throw error;

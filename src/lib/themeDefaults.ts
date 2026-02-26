@@ -1,0 +1,86 @@
+import { ColorScheme, ThemeModeConfig } from '../types';
+
+export const DEFAULT_LIGHT: ColorScheme = {
+  background: '#f8fafc',
+  surface: '#ffffff',
+  surfaceHover: '#f1f5f9',
+  card: '#ffffff',
+  textMain: '#0f172a',
+  textMuted: '#64748b',
+  textInverted: '#ffffff',
+  border: '#e2e8f0',
+  borderSubtle: '#f1f5f9',
+  accent: '#c9a655',
+  accentHover: '#b8953e',
+  accentForeground: '#ffffff',
+  accentMuted: '#c9a65520',
+  success: '#10b981',
+  successBg: '#10b98115',
+  warning: '#f59e0b',
+  warningBg: '#f59e0b15',
+  error: '#ef4444',
+  errorBg: '#ef444415',
+  inputBg: '#f8fafc',
+  inputBorder: '#e2e8f0',
+  inputFocus: '#c9a655',
+  buttonPrimaryBg: '#c9a655',
+  buttonPrimaryText: '#ffffff',
+  badgeBg: '#f1f5f9',
+  tooltipBg: '#0f172a',
+  tooltipText: '#f8fafc',
+  overlay: '#00000060',
+  shadow: '#0000001a',
+  glassTint: '#ffffff40',
+  headerBg: '#ffffff',
+  scrollbarThumb: '#c9a655',
+  scrollbarTrack: 'transparent',
+  ring: '#c9a65580',
+};
+
+export const DEFAULT_DARK: ColorScheme = {
+  background: '#0f172a',
+  surface: '#1e293b',
+  surfaceHover: '#334155',
+  card: '#1e293b',
+  textMain: '#f8fafc',
+  textMuted: '#94a3b8',
+  textInverted: '#0f172a',
+  border: 'transparent',
+  borderSubtle: '#1e293b',
+  accent: '#c9a655',
+  accentHover: '#d4b366',
+  accentForeground: '#0f172a',
+  accentMuted: '#c9a65520',
+  success: '#22c55e',
+  successBg: '#22c55e15',
+  warning: '#eab308',
+  warningBg: '#eab30815',
+  error: '#ef4444',
+  errorBg: '#ef444415',
+  inputBg: '#0f172a',
+  inputBorder: '#334155',
+  inputFocus: '#c9a655',
+  buttonPrimaryBg: '#c9a655',
+  buttonPrimaryText: '#0f172a',
+  badgeBg: '#334155',
+  tooltipBg: '#f8fafc',
+  tooltipText: '#0f172a',
+  overlay: '#00000080',
+  shadow: '#00000040',
+  glassTint: '#ffffff10',
+  headerBg: '#1e293b',
+  scrollbarThumb: '#c9a655',
+  scrollbarTrack: 'transparent',
+  ring: '#c9a65580',
+};
+
+export const DEFAULT_THEME_MODE: ThemeModeConfig = {
+  mode: 'dual',
+  defaultTheme: 'dark',
+};
+
+/** Merge partial/legacy scheme with defaults */
+export function mergeScheme(partial: Partial<ColorScheme> | undefined, defaults: ColorScheme): ColorScheme {
+  if (!partial) return { ...defaults };
+  return { ...defaults, ...partial };
+}

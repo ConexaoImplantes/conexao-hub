@@ -1,0 +1,1 @@
+ALTER TABLE public.system_config ADD COLUMN IF NOT EXISTS theme_mode jsonb NOT NULL DEFAULT '{"mode":"dual","defaultTheme":"dark"}'::jsonb;
