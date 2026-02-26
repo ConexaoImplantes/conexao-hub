@@ -9,7 +9,7 @@ import { mockDb, GamificationLevel } from '../../lib/mockDb';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme } = useTheme();
+  const { theme, toggleTheme, canToggle } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const { config } = useBrand();
   const [levels, setLevels] = useState<GamificationLevel[]>([]);
@@ -80,6 +80,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                     </select>
                 </div>
 
+                {canToggle && (
                 <button
                 onClick={toggleTheme}
                 className="relative overflow-hidden w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 group"
@@ -90,6 +91,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         {theme === 'light' ? <Moon size={18} className="hidden sm:block" /> : <Sun size={18} className="hidden sm:block" />}
                     </div>
                 </button>
+                )}
 
                 <div className="flex items-center gap-1.5 sm:gap-3 pl-1 sm:pl-2">
                     <div className="flex items-center gap-2 sm:gap-3 rounded-full p-1 pr-2 sm:pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>

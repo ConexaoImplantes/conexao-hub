@@ -84,15 +84,52 @@ export interface AccessLog {
 }
 
 export interface ColorScheme {
+  // Base
   background: string;
   surface: string;
+  surfaceHover: string;
+  card: string;
+  // Text
   textMain: string;
   textMuted: string;
+  textInverted: string;
+  // Border
   border: string;
+  borderSubtle: string;
+  // Brand
   accent: string;
+  accentHover: string;
+  accentForeground: string;
+  accentMuted: string;
+  // Feedback
   success: string;
+  successBg: string;
   warning: string;
+  warningBg: string;
   error: string;
+  errorBg: string;
+  // Components
+  inputBg: string;
+  inputBorder: string;
+  inputFocus: string;
+  buttonPrimaryBg: string;
+  buttonPrimaryText: string;
+  badgeBg: string;
+  tooltipBg: string;
+  tooltipText: string;
+  // Effects
+  overlay: string;
+  shadow: string;
+  glassTint: string;
+  headerBg: string;
+  scrollbarThumb: string;
+  scrollbarTrack: string;
+  ring: string;
+}
+
+export interface ThemeModeConfig {
+  mode: 'single' | 'dual';
+  defaultTheme: 'light' | 'dark';
 }
 
 export interface SystemConfig {
@@ -101,6 +138,7 @@ export interface SystemConfig {
   webhookUrl?: string;
   themeLight: ColorScheme;
   themeDark: ColorScheme;
+  themeMode: ThemeModeConfig;
 }
 
 // Gamification

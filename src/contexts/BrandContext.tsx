@@ -1,7 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { SystemConfig } from '../types';
+import { SystemConfig, ColorScheme } from '../types';
 import { mockDb } from '../lib/mockDb';
-
+import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE } from '../lib/themeDefaults';
+import { useTheme } from './ThemeContext';
 interface BrandContextType {
   config: SystemConfig;
   updateConfig: (newConfig: SystemConfig) => Promise<void>;
@@ -10,28 +11,65 @@ interface BrandContextType {
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
 
+const defaults: SystemConfig = {
+  appName: 'Hub Conexão',
+  themeLight: DEFAULT_LIGHT,
+  themeDark: DEFAULT_DARK,
+  themeMode: DEFAULT_THEME_MODE,
+};
+
+function buildCssVars(scheme: ColorScheme): string {
+  return Object.entries({
+    '--color-bg': scheme.background,
+    '--color-surface': scheme.surface,
+    '--color-surface-hover': scheme.surfaceHover,
+    '--color-card': scheme.card,
+    '--color-text-main': scheme.textMain,
+    '--color-text-muted': scheme.textMuted,
+    '--color-text-inverted': scheme.textInverted,
+    '--color-border': scheme.border,
+    '--color-border-subtle': scheme.borderSubtle,
+    '--color-accent': scheme.accent,
+    '--color-accent-hover': scheme.accentHover,
+    '--color-accent-fg': scheme.accentForeground,
+    '--color-accent-muted': scheme.accentMuted,
+    '--color-success': scheme.success,
+    '--color-success-bg': scheme.successBg,
+    '--color-warning': scheme.warning,
+    '--color-warning-bg': scheme.warningBg,
+    '--color-error': scheme.error,
+    '--color-error-bg': scheme.errorBg,
+    '--color-input-bg': scheme.inputBg,
+    '--color-input-border': scheme.inputBorder,
+    '--color-input-focus': scheme.inputFocus,
+    '--color-btn-primary-bg': scheme.buttonPrimaryBg,
+    '--color-btn-primary-text': scheme.buttonPrimaryText,
+    '--color-badge-bg': scheme.badgeBg,
+    '--color-tooltip-bg': scheme.tooltipBg,
+    '--color-tooltip-text': scheme.tooltipText,
+    '--color-overlay': scheme.overlay,
+    '--color-shadow': scheme.shadow,
+    '--color-glass-tint': scheme.glassTint,
+    '--color-header-bg': scheme.headerBg,
+    '--color-scrollbar-thumb': scheme.scrollbarThumb,
+    '--color-scrollbar-track': scheme.scrollbarTrack,
+    '--color-ring': scheme.ring,
+  }).map(([k, v]) => `${k}: ${v};`).join('\n        ');
+}
+
 export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { applyThemeMode } = useTheme();
   const [config, setConfig] = useState<SystemConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  const defaults: SystemConfig = {
-      appName: 'Hub Conexão',
-      themeLight: { background: '#f8fafc', surface: '#ffffff', textMain: '#0f172a', textMuted: '#64748b', border: '#e2e8f0', accent: '#c9a655', success: '#10b981', warning: '#f59e0b', error: '#ef4444' },
-      themeDark: { background: '#0f172a', surface: '#1e293b', textMain: '#f8fafc', textMuted: '#94a3b8', border: 'transparent', accent: '#c9a655', success: '#22c55e', warning: '#eab308', error: '#ef4444' }
-  };
-
   useEffect(() => {
     mockDb.getSystemConfig()
-      .then(data => {
-        setConfig(data);
-      })
+      .then(data => setConfig(data))
       .catch(err => {
         console.error("BrandContext Init Error:", err);
         setConfig(defaults);
       })
-      .finally(() => {
-        setIsLoading(false);
-      });
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
@@ -46,51 +84,39 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const css = `
       :root {
-        --color-bg: ${config.themeLight.background};
-        --color-surface: ${config.themeLight.surface};
-        --color-text-main: ${config.themeLight.textMain};
-        --color-text-muted: ${config.themeLight.textMuted};
-        --color-border: ${config.themeLight.border};
-        --color-accent: ${config.themeLight.accent};
-        --color-success: ${config.themeLight.success};
-        --color-warning: ${config.themeLight.warning};
-        --color-error: ${config.themeLight.error};
+        ${buildCssVars(config.themeLight)}
       }
       .dark {
-        --color-bg: ${config.themeDark.background};
-        --color-surface: ${config.themeDark.surface};
-        --color-text-main: ${config.themeDark.textMain};
-        --color-text-muted: ${config.themeDark.textMuted};
-        --color-border: ${config.themeDark.border};
-        --color-accent: ${config.themeDark.accent};
-        --color-success: ${config.themeDark.success};
-        --color-warning: ${config.themeDark.warning};
-        --color-error: ${config.themeDark.error};
+        ${buildCssVars(config.themeDark)}
       }
     `;
 
     styleTag.innerHTML = css;
     document.title = config.appName;
 
-  }, [config]);
+    // Apply theme mode
+    if (config.themeMode) {
+      applyThemeMode(config.themeMode.mode, config.themeMode.defaultTheme);
+    }
+  }, [config, applyThemeMode]);
 
   const updateConfig = async (newConfig: SystemConfig) => {
     try {
-        await mockDb.updateSystemConfig(newConfig);
-        setConfig(newConfig);
+      await mockDb.updateSystemConfig(newConfig);
+      setConfig(newConfig);
     } catch (e) {
-        console.error("Failed to update config", e);
-        throw e;
+      console.error("Failed to update config", e);
+      throw e;
     }
   };
 
   return (
     <BrandContext.Provider value={{ config: config || defaults, updateConfig, isLoading }}>
       {!isLoading && config ? children : (
-         <div className="h-screen w-full flex flex-col gap-4 items-center justify-center bg-gray-50 text-gray-500 font-medium animate-pulse">
-            <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"></div>
-            <span>Carregando Sistema...</span>
-         </div>
+        <div className="h-screen w-full flex flex-col gap-4 items-center justify-center bg-gray-50 text-gray-500 font-medium animate-pulse">
+          <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"></div>
+          <span>Carregando Sistema...</span>
+        </div>
       )}
     </BrandContext.Provider>
   );

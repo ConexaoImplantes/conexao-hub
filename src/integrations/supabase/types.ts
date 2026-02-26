@@ -315,6 +315,7 @@ export type Database = {
           logo_url: string | null
           theme_dark: Json
           theme_light: Json
+          theme_mode: Json
           updated_at: string
           webhook_url: string | null
         }
@@ -324,6 +325,7 @@ export type Database = {
           logo_url?: string | null
           theme_dark?: Json
           theme_light?: Json
+          theme_mode?: Json
           updated_at?: string
           webhook_url?: string | null
         }
@@ -333,6 +335,7 @@ export type Database = {
           logo_url?: string | null
           theme_dark?: Json
           theme_light?: Json
+          theme_mode?: Json
           updated_at?: string
           webhook_url?: string | null
         }
