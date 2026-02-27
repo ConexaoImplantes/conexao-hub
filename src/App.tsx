@@ -17,7 +17,9 @@ import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
 import { RegistrationProgress } from "./components/hub/RegistrationProgress";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: { queries: { retry: 1 } },
+});
 
 const AppContent = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
