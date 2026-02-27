@@ -28,6 +28,7 @@ import {
   Monitor,
   Moon,
   Sun,
+  List,
   Users,
   Share2,
   CheckCircle,
@@ -225,6 +226,8 @@ export const Admin: React.FC = () => {
   const [isCollectionFormOpen, setIsCollectionFormOpen] = useState(false);
   const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
   const [collectionSearch, setCollectionSearch] = useState("");
+  const [expandedCollection, setExpandedCollection] = useState<string | null>(null);
+  const [expandedCollectionItems, setExpandedCollectionItems] = useState<import("../types").CollectionItem[]>([]);
   const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [collectionProgress, setCollectionProgress] = useState<CollectionProgress[]>([]);
   // Gamification levels state
@@ -903,13 +906,31 @@ export const Admin: React.FC = () => {
                       </div>
                       <div className="flex gap-1 shrink-0">
                         <button
+                          onClick={async (e) => {
+                            e.stopPropagation();
+                            if (expandedCollection === col.id) {
+                              setExpandedCollection(null);
+                              setExpandedCollectionItems([]);
+                            } else {
+                              setExpandedCollection(col.id);
+                              try {
+                                const items = await mockDb.getCollectionItems(col.id);
+                                setExpandedCollectionItems(items);
+                              } catch { setExpandedCollectionItems([]); }
+                            }
+                          }}
+                          className="p-2 rounded-lg transition-colors"
+                          style={{ color: expandedCollection === col.id ? "var(--color-accent)" : "var(--color-text-muted)" }}
+                          title="Ver conteúdos da trilha">
+                          <List size={16} />
+                        </button>
+                        <button
                       onClick={() => {
                         setEditingCollection(col);
                         setIsCollectionFormOpen(true);
                       }}
                       className="p-2 rounded-lg"
                       style={{ color: "var(--color-accent)" }}>
-
                           <Edit size={16} />
                         </button>
                         <button
@@ -918,7 +939,6 @@ export const Admin: React.FC = () => {
                         setIsConfirmOpen(true);
                       }}
                       className="p-2 rounded-lg text-red-500">
-
                           <Trash2 size={16} />
                         </button>
                       </div>
@@ -937,6 +957,49 @@ export const Admin: React.FC = () => {
                         </span>
                   )}
                     </div>
+
+                    {/* Timeline dos conteúdos */}
+                    {expandedCollection === col.id && (
+                      <div className="mt-3 pt-3 space-y-0" style={{ borderTop: "1px solid color-mix(in srgb, var(--color-border) 50%, transparent)" }}>
+                        <p className="text-[10px] font-bold uppercase tracking-wider mb-2" style={{ color: "var(--color-text-muted)" }}>
+                          Conteúdos da Trilha
+                        </p>
+                        {expandedCollectionItems.length === 0 ? (
+                          <p className="text-xs py-2" style={{ color: "var(--color-text-muted)" }}>Nenhum conteúdo vinculado.</p>
+                        ) : (
+                          <div className="relative pl-4">
+                            <div className="absolute left-[7px] top-1 bottom-1 w-px" style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 30%, transparent)" }} />
+                            {expandedCollectionItems.map((item, idx) => {
+                              const mat = item.material;
+                              const matTitle = mat?.title["pt-br"] || mat?.title["en-us"] || "Sem título";
+                              const typeIcon = mat?.type === "video" ? "🎬" : mat?.type === "pdf" ? "📄" : mat?.type === "audio" ? "🎧" : "🖼️";
+                              return (
+                                <div key={item.id} className="relative flex items-start gap-3 pb-3 last:pb-0">
+                                  <div
+                                    className="relative z-10 w-3.5 h-3.5 rounded-full border-2 shrink-0 mt-0.5"
+                                    style={{
+                                      borderColor: "var(--color-accent)",
+                                      backgroundColor: idx === 0 ? "var(--color-accent)" : "var(--color-surface)",
+                                    }}
+                                  />
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-xs font-medium truncate" style={{ color: "var(--color-text-main)" }}>
+                                      {typeIcon} {matTitle}
+                                    </p>
+                                    <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>
+                                      {mat?.points || 0} XP · {mat?.type?.toUpperCase()}
+                                    </p>
+                                  </div>
+                                  <span className="text-[10px] font-bold shrink-0 mt-0.5" style={{ color: "var(--color-text-muted)" }}>
+                                    #{idx + 1}
+                                  </span>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        )}
+                      </div>
+                    )}
                   </div>);
 
           })}
