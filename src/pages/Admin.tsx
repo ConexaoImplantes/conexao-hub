@@ -1760,7 +1760,7 @@ export const Admin: React.FC = () => {
                           const isExpired = new Date(tk.expiresAt) < new Date();
                           const statusLabel = isUsed ? "Usado" : isExpired ? "Expirado" : "Ativo";
                           const statusColor = isUsed ? "text-blue-600 bg-blue-500/10" : isExpired ? "text-red-600 bg-red-500/10" : "text-green-600 bg-green-500/10";
-                          const publishedUrl = window.location.origin;
+                          const publishedUrl = 'https://conexao-hub.lovable.app';
                           const fullUrl = `${publishedUrl}/?token=${tk.token}`;
                           return (
                             <div key={tk.id} className="p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center gap-3" style={{ backgroundColor: "var(--color-bg)" }}>
