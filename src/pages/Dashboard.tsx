@@ -11,7 +11,8 @@ import { SkeletonCardGrid } from '../components/hub/SkeletonCard';
 import { usePagination } from '../hooks/usePagination';
 import {
   Search, Grid, FileText, Image as ImageIcon, Video, Filter, ChevronRight, ChevronLeft,
-  Layers, Sparkles, BookOpen, Tag, Star, ArrowLeft, Trophy, CheckCircle, PlayCircle, Lock
+  Layers, Sparkles, BookOpen, Tag, Star, ArrowLeft, Trophy, CheckCircle, PlayCircle, Lock,
+  Headphones
 } from 'lucide-react';
 import { Progress } from '../components/ui/progress';
 import { TrailCompletionCelebration } from '../components/hub/TrailCompletionCelebration';
@@ -125,6 +126,7 @@ export const Dashboard: React.FC = () => {
       pdf: base.filter(m => m.type === 'pdf').length,
       image: base.filter(m => m.type === 'image').length,
       video: base.filter(m => m.type === 'video').length,
+      audio: base.filter(m => m.type === 'audio').length,
     };
   }, [materials, user]);
 
@@ -257,6 +259,7 @@ export const Dashboard: React.FC = () => {
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="pdf" icon={FileText} label={t('filter.pdf')} count={counts.pdf} active={filterType === 'pdf'} /></div>
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="image" icon={ImageIcon} label={t('filter.image')} count={counts.image} active={filterType === 'image'} /></div>
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
+              <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="audio" icon={Headphones} label={t('filter.audio')} count={counts.audio} active={filterType === 'audio'} /></div>
 
               {/* Tag filter */}
               {allTags.length > 0 && (

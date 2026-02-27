@@ -491,7 +491,7 @@ export type Database = {
       app_language: "pt-br" | "en-us" | "es-es"
       app_role: "client" | "distributor" | "consultant" | "super_admin"
       app_status: "pending" | "active" | "inactive" | "rejected"
-      material_type: "pdf" | "image" | "video"
+      material_type: "pdf" | "image" | "video" | "audio"
       progress_status: "started" | "completed"
       translation_status: "draft" | "review" | "published"
     }
@@ -624,7 +624,7 @@ export const Constants = {
       app_language: ["pt-br", "en-us", "es-es"],
       app_role: ["client", "distributor", "consultant", "super_admin"],
       app_status: ["pending", "active", "inactive", "rejected"],
-      material_type: ["pdf", "image", "video"],
+      material_type: ["pdf", "image", "video", "audio"],
       progress_status: ["started", "completed"],
       translation_status: ["draft", "review", "published"],
     },
