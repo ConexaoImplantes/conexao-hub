@@ -60,7 +60,7 @@ export const RegistrationProgress: React.FC = () => {
         particleCount: 150,
         spread: 90,
         origin: { y: 0.6 },
-        colors: ['#c9a655', '#e8d48b', '#a8873a'],
+        colors: [getComputedStyle(document.documentElement).getPropertyValue('--color-gradient-start').trim() || '#c9a655', getComputedStyle(document.documentElement).getPropertyValue('--color-gradient-mid').trim() || '#e8d48b', getComputedStyle(document.documentElement).getPropertyValue('--color-gradient-end').trim() || '#a8873a'],
       });
     }
   }, [status, celebrated]);

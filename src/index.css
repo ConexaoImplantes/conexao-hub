@@ -105,6 +105,9 @@ All colors MUST be HSL.
   --color-success: #22c55e;
   --color-warning: #f59e0b;
   --color-error: #ef4444;
+  --color-gradient-start: #c9a655;
+  --color-gradient-mid: #e8d48b;
+  --color-gradient-end: #a8873a;
 }
 
 /* Custom scrollbar - accent color, 5px */
@@ -174,33 +177,33 @@ All colors MUST be HSL.
 .liquid-glass-gold {
   background: linear-gradient(
     135deg,
-    rgba(201, 166, 85, 0.25) 0%,
-    rgba(232, 212, 139, 0.15) 40%,
-    rgba(168, 135, 58, 0.20) 70%,
-    rgba(201, 166, 85, 0.18) 100%
+    color-mix(in srgb, var(--color-gradient-start) 25%, transparent) 0%,
+    color-mix(in srgb, var(--color-gradient-mid) 15%, transparent) 40%,
+    color-mix(in srgb, var(--color-gradient-end) 20%, transparent) 70%,
+    color-mix(in srgb, var(--color-gradient-start) 18%, transparent) 100%
   );
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid rgba(201, 166, 85, 0.30);
+  border: 1px solid color-mix(in srgb, var(--color-gradient-start) 30%, transparent);
   box-shadow:
-    0 4px 20px rgba(201, 166, 85, 0.12),
-    inset 0 1px 0 rgba(232, 212, 139, 0.25),
-    inset 0 -1px 0 rgba(168, 135, 58, 0.10);
+    0 4px 20px color-mix(in srgb, var(--color-gradient-start) 12%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-gradient-mid) 25%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--color-gradient-end) 10%, transparent);
 }
 
 .dark .liquid-glass-gold {
   background: linear-gradient(
     135deg,
-    rgba(201, 166, 85, 0.18) 0%,
-    rgba(232, 212, 139, 0.08) 40%,
-    rgba(168, 135, 58, 0.14) 70%,
-    rgba(201, 166, 85, 0.10) 100%
+    color-mix(in srgb, var(--color-gradient-start) 18%, transparent) 0%,
+    color-mix(in srgb, var(--color-gradient-mid) 8%, transparent) 40%,
+    color-mix(in srgb, var(--color-gradient-end) 14%, transparent) 70%,
+    color-mix(in srgb, var(--color-gradient-start) 10%, transparent) 100%
   );
-  border: 1px solid rgba(201, 166, 85, 0.22);
+  border: 1px solid color-mix(in srgb, var(--color-gradient-start) 22%, transparent);
   box-shadow:
-    0 4px 20px rgba(201, 166, 85, 0.08),
-    inset 0 1px 0 rgba(232, 212, 139, 0.12),
-    inset 0 -1px 0 rgba(168, 135, 58, 0.06);
+    0 4px 20px color-mix(in srgb, var(--color-gradient-start) 8%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--color-gradient-mid) 12%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--color-gradient-end) 6%, transparent);
 }
 
 /* Icon Box – standardized icon container: dark rounded square + gold icon */

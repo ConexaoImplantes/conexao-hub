@@ -121,7 +121,7 @@ export const AuthPage: React.FC = () => {
         {config.logoUrl ?
     <img src={config.logoUrl} alt="Logo" className={`${size === "large" ? "h-28" : "h-16"} drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all duration-500 hover:scale-105`} /> :
 
-    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)', boxShadow: '0 25px 50px -12px rgba(201,166,85,0.4)' }}>
+    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: '0 25px 50px -12px rgba(201,166,85,0.4)' }}>
               {config.appName.substring(0, 2).toUpperCase()}
             </div>
     }
@@ -156,7 +156,7 @@ export const AuthPage: React.FC = () => {
 
           <>
               <h2 className="text-3xl font-bold mb-3 tracking-tight" style={{ color: 'var(--color-text-main)' }}>{isLogin ? t('auth.login') : t('auth.register')}</h2>
-              <p className="text-lg font-medium bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]" style={{ backgroundImage: 'linear-gradient(90deg, #c9a655, #e8d48b, #a8873a, #c9a655)' }}>{config.appName}</p>
+              <p className="text-lg font-medium bg-clip-text text-transparent animate-shimmer bg-[length:200%_100%]" style={{ backgroundImage: 'linear-gradient(90deg, var(--color-gradient-start), var(--color-gradient-mid), var(--color-gradient-end), var(--color-gradient-start))' }}>{config.appName}</p>
             </>
           }
         </div>
@@ -291,7 +291,7 @@ export const AuthPage: React.FC = () => {
             </>
           }
 
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)', boxShadow: '0 10px 25px -5px rgba(201,166,85,0.3)' }}>
+          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: '0 10px 25px -5px rgba(201,166,85,0.3)' }}>
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2 text-zinc-900">
                 {!isLogin && invitedRole && <UserPlus size={20} />}

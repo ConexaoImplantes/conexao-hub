@@ -180,8 +180,11 @@ export const mockDb = {
   },
 
   deleteUser: async (userId: string): Promise<void> => {
-    const { error } = await supabase.from('profiles').delete().eq('id', userId);
+    const { data, error } = await supabase.functions.invoke('delete-user', {
+      body: { userId },
+    });
     if (error) throw error;
+    if (data?.error) throw new Error(data.error);
   },
 
   createMaterial: async (material: Omit<Material, 'id' | 'createdAt'>): Promise<Material> => {
