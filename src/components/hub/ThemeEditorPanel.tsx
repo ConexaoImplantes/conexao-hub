@@ -323,78 +323,72 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({ localConfig,
           </button>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left: Token Editor */}
-          <div className="space-y-2">
-            {CATEGORY_ORDER.map((catKey) => {
-              const cat = CATEGORIES[catKey];
-              return (
-                <div key={catKey}>
-                  <div className="flex items-center justify-between">
-                    <button
-                      onClick={() => toggleCollapsed(catKey)}
-                      className="flex-1 text-left text-xs font-bold uppercase tracking-wider py-2 flex items-center justify-between"
-                      style={{ color: 'var(--color-text-muted)' }}
-                    >
-                      {cat.title}
-                      <span className="text-[10px] font-normal">{collapsed[catKey] ? '▶' : '▼'}</span>
-                    </button>
-                    <button
-                      onClick={() => resetCategory(catKey)}
-                      className="p-1 rounded text-[10px] font-semibold hover:opacity-80"
-                      style={{ color: 'var(--color-text-muted)' }}
-                      title="Resetar categoria"
-                    >
-                      <RotateCcw size={12} />
-                    </button>
-                  </div>
-                  <div className="border-b mb-3" style={{ borderColor: 'var(--color-border)' }} />
-                  {!collapsed[catKey] && (
-                    <>
-                      <div className="space-y-1 mb-4">
-                        {cat.tokens.map((token) => (
-                          <ColorInput
-                            key={token.key}
-                            label={token.label}
-                            value={currentScheme[token.key] || defaults[token.key]}
-                            onChange={(v) => updateSchemeField(token.key, v)}
-                            hint={token.hint}
-                          />
-                        ))}
-                      </div>
-                      {catKey === 'gradients' && (
-                        <div className="mb-4">
-                          <p className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-muted)' }}>Preview do Gradiente</p>
-                          <div
-                            className="h-10 rounded-xl shadow-inner"
-                            style={{ background: `linear-gradient(135deg, ${currentScheme.gradientStart || defaults.gradientStart} 0%, ${currentScheme.gradientMid || defaults.gradientMid} 40%, ${currentScheme.gradientEnd || defaults.gradientEnd} 70%, ${currentScheme.gradientStart || defaults.gradientStart} 100%)` }}
-                          />
-                        </div>
-                      )}
-                    </>
-                  )}
+        {/* Live Preview - Full Width */}
+        <div className="mb-6">
+          <div className="flex items-center gap-2 mb-2">
+            <Eye size={16} style={{ color: 'var(--color-text-muted)' }} />
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+              Preview em Tempo Real
+            </span>
+            <span className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
+              {Object.keys(currentScheme).length} tokens · {editingMode === 'light' ? '☀️ Light' : '🌙 Dark'}
+            </span>
+          </div>
+          <LivePreview themeName={editingMode === 'light' ? 'Light' : 'Dark'} scheme={currentScheme} />
+        </div>
+
+        {/* Token Editor - Two Columns */}
+        <div className="grid md:grid-cols-2 gap-x-6 gap-y-2">
+          {CATEGORY_ORDER.map((catKey) => {
+            const cat = CATEGORIES[catKey];
+            return (
+              <div key={catKey}>
+                <div className="flex items-center justify-between">
+                  <button
+                    onClick={() => toggleCollapsed(catKey)}
+                    className="flex-1 text-left text-xs font-bold uppercase tracking-wider py-2 flex items-center justify-between"
+                    style={{ color: 'var(--color-text-muted)' }}
+                  >
+                    {cat.title}
+                    <span className="text-[10px] font-normal">{collapsed[catKey] ? '▶' : '▼'}</span>
+                  </button>
+                  <button
+                    onClick={() => resetCategory(catKey)}
+                    className="p-1 rounded text-[10px] font-semibold hover:opacity-80"
+                    style={{ color: 'var(--color-text-muted)' }}
+                    title="Resetar categoria"
+                  >
+                    <RotateCcw size={12} />
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Right: Live Preview */}
-          <div className="space-y-4 lg:sticky lg:top-20">
-            <div className="flex items-center gap-2 mb-2">
-              <Eye size={16} style={{ color: 'var(--color-text-muted)' }} />
-              <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                Preview em Tempo Real
-              </span>
-            </div>
-            <LivePreview themeName={editingMode === 'light' ? 'Light' : 'Dark'} scheme={currentScheme} />
-
-            {/* Token Counter */}
-            <div className="p-3 rounded-lg text-center" style={{ backgroundColor: 'var(--color-bg)' }}>
-              <span className="text-[11px] font-semibold" style={{ color: 'var(--color-text-muted)' }}>
-                {Object.keys(currentScheme).length} tokens configurados · {editingMode === 'light' ? '☀️ Light' : '🌙 Dark'}
-              </span>
-            </div>
-          </div>
+                <div className="border-b mb-3" style={{ borderColor: 'var(--color-border)' }} />
+                {!collapsed[catKey] && (
+                  <>
+                    <div className="space-y-1 mb-4">
+                      {cat.tokens.map((token) => (
+                        <ColorInput
+                          key={token.key}
+                          label={token.label}
+                          value={currentScheme[token.key] || defaults[token.key]}
+                          onChange={(v) => updateSchemeField(token.key, v)}
+                          hint={token.hint}
+                        />
+                      ))}
+                    </div>
+                    {catKey === 'gradients' && (
+                      <div className="mb-4">
+                        <p className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-muted)' }}>Preview do Gradiente</p>
+                        <div
+                          className="h-10 rounded-xl shadow-inner"
+                          style={{ background: `linear-gradient(135deg, ${currentScheme.gradientStart || defaults.gradientStart} 0%, ${currentScheme.gradientMid || defaults.gradientMid} 40%, ${currentScheme.gradientEnd || defaults.gradientEnd} 70%, ${currentScheme.gradientStart || defaults.gradientStart} 100%)` }}
+                        />
+                      </div>
+                    )}
+                  </>
+                )}
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>
