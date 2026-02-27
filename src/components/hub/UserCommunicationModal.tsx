@@ -4,6 +4,7 @@ import { UserProfile } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { X, Mail, MessageCircle, Send, Paperclip } from 'lucide-react';
 import { useBrand } from '../../contexts/BrandContext';
+import { toast } from 'sonner';
 
 interface UserCommunicationModalProps {
   user: UserProfile;
@@ -27,7 +28,7 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
     setLoading(true);
 
     if (!config.webhookUrl) {
-      alert('Webhook URL não configurada em Configurações.');
+      toast.error('Webhook URL não configurada em Configurações.');
       setLoading(false);
       return;
     }
@@ -44,10 +45,10 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
       console.log(JSON.stringify(payload, null, 2));
       console.log('Target:', config.webhookUrl);
       await new Promise(resolve => setTimeout(resolve, 1500));
-      alert(t('comm.success'));
+      toast.success(t('comm.success'));
       onClose();
     } catch (error) {
-      alert('Erro ao enviar.');
+      toast.error('Erro ao enviar.');
     } finally {
       setLoading(false);
     }

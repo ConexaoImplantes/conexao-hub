@@ -7,6 +7,7 @@ import { seedUsers } from '../lib/seed';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
 import { mockDb } from '../lib/mockDb';
+import { toast } from 'sonner';
 
 export const AuthPage: React.FC = () => {
   const { login, register, loginMock, isDbMissing } = useAuth();
@@ -101,9 +102,9 @@ export const AuthPage: React.FC = () => {
     setIsSeeding(true);
     try {
       const result = await seedUsers();
-      alert(result);
+      toast.success(result);
     } catch (e: any) {
-      alert("Erro: " + e.message);
+      toast.error("Erro: " + e.message);
     } finally {
       setIsSeeding(false);
     }

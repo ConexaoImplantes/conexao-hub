@@ -92,6 +92,7 @@ import {
 "recharts";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import { toast } from "sonner";
 
 
 const AnalyticsDetailModal = ({
@@ -295,7 +296,7 @@ export const Admin: React.FC = () => {
       pdf.save(`metricas_${new Date().toISOString().slice(0, 10)}.pdf`);
     } catch (e) {
       console.error('PDF export error:', e);
-      alert('Erro ao gerar PDF. Verifique o console para detalhes.');
+      toast.error('Erro ao gerar PDF. Verifique o console para detalhes.');
     }
   };
   useEffect(() => {
@@ -337,7 +338,7 @@ export const Admin: React.FC = () => {
       await mockDb.createInviteToken(inviteRole, inviteExpiry);
       loadInviteTokens();
     } catch (e: any) {
-      alert('Erro ao gerar convite: ' + e.message);
+      toast.error('Erro ao gerar convite: ' + e.message);
     }
     setInviteGenerating(false);
   };
@@ -346,7 +347,7 @@ export const Admin: React.FC = () => {
       await mockDb.deleteInviteToken(id);
       loadInviteTokens();
     } catch (e: any) {
-      alert('Erro: ' + e.message);
+      toast.error('Erro: ' + e.message);
     }
   };
   const loadAnalytics = async () => {
@@ -379,7 +380,7 @@ export const Admin: React.FC = () => {
       await mockDb.createMaterial(materialData);
       loadMaterials();
     } catch (e: any) {
-      alert("Erro ao salvar material: " + (e.message || JSON.stringify(e)));
+      toast.error("Erro ao salvar material: " + (e.message || JSON.stringify(e)));
     }
   };
 
@@ -388,7 +389,7 @@ export const Admin: React.FC = () => {
       await mockDb.updateMaterial({ ...material, active: !material.active });
       loadMaterials();
     } catch (e: any) {
-      alert("Erro ao atualizar status: " + e.message);
+      toast.error("Erro ao atualizar status: " + e.message);
     }
   };
 
@@ -406,7 +407,7 @@ export const Admin: React.FC = () => {
         loadUsers();
       }
     } catch (e: any) {
-      alert("Erro ao excluir: " + e.message);
+      toast.error("Erro ao excluir: " + e.message);
     }
     setIsConfirmOpen(false);
     setItemToDelete(null);
@@ -421,7 +422,7 @@ export const Admin: React.FC = () => {
     const langs: Language[] = ["pt-br", "en-us", "es-es"];
     const availableLang = langs.find((l) => material.assets[l]?.url);
     if (availableLang) setViewingMaterial({ mat: material, lang: availableLang });else
-    alert(t("no.materials"));
+    toast.info(t("no.materials"));
   };
 
   const filteredMaterials = useMemo(() => {
@@ -451,7 +452,7 @@ export const Admin: React.FC = () => {
       await mockDb.updateUserStatus(userId, status, rejectionReason);
       loadUsers();
     } catch (e: any) {
-      alert("Erro: " + e.message);
+      toast.error("Erro: " + e.message);
     }
   };
 
@@ -475,7 +476,7 @@ export const Admin: React.FC = () => {
       await mockDb.updateUser(updatedUser);
       loadUsers();
     } catch (e: any) {
-      alert("Erro: " + e.message);
+      toast.error("Erro: " + e.message);
     }
   };
 
@@ -557,9 +558,9 @@ export const Admin: React.FC = () => {
   const handleSaveSettings = async () => {
     try {
       await updateConfig(localConfig);
-      alert("Configurações salvas e aplicadas!");
+      toast.success("Configurações salvas e aplicadas!");
     } catch (e: any) {
-      alert("Erro: " + e.message);
+      toast.error("Erro: " + e.message);
     }
   };
 
@@ -1728,7 +1729,7 @@ export const Admin: React.FC = () => {
                                   .getPublicUrl(uploadData.path);
                                 setLocalConfig({ ...localConfig, logoUrl: urlData.publicUrl });
                               } catch (err: any) {
-                                alert('Erro ao enviar logo: ' + err.message);
+                                toast.error('Erro ao enviar logo: ' + err.message);
                               }
                             }}
                           />
