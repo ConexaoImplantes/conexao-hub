@@ -195,6 +195,7 @@ export type Database = {
           expires_at: string
           id: string
           role: Database["public"]["Enums"]["app_role"]
+          status: string
           token: string
           used_at: string | null
           used_by: string | null
@@ -204,6 +205,7 @@ export type Database = {
           expires_at?: string
           id?: string
           role: Database["public"]["Enums"]["app_role"]
+          status?: string
           token?: string
           used_at?: string | null
           used_by?: string | null
@@ -213,6 +215,7 @@ export type Database = {
           expires_at?: string
           id?: string
           role?: Database["public"]["Enums"]["app_role"]
+          status?: string
           token?: string
           used_at?: string | null
           used_by?: string | null
