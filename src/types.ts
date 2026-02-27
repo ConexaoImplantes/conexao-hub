@@ -137,6 +137,26 @@ export interface ThemeModeConfig {
   defaultTheme: 'light' | 'dark';
 }
 
+export interface EnvironmentEffects {
+  pageBg: string;
+  blob1Color: string;
+  blob2Color: string;
+  blob3Color: string;
+  blobOpacity: string;
+  blobSize: string;
+  blobBlur: string;
+  grainOpacity: string;
+  grainBlendMode: string;
+  grainContrast: string;
+  glassOpacity: string;
+  glassBlur: string;
+  glassBorderOpacity: string;
+}
+
+export type EnvironmentKey = 'auth' | 'client' | 'manager' | 'admin' | 'global';
+
+export type EnvironmentThemes = Record<EnvironmentKey, EnvironmentEffects>;
+
 export interface SystemConfig {
   appName: string;
   logoUrl?: string;
@@ -144,6 +164,7 @@ export interface SystemConfig {
   themeLight: ColorScheme;
   themeDark: ColorScheme;
   themeMode: ThemeModeConfig;
+  environmentThemes?: EnvironmentThemes;
 }
 
 // Gamification

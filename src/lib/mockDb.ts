@@ -1,6 +1,6 @@
 import { supabase } from './supabaseClient';
-import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress, ThemeModeConfig } from '../types';
-import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE, mergeScheme } from './themeDefaults';
+import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress, ThemeModeConfig, EnvironmentThemes } from '../types';
+import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE, mergeScheme, DEFAULT_ENVIRONMENT_THEMES } from './themeDefaults';
 
 export interface CollectionProgress {
   id: string;
@@ -103,6 +103,9 @@ export const mockDb = {
       themeLight: mergeScheme(data.theme_light as unknown as Partial<ColorScheme>, DEFAULT_LIGHT),
       themeDark: mergeScheme(data.theme_dark as unknown as Partial<ColorScheme>, DEFAULT_DARK),
       themeMode: (data as any).theme_mode ? { ...DEFAULT_THEME_MODE, ...(data as any).theme_mode } : DEFAULT_THEME_MODE,
+      environmentThemes: (data as any).environment_themes && Object.keys((data as any).environment_themes).length > 0
+        ? { ...DEFAULT_ENVIRONMENT_THEMES, ...(data as any).environment_themes }
+        : DEFAULT_ENVIRONMENT_THEMES,
     };
   },
 
@@ -116,6 +119,7 @@ export const mockDb = {
         theme_light: config.themeLight as any,
         theme_dark: config.themeDark as any,
         theme_mode: config.themeMode as any,
+        environment_themes: config.environmentThemes as any,
         updated_at: new Date().toISOString()
       } as any)
       .eq('id', 1);

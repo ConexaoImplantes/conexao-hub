@@ -355,6 +355,7 @@ export type Database = {
       system_config: {
         Row: {
           app_name: string
+          environment_themes: Json
           id: number
           logo_url: string | null
           theme_dark: Json
@@ -365,6 +366,7 @@ export type Database = {
         }
         Insert: {
           app_name?: string
+          environment_themes?: Json
           id?: number
           logo_url?: string | null
           theme_dark?: Json
@@ -375,6 +377,7 @@ export type Database = {
         }
         Update: {
           app_name?: string
+          environment_themes?: Json
           id?: number
           logo_url?: string | null
           theme_dark?: Json
