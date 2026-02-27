@@ -489,7 +489,12 @@ export type Database = {
     }
     Enums: {
       app_language: "pt-br" | "en-us" | "es-es"
-      app_role: "client" | "distributor" | "consultant" | "super_admin"
+      app_role:
+        | "client"
+        | "distributor"
+        | "consultant"
+        | "super_admin"
+        | "manager"
       app_status: "pending" | "active" | "inactive" | "rejected"
       material_type: "pdf" | "image" | "video" | "audio"
       progress_status: "started" | "completed"
@@ -622,7 +627,13 @@ export const Constants = {
   public: {
     Enums: {
       app_language: ["pt-br", "en-us", "es-es"],
-      app_role: ["client", "distributor", "consultant", "super_admin"],
+      app_role: [
+        "client",
+        "distributor",
+        "consultant",
+        "super_admin",
+        "manager",
+      ],
       app_status: ["pending", "active", "inactive", "rejected"],
       material_type: ["pdf", "image", "video", "audio"],
       progress_status: ["started", "completed"],
