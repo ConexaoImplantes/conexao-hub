@@ -62,7 +62,9 @@ import {
   Layers,
   Star,
   Target,
-  Award } from
+  Award,
+  Upload,
+  FolderOpen } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
@@ -1602,47 +1604,138 @@ export const Admin: React.FC = () => {
               }
               </div>
 
-              {settingsTab === "identity" &&
+               {settingsTab === "identity" &&
             <div
-              className="p-6 rounded-xl shadow-sm animate-fade-in"
+              className="p-6 rounded-xl shadow-sm animate-fade-in space-y-6"
               style={{ backgroundColor: "var(--color-surface)" }}>
 
-                  <div className="grid md:grid-cols-2 gap-6">
-                    <div>
-                      <label className="block text-sm font-medium mb-1" style={{ color: "var(--color-text-main)" }}>
-                        Nome da Aplicação
-                      </label>
-                      <input
-                    type="text"
-                    value={localConfig.appName}
-                    onChange={(e) => setLocalConfig({ ...localConfig, appName: e.target.value })}
-                    className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 focus:ring-2 outline-none"
-                    style={{ color: "var(--color-text-main)" }} />
-
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium mb-1" style={{ color: "var(--color-text-main)" }}>
-                        URL do Logo
-                      </label>
-                      <div className="flex gap-2">
-                        <input
+                  <div>
+                    <label className="block text-sm font-medium mb-1" style={{ color: "var(--color-text-main)" }}>
+                      Nome da Aplicação
+                    </label>
+                    <input
                       type="text"
-                      placeholder="https://..."
-                      value={localConfig.logoUrl || ""}
-                      onChange={(e) => setLocalConfig({ ...localConfig, logoUrl: e.target.value })}
-                      className="flex-1 p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 focus:ring-2 outline-none"
+                      value={localConfig.appName}
+                      onChange={(e) => setLocalConfig({ ...localConfig, appName: e.target.value })}
+                      className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 focus:ring-2 outline-none"
                       style={{ color: "var(--color-text-main)" }} />
+                  </div>
 
-                        <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center shrink-0"
-                      style={{ backgroundColor: "var(--color-bg)" }}>
+                  {/* Logo Section */}
+                  <div>
+                    <label className="block text-sm font-medium mb-3" style={{ color: "var(--color-text-main)" }}>
+                      Logo da Plataforma
+                    </label>
+                    
+                    {/* Preview */}
+                    <div className="mb-4 p-4 rounded-xl flex items-center gap-4" style={{ backgroundColor: "var(--color-bg)" }}>
+                      <div className="w-16 h-16 rounded-xl flex items-center justify-center shrink-0 overflow-hidden" style={{ backgroundColor: "var(--color-surface)", border: "1px dashed var(--color-border)" }}>
+                        {localConfig.logoUrl ? (
+                          <img src={localConfig.logoUrl} className="w-full h-full object-contain p-1" alt="Logo preview" />
+                        ) : (
+                          <ImageIcon size={24} style={{ color: "var(--color-text-muted)" }} />
+                        )}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate" style={{ color: "var(--color-text-main)" }}>
+                          {localConfig.logoUrl ? localConfig.logoUrl.split('/').pop() || 'Logo configurado' : 'Nenhum logo definido'}
+                        </p>
+                        <p className="text-xs mt-0.5" style={{ color: "var(--color-text-muted)" }}>
+                          Formatos aceitos: PNG, SVG, JPG, WEBP
+                        </p>
+                      </div>
+                      {localConfig.logoUrl && (
+                        <button
+                          onClick={() => setLocalConfig({ ...localConfig, logoUrl: '' })}
+                          className="p-2 rounded-lg text-red-500 hover:bg-red-500/10 transition-colors"
+                          title="Remover logo"
+                        >
+                          <X size={16} />
+                        </button>
+                      )}
+                    </div>
 
-                          {localConfig.logoUrl ?
-                      <img src={localConfig.logoUrl} className="w-6 h-6 object-contain" /> :
-
-                      <ImageIcon size={16} style={{ color: "var(--color-text-muted)" }} />
-                      }
+                    {/* Three options */}
+                    <div className="grid gap-3">
+                      {/* Option 1: URL */}
+                      <div className="p-3 rounded-xl" style={{ backgroundColor: "var(--color-bg)" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <LinkIcon size={14} style={{ color: "var(--color-accent)" }} />
+                          <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-accent)" }}>Link externo</span>
                         </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="https://exemplo.com/logo.png"
+                            value={localConfig.logoUrl?.startsWith('/') ? '' : (localConfig.logoUrl || '')}
+                            onChange={(e) => setLocalConfig({ ...localConfig, logoUrl: e.target.value })}
+                            className="flex-1 p-2 rounded-lg text-sm outline-none focus:ring-2"
+                            style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
+                          />
+                        </div>
+                      </div>
+
+                      {/* Option 2: Public folder reference */}
+                      <div className="p-3 rounded-xl" style={{ backgroundColor: "var(--color-bg)" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <FolderOpen size={14} style={{ color: "var(--color-accent)" }} />
+                          <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-accent)" }}>Arquivo local (pasta public)</span>
+                        </div>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="/logo.png, /images/brand.svg..."
+                            value={localConfig.logoUrl?.startsWith('/') ? localConfig.logoUrl : ''}
+                            onChange={(e) => {
+                              let val = e.target.value;
+                              if (val && !val.startsWith('/')) val = '/' + val;
+                              setLocalConfig({ ...localConfig, logoUrl: val });
+                            }}
+                            className="flex-1 p-2 rounded-lg text-sm outline-none focus:ring-2"
+                            style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
+                          />
+                        </div>
+                        <p className="text-[10px] mt-1.5" style={{ color: "var(--color-text-muted)" }}>
+                          Ex: /favicon.ico, /logo.png — arquivos na pasta public do projeto
+                        </p>
+                      </div>
+
+                      {/* Option 3: Upload */}
+                      <div className="p-3 rounded-xl" style={{ backgroundColor: "var(--color-bg)" }}>
+                        <div className="flex items-center gap-2 mb-2">
+                          <Upload size={14} style={{ color: "var(--color-accent)" }} />
+                          <span className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-accent)" }}>Fazer upload</span>
+                        </div>
+                        <label className="flex items-center justify-center gap-2 p-3 rounded-lg cursor-pointer transition-all hover:scale-[1.01]" style={{ backgroundColor: "var(--color-surface)", border: "1px dashed var(--color-border)" }}>
+                          <Upload size={16} style={{ color: "var(--color-text-muted)" }} />
+                          <span className="text-sm" style={{ color: "var(--color-text-muted)" }}>Clique para selecionar imagem</span>
+                          <input
+                            type="file"
+                            accept="image/png,image/jpeg,image/svg+xml,image/webp"
+                            className="hidden"
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const ext = file.name.split('.').pop() || 'png';
+                                const fileName = `logo-${Date.now()}.${ext}`;
+                                const { data: uploadData, error: uploadError } = await (await import('@/integrations/supabase/client')).supabase.storage
+                                  .from('branding')
+                                  .upload(fileName, file, { upsert: true });
+                                if (uploadError) throw uploadError;
+                                const { data: urlData } = (await import('@/integrations/supabase/client')).supabase.storage
+                                  .from('branding')
+                                  .getPublicUrl(uploadData.path);
+                                setLocalConfig({ ...localConfig, logoUrl: urlData.publicUrl });
+                              } catch (err: any) {
+                                alert('Erro ao enviar logo: ' + err.message);
+                              }
+                            }}
+                          />
+                        </label>
+                        <p className="text-[10px] mt-1.5" style={{ color: "var(--color-text-muted)" }}>
+                          O arquivo será salvo no armazenamento da plataforma
+                        </p>
                       </div>
                     </div>
                   </div>
