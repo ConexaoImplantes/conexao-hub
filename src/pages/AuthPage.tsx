@@ -148,7 +148,7 @@ export const AuthPage: React.FC = () => {
           {!isLogin && invitedRole ?
           <div className="animate-fade-in">
               <h2 className="text-3xl font-bold mb-2 tracking-tight" style={{ color: 'var(--color-text-main)' }}>
-                Cadastro de {invitedRole === 'client' ? 'Clientes' : invitedRole === 'distributor' ? 'Distribuidores' : invitedRole === 'consultant' ? 'Consultores' : 'Administradores'}
+                Cadastro de {invitedRole === 'client' ? 'Clientes' : invitedRole === 'distributor' ? 'Distribuidores' : invitedRole === 'consultant' ? 'Consultores' : invitedRole === 'manager' ? 'Gestores' : 'Administradores'}
               </h2>
               <p className="text-sm leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
                 Acesse materiais exclusivos e acompanhe as novidades da plataforma {config.appName}.
@@ -265,12 +265,12 @@ export const AuthPage: React.FC = () => {
                       <div>
                         <p className="text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--color-accent)' }}>Perfil pré-definido</p>
                         <p className="text-sm font-semibold capitalize" style={{ color: 'var(--color-text-main)' }}>
-                          {invitedRole === 'client' ? 'Cliente' : invitedRole === 'distributor' ? 'Distribuidor' : invitedRole === 'consultant' ? 'Consultor' : 'Administrador'}
+                          {invitedRole === 'client' ? 'Cliente' : invitedRole === 'distributor' ? 'Distribuidor' : invitedRole === 'consultant' ? 'Consultor' : invitedRole === 'manager' ? 'Gestor' : 'Administrador'}
                         </p>
                       </div>
                     </div>
               }
-                 {role === 'client' &&
+                 {(role === 'client') &&
               <div className="group">
                     <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>CRO (Opcional)</label>
                     <input type="text" className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={cro} onChange={(e) => setCro(e.target.value)} />

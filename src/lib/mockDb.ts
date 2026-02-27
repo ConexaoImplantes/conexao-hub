@@ -28,7 +28,8 @@ const localUsers: UserProfile[] = [
     { id: 'mock-admin', name: 'Super Admin (Mock)', email: 'admin@demo.com', role: 'super_admin', whatsapp: '11999999999', status: 'active', points: 0, preferences: { theme: 'light', language: 'pt-br' } },
     { id: 'mock-client', name: 'Cliente Exemplo', email: 'client@demo.com', role: 'client', whatsapp: '11988888888', cro: '12345', status: 'active', points: 150, preferences: { theme: 'light', language: 'pt-br' } },
     { id: 'mock-distrib', name: 'Distribuidor Demo', email: 'distributor@demo.com', role: 'distributor', whatsapp: '11977777777', status: 'active', points: 320, preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-consult', name: 'Consultor Demo', email: 'consultant@demo.com', role: 'consultant', whatsapp: '11966666666', status: 'active', points: 780, preferences: { theme: 'light', language: 'pt-br' } }
+    { id: 'mock-consult', name: 'Consultor Demo', email: 'consultant@demo.com', role: 'consultant', whatsapp: '11966666666', status: 'active', points: 780, preferences: { theme: 'light', language: 'pt-br' } },
+    { id: 'mock-manager', name: 'Gestor Demo', email: 'manager@demo.com', role: 'manager', whatsapp: '11955555555', status: 'active', points: 0, preferences: { theme: 'light', language: 'pt-br' } }
 ];
 
 const mapProfileFromDb = (data: any): UserProfile => ({
@@ -274,7 +275,7 @@ export const mockDb = {
   getMaterials: async (role: Role): Promise<Material[]> => {
     let query = supabase.from('materials').select(`*, material_assets (*)`).order('created_at', { ascending: false });
 
-    if (role !== 'super_admin') {
+    if (role !== 'super_admin' && role !== 'manager') {
       query = query.eq('active', true).contains('allowed_roles', [role]);
     }
 
@@ -319,7 +320,7 @@ export const mockDb = {
 
   getCollections: async (role: Role): Promise<Collection[]> => {
     let query = supabase.from('collections').select('*').order('created_at', { ascending: false });
-    if (role !== 'super_admin') {
+    if (role !== 'super_admin' && role !== 'manager') {
       query = query.eq('active', true).contains('allowed_roles', [role]);
     }
     const { data, error } = await query;

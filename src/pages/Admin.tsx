@@ -986,6 +986,7 @@ export const Admin: React.FC = () => {
               <option value="client">{t("role.client")}</option>
               <option value="distributor">{t("role.distributor")}</option>
               <option value="consultant">{t("role.consultant")}</option>
+              <option value="manager">{t("role.manager")}</option>
             </select>
             <div className="flex gap-2">
               <button
@@ -1318,6 +1319,7 @@ export const Admin: React.FC = () => {
                 <option value="client">{t("role.client")}</option>
                 <option value="distributor">{t("role.distributor")}</option>
                 <option value="consultant">{t("role.consultant")}</option>
+                <option value="manager">{t("role.manager")}</option>
               </select>
               <select
               className="flex-1 md:w-40 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none"
@@ -1812,6 +1814,7 @@ export const Admin: React.FC = () => {
                         <option value="client">{t("role.client")}</option>
                         <option value="distributor">{t("role.distributor")}</option>
                         <option value="consultant">{t("role.consultant")}</option>
+                        <option value="manager">{t("role.manager")}</option>
                         <option value="super_admin">{t("role.super_admin")}</option>
                       </select>
                     </div>

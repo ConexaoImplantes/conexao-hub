@@ -12,6 +12,7 @@ import { Layout } from "./components/hub/Layout";
 import { GlobalEffects } from "./components/hub/GlobalEffects";
 import { KeyboardHelpModal } from "./components/hub/KeyboardHelpModal";
 import { AuthPage } from "./pages/AuthPage";
+import { ManagerDashboard } from "./pages/ManagerDashboard";
 import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
 import { RegistrationProgress } from "./components/hub/RegistrationProgress";
@@ -39,13 +40,14 @@ const AppContent = () => {
   }
 
   const isAdmin = user.role === 'super_admin';
+  const isManager = user.role === 'manager';
 
   return (
     <ShortcutProvider>
       <Layout>
         <GlobalEffects />
         <KeyboardHelpModal />
-        {isAdmin ? <Admin /> : <Dashboard />}
+        {isAdmin ? <Admin /> : isManager ? <ManagerDashboard /> : <Dashboard />}
       </Layout>
     </ShortcutProvider>
   );

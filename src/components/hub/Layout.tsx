@@ -20,7 +20,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   // Determine current level color for non-admin users
   const getLevelColor = (): string | null => {
-    if (!user || user.role === 'super_admin' || levels.length === 0) return null;
+    if (!user || user.role === 'super_admin' || user.role === 'manager' || levels.length === 0) return null;
     const points = user.points || 0;
     // Find the highest level the user qualifies for
     const sorted = [...levels].sort((a, b) => b.minPoints - a.minPoints);
@@ -100,7 +100,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         </div>
                         <div className="hidden md:block leading-none">
                             <p className="text-xs font-bold transition-colors" style={{ color: 'var(--color-text-main)' }}>{user?.name.split(' ')[0]}</p>
-                            {user?.role !== 'super_admin' ? (
+                        {user?.role !== 'super_admin' && user?.role !== 'manager' ? (
                               <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5 flex items-center gap-1" style={{ color: levelColor || 'var(--color-accent)' }}>
                                 <Star size={8} style={levelColor ? { fill: levelColor, color: levelColor } : {}} className={!levelColor ? 'fill-yellow-400 text-yellow-400' : ''} />
                                 {getUserLevel(user?.points || 0)} · {user?.points || 0} XP
