@@ -1,110 +1,147 @@
 
-# Plano: Tornar Toda a Plataforma Responsiva (Mobile, Tablet e Desktop)
 
-## Resumo
+# Plano: Gestão de Usuários com Convites Seguros por Token
 
-A plataforma ja possui algumas classes responsivas basicas (`md:`, `sm:`, `xl:`), mas varias areas precisam de ajustes para funcionar bem em telas pequenas. O trabalho envolve adaptar o header, sidebar do Dashboard, tabelas do Admin, modais e a pagina de autenticacao.
+## Fluxo
 
----
-
-## Principais Areas de Ajuste
-
-### 1. Header (Layout.tsx)
-- O header ja funciona razoavelmente, mas em telas muito pequenas os elementos ficam apertados
-- Ajustar: esconder nome do app em telas < 640px (ja feito parcialmente com `hidden sm:block`), reduzir padding, garantir que o seletor de idioma funcione em mobile (atualmente `hidden md:flex`)
-- Tornar o seletor de idioma visivel em mobile tambem, possivelmente em formato compacto
-
-### 2. Dashboard - Sidebar e Layout
-- A sidebar (`aside w-full md:w-72`) ja empilha verticalmente em mobile, mas os filtros horizontais ficam cortados
-- Melhorar o scroll horizontal dos filtros em mobile
-- O card de gamificacao e a "Dica Pro" ficam bem em mobile
-- A barra de busca na secao de materiais precisa de ajuste para nao ficar espremida
-
-### 3. Dashboard - Collection Detail
-- O botao "Voltar para Trilhas", o hero da trilha e a lista de materiais precisam de padding reduzido em mobile
-- Os botoes de acao nos itens da trilha ("Iniciar", "Continuar") devem adaptar-se a telas menores
-
-### 4. Admin - Tabelas (Materials, Users, Analytics)
-- As tabelas usam `overflow-x-auto`, o que ja permite scroll horizontal, mas a experiencia nao e ideal em mobile
-- Converter tabelas em cards empilhados em mobile (abordagem card-list) para as abas de Materiais e Usuarios
-- A aba de Analytics com seus graficos (Recharts) ja usa `ResponsiveContainer`, mas o grid de KPIs precisa de ajuste
-
-### 5. Admin - Abas de Navegacao
-- As tabs do Admin ja usam `flex-wrap`, mas os icones sem texto em mobile precisam de melhor espacamento
-- O Settings com sidebar lateral precisa converter para navegacao empilhada em mobile
-
-### 6. Admin - Graficos e Rankings
-- Os graficos Recharts ja sao responsivos via `ResponsiveContainer`
-- Ajustar o grid de rankings (`grid-cols-1 md:grid-cols-3`) -- ja esta bom
-
-### 7. Modais
-- ViewerModal: ja usa tela cheia (`fixed inset-0`), funciona bem em mobile
-- MaterialFormModal, CollectionFormModal, UserEditModal: verificar se os formularios nao transbordam em telas pequenas
-- AnalyticsDetailModal: a tabela dentro do modal precisa de scroll horizontal em mobile
-
-### 8. Pagina de Autenticacao (AuthPage.tsx)
-- Ja usa `max-w-[480px]` e `p-4` em mobile, funciona razoavelmente
-- Ajustar padding interno (`p-8 md:p-10` ja esta bom)
-- Garantir que campos de formulario nao fiquem muito grandes
+```text
+Admin gera token (por perfil) ──► Link único: /invite?token=abc123...
+                                       │
+                                 Pessoa recebe via WhatsApp
+                                       │
+                                 Acessa link ──► Valida token (não expirado, não usado)
+                                       │
+                                 Formulário de cadastro (role bloqueado pelo token)
+                                       │
+                                 Cadastra ──► status: pending, token marcado como usado
+                                       │
+                                 Tela de progresso (polling a cada 5s)
+                                       │
+              Admin aprova ou recusa ◄──┘
+                    │
+    Aprovado ──► Confetti + botão "Fazer Login"
+    Recusado ──► Exibe motivo da recusa
+```
 
 ---
 
-## Detalhes Tecnicos
+## 1. Migração de Banco de Dados
 
-### Breakpoints utilizados (Tailwind padrao)
-- `sm:` = 640px (celulares grandes)
-- `md:` = 768px (tablets)
-- `lg:` = 1024px (tablets landscape / laptops)
-- `xl:` = 1280px (desktops)
+### Tabela `invite_tokens`
+```sql
+CREATE TABLE public.invite_tokens (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  token text UNIQUE NOT NULL DEFAULT encode(gen_random_bytes(32), 'hex'),
+  role app_role NOT NULL,
+  used_by uuid REFERENCES public.profiles(id) ON DELETE SET NULL,
+  used_at timestamptz,
+  expires_at timestamptz NOT NULL DEFAULT (now() + interval '7 days'),
+  created_at timestamptz NOT NULL DEFAULT now()
+);
 
-### Mudancas por arquivo
+ALTER TABLE public.invite_tokens ENABLE ROW LEVEL SECURITY;
 
-**src/components/hub/Layout.tsx**
-- Mover seletor de idioma de `hidden md:flex` para sempre visivel, mas em formato compacto em mobile
-- Ajustar gaps e paddings do header para mobile
+-- Admins gerenciam tudo
+CREATE POLICY "Admins manage invite tokens"
+  ON public.invite_tokens FOR ALL TO authenticated
+  USING (has_role(auth.uid(), 'super_admin'));
 
-**src/pages/Dashboard.tsx**
-- Sidebar: melhorar filtros em mobile (botoes menores, melhor scroll)
-- Collection detail: reduzir padding do hero, adaptar botoes de acao para empilhar verticalmente em telas muito pequenas
-- Textos hardcoded de "Voltar para Trilhas", "Concluido", "Em andamento" etc. -- esses serao tratados junto com a traducao pendente
+-- Anon pode validar um token específico (SELECT apenas)
+CREATE POLICY "Anon can validate tokens"
+  ON public.invite_tokens FOR SELECT TO anon
+  USING (true);
+```
 
-**src/pages/Admin.tsx (arquivo grande, ~2200 linhas)**
-- Tabela de Materiais: em mobile (`< md`), converter para layout de cards empilhados usando CSS/classes condicionais
-- Tabela de Usuarios: mesma abordagem de cards
-- Settings sidebar: converter para tabs horizontais em mobile
-- Filtros das abas: garantir que selects ocupem largura total em mobile
-- KPIs do Analytics: ajustar grid de `grid-cols-2 md:grid-cols-3 lg:grid-cols-6` para `grid-cols-2 sm:grid-cols-3 lg:grid-cols-6`
+### Coluna `rejection_reason` em `profiles`
+```sql
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS rejection_reason text;
+```
 
-**src/components/hub/ViewerModal.tsx**
-- Ajustar padding do titulo para nao sobrepor o botao de fechar em telas pequenas
-- PDF viewer: reduzir `pt-20` para `pt-16` em mobile
-
-**src/components/hub/MaterialFormModal.tsx e outros modais**
-- Verificar e ajustar `max-h-[90vh]` e overflow para funcionar bem em mobile
-- Garantir que formularios de criacao/edicao nao transbordem
-
-**src/index.css**
-- Nao necessita mudancas significativas, os estilos base ja sao flexiveis
-
-### Abordagem Geral
-- Usar classes Tailwind responsivas existentes, sem adicionar CSS custom desnecessario
-- Para tabelas em mobile: usar a tecnica de "cards responsivos" com `hidden md:table-cell` e layout alternativo visivel apenas em mobile
-- Testar nos 3 breakpoints: 375px (iPhone), 768px (iPad), 1280px+ (Desktop)
+### Realtime para polling de status
+```sql
+ALTER PUBLICATION supabase_realtime ADD TABLE public.profiles;
+```
 
 ---
 
-## Ordem de Implementacao
+## 2. Novo Componente: `RegistrationProgress.tsx`
 
-1. **Header (Layout.tsx)** -- ajustes menores, impacto visual imediato
-2. **Dashboard.tsx** -- sidebar, filtros, collection detail
-3. **Admin.tsx** -- tabelas como cards em mobile, settings sidebar, analytics
-4. **Modais** -- ajustes finos de overflow e padding
-5. **Teste visual** nos 3 breakpoints
+- Exibido quando `user.status === 'pending'` ou `'rejected'`
+- Usa **Realtime** (channel subscribe em `profiles` filtrado por `user.id`) para atualização instantânea do status
+- **Pending**: Animação de espera, mensagem "Seu cadastro está em análise"
+- **Rejected**: Exibe `rejection_reason`, botão de contato por WhatsApp
+- **Active**: Confetti (canvas-confetti já instalado) + botão "Fazer Login" que faz logout e redireciona
 
 ---
 
-## O que NAO muda
-- A arquitetura de componentes permanece a mesma
-- Nenhuma dependencia nova sera adicionada
-- O design system (cores, gradientes, liquid glass) permanece intacto
-- A logica de negocio nao sera alterada
+## 3. Editar `AuthPage.tsx`
+
+- Detectar `?token=xxx` na URL (em vez de `?role=xxx`)
+- Validar token via query direta ao banco: `select * from invite_tokens where token = ? and used_at is null and expires_at > now()`
+- Se inválido/expirado: exibir erro e bloquear formulário
+- Se válido: extrair `role`, preencher e bloquear campo de perfil
+- Após registro bem-sucedido: marcar token como `used_by` e `used_at` via update
+
+---
+
+## 4. Editar `App.tsx`
+
+- Após autenticação, se `user.status === 'pending'` ou `'rejected'`, renderizar `<RegistrationProgress />` em vez de `<Dashboard />` ou `<Admin />`
+
+---
+
+## 5. Editar `Admin.tsx` — Painel de Convites
+
+Substituir os links estáticos por:
+- **Botão "Gerar Convite"** por perfil (client, distributor, consultant, super_admin)
+- **Expiração configurável** (1 dia, 7 dias, 30 dias) via select
+- **Lista de tokens gerados** com status (ativo/usado/expirado), data de criação, expiração
+- **Copiar link** com token
+- **Deletar token** não utilizado
+
+---
+
+## 6. Editar `Admin.tsx` — Aprovação/Rejeição com Motivo
+
+- Botão "Rejeitar" abre modal com campo de texto **obrigatório** para motivo
+- Salva `rejection_reason` no perfil e muda status para `rejected`
+- Botão "Aprovar" muda status para `active` e limpa `rejection_reason`
+- Atualizar `handleUserStatus` para aceitar `rejectionReason` opcional
+
+---
+
+## 7. Novo Componente: `RejectUserModal.tsx`
+
+- Modal simples com textarea para motivo da rejeição
+- Botão "Confirmar Rejeição"
+- Chamado pelo Admin ao clicar em rejeitar
+
+---
+
+## 8. Editar `mockDb.ts`
+
+- Adicionar CRUD para `invite_tokens` (create, list, delete, markUsed)
+- Atualizar `updateUserStatus` para aceitar e salvar `rejection_reason`
+- Adicionar query `getProfileByIdRealtime` ou adaptar `getProfileById` para incluir `rejection_reason`
+
+---
+
+## 9. Editar `UserEditModal.tsx`
+
+- Exibir campo readonly `rejection_reason` quando status é `rejected` (informativo)
+
+---
+
+## Arquivos Afetados
+
+| Arquivo | Ação |
+|---|---|
+| Nova migração SQL | Criar tabela `invite_tokens` + coluna `rejection_reason` + realtime |
+| `src/components/hub/RegistrationProgress.tsx` | **Criar** |
+| `src/components/hub/RejectUserModal.tsx` | **Criar** |
+| `src/pages/AuthPage.tsx` | Editar (token validation flow) |
+| `src/App.tsx` | Editar (pending/rejected routing) |
+| `src/pages/Admin.tsx` | Editar (invite panel + reject modal integration) |
+| `src/lib/mockDb.ts` | Editar (invite CRUD + rejection reason) |
+| `src/components/hub/UserEditModal.tsx` | Editar (show rejection reason) |
+
