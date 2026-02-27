@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { toast } from 'sonner';
 import { UserProfile, Role } from '../types';
 import { supabase } from '../lib/supabaseClient';
 import { mockDb } from '../lib/mockDb';
@@ -174,7 +175,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
     }
 
-    alert("Cadastro realizado! Aguarde a aprovação do administrador.");
+    toast.success("Cadastro realizado! Aguarde a aprovação do administrador.");
   };
 
   const logout = async () => {
