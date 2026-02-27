@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType } from '../../types';
 import { X, ExternalLink, RefreshCw, PlayCircle, Youtube, Headphones, Globe } from 'lucide-react';
@@ -9,69 +9,57 @@ interface ViewerModalProps {
   onClose: () => void;
 }
 
+const getEmbedConfig = (url: string) => {
+  if (!url) return { isEmbed: false, url: '', provider: '', originalUrl: '', embedUrl: '', nativeUrl: '' };
+  const cleanUrl = url.trim();
+  const youtubeMatch = cleanUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
+  if (youtubeMatch && youtubeMatch[1]) {
+    return { isEmbed: true, provider: 'YouTube', originalUrl: cleanUrl, embedUrl: `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&rel=0&modestbranding=1`, nativeUrl: '' };
+  }
+  const driveIdMatch = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
+  if (driveIdMatch && driveIdMatch[1]) {
+    const id = driveIdMatch[1];
+    return { isEmbed: true, provider: 'Google Drive', originalUrl: cleanUrl, embedUrl: `https://drive.google.com/file/d/${id}/preview`, nativeUrl: `https://drive.google.com/uc?export=download&id=${id}` };
+  }
+  return { isEmbed: false, provider: 'Direct', originalUrl: cleanUrl, embedUrl: cleanUrl, nativeUrl: cleanUrl };
+};
+
+const getResolvedUrl = (url: string, type: MaterialType): string => {
+  const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
+  if (!driveMatch?.[1]) return url;
+  const id = driveMatch[1];
+  if (type === 'image') return `https://lh3.googleusercontent.com/d/${id}=s2000`;
+  if (type === 'pdf') return `https://drive.google.com/file/d/${id}/preview`;
+  return url;
+};
+
 export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, onClose }) => {
   const [forceNativeDrive, setForceNativeDrive] = useState(false);
+  const [htmlContent, setHtmlContent] = useState<string | null>(null);
 
-  if (!material) return null;
+  useEffect(() => {
+    if (material?.type === 'html') {
+      const url = material.assets[language]?.url;
+      if (url) {
+        fetch(url)
+          .then(res => res.text())
+          .then(text => setHtmlContent(text))
+          .catch(() => setHtmlContent(null));
+      }
+    }
+  }, [material?.type, material?.assets, language]);
 
-  const asset = material.assets[language];
-  if (!asset) return null;
+  const asset = material?.assets[language] ?? null;
+  const displayTitle = material ? (material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled') : '';
+  const embedConfig = useMemo(() => getEmbedConfig(asset?.url || ''), [asset?.url]);
+  const resolvedUrl = useMemo(() => getResolvedUrl(asset?.url || '', material?.type || 'pdf'), [asset?.url, material?.type]);
 
-  const displayTitle = material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled';
+  if (!material || !asset) return null;
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
     return false;
   };
-
-  const getEmbedConfig = (url: string) => {
-    if (!url) return { isEmbed: false, url: '', provider: '', originalUrl: '' };
-    const cleanUrl = url.trim();
-
-    const youtubeMatch = cleanUrl.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/);
-    if (youtubeMatch && youtubeMatch[1]) {
-      return {
-        isEmbed: true,
-        provider: 'YouTube',
-        originalUrl: cleanUrl,
-        embedUrl: `https://www.youtube.com/embed/${youtubeMatch[1]}?autoplay=1&rel=0&modestbranding=1`,
-        nativeUrl: ''
-      };
-    }
-
-    const driveIdMatch = cleanUrl.match(/\/d\/([a-zA-Z0-9_-]+)/) || cleanUrl.match(/id=([a-zA-Z0-9_-]+)/);
-    if (driveIdMatch && driveIdMatch[1]) {
-      const id = driveIdMatch[1];
-      return {
-        isEmbed: true,
-        provider: 'Google Drive',
-        originalUrl: cleanUrl,
-        embedUrl: `https://drive.google.com/file/d/${id}/preview`,
-        nativeUrl: `https://drive.google.com/uc?export=download&id=${id}`
-      };
-    }
-
-    return {
-      isEmbed: false,
-      provider: 'Direct',
-      originalUrl: cleanUrl,
-      embedUrl: cleanUrl,
-      nativeUrl: cleanUrl
-    };
-  };
-
-  const embedConfig = useMemo(() => getEmbedConfig(asset.url), [asset.url]);
-
-  const getResolvedUrl = (url: string, type: MaterialType): string => {
-    const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
-    if (!driveMatch?.[1]) return url;
-    const id = driveMatch[1];
-    if (type === 'image') return `https://lh3.googleusercontent.com/d/${id}=s2000`;
-    if (type === 'pdf') return `https://drive.google.com/file/d/${id}/preview`;
-    return url;
-  };
-
-  const resolvedUrl = useMemo(() => getResolvedUrl(asset.url, material.type), [asset.url, material.type]);
 
   return createPortal(
     <div
@@ -127,13 +115,23 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
           if (material.type === 'html') {
             return (
               <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
-                <iframe
-                  src={asset.url}
-                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                  className="w-full h-full rounded-lg bg-white shadow-2xl"
-                  title="Interactive Page"
-                  style={{ border: 'none' }}
-                />
+                {htmlContent ? (
+                  <iframe
+                    srcDoc={htmlContent}
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                    className="w-full h-full rounded-lg bg-white shadow-2xl"
+                    title="Interactive Page"
+                    style={{ border: 'none' }}
+                  />
+                ) : (
+                  <iframe
+                    src={asset.url}
+                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                    className="w-full h-full rounded-lg bg-white shadow-2xl"
+                    title="Interactive Page"
+                    style={{ border: 'none' }}
+                  />
+                )}
               </div>
             );
           }
