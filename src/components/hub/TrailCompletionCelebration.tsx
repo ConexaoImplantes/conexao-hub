@@ -21,7 +21,11 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
   const { t } = useLanguage();
 
   const fireConfetti = useCallback(() => {
-    const gold = ['#c9a655', '#e8d48b', '#a8873a', '#d4af37', '#ffd700'];
+    const cs = getComputedStyle(document.documentElement);
+    const gs = cs.getPropertyValue('--color-gradient-start').trim() || '#c9a655';
+    const gm = cs.getPropertyValue('--color-gradient-mid').trim() || '#e8d48b';
+    const ge = cs.getPropertyValue('--color-gradient-end').trim() || '#a8873a';
+    const gold = [gs, gm, ge, '#d4af37', '#ffd700'];
 
     // Initial big burst from center
     confetti({
@@ -140,7 +144,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
           <div
             className="w-24 h-24 rounded-full flex items-center justify-center mb-6 animate-scale-in"
             style={{
-              background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)',
+              background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)',
               boxShadow: '0 8px 30px rgba(201,166,85,0.4), inset 0 2px 4px rgba(255,255,255,0.3)',
               animationDelay: '0.2s',
               animationFillMode: 'backwards',
@@ -153,7 +157,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
           <h2
             className="text-2xl font-bold mb-2"
             style={{
-              background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)',
+              background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
             }}
@@ -186,7 +190,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
             onClick={onClose}
             className="w-full py-3 rounded-xl font-bold text-sm transition-all hover:opacity-90 active:scale-95"
             style={{
-              background: 'linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a655 100%)',
+              background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)',
               color: 'white',
               boxShadow: '0 8px 24px rgba(201,166,85,0.3)',
             }}

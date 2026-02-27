@@ -126,6 +126,10 @@ export interface ColorScheme {
   scrollbarThumb: string;
   scrollbarTrack: string;
   ring: string;
+  // Gradients
+  gradientStart: string;
+  gradientMid: string;
+  gradientEnd: string;
 }
 
 export interface ThemeModeConfig {

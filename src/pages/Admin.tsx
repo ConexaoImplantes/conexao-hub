@@ -1788,15 +1788,13 @@ export const Admin: React.FC = () => {
                                     {copiedLink === tk.id ? <><CheckCircle size={13} /> Copiado!</> : <><Copy size={13} /> Copiar</>}
                                   </button>
                                 )}
-                                {!isUsed && (
-                                  <button
-                                    onClick={() => deleteInviteToken(tk.id)}
-                                    className="p-2 rounded-lg text-red-500"
-                                    title="Excluir convite"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                )}
+                                <button
+                                  onClick={() => deleteInviteToken(tk.id)}
+                                  className="p-2 rounded-lg text-red-500"
+                                  title="Excluir convite"
+                                >
+                                  <Trash2 size={16} />
+                                </button>
                               </div>
                             </div>
                           );

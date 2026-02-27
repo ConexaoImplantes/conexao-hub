@@ -87,7 +87,7 @@ const LivePreview = ({ themeName, scheme }: { themeName: string; scheme: ColorSc
 );
 
 /* ─── CATEGORY DEFINITIONS ─── */
-type CategoryKey = 'base' | 'text' | 'border' | 'brand' | 'feedback' | 'components' | 'effects';
+type CategoryKey = 'base' | 'text' | 'border' | 'brand' | 'feedback' | 'components' | 'effects' | 'gradients';
 interface TokenDef { key: keyof ColorScheme; label: string; hint: string }
 
 const CATEGORIES: Record<CategoryKey, { title: string; tokens: TokenDef[] }> = {
@@ -160,9 +160,17 @@ const CATEGORIES: Record<CategoryKey, { title: string; tokens: TokenDef[] }> = {
       { key: 'ring', label: 'Focus Ring', hint: 'Anel de foco geral' },
     ],
   },
+  gradients: {
+    title: '🌈 Gradientes',
+    tokens: [
+      { key: 'gradientStart', label: 'Gradiente Início', hint: 'Cor inicial do gradiente da marca' },
+      { key: 'gradientMid', label: 'Gradiente Meio', hint: 'Cor intermediária do gradiente' },
+      { key: 'gradientEnd', label: 'Gradiente Fim', hint: 'Cor final do gradiente' },
+    ],
+  },
 };
 
-const CATEGORY_ORDER: CategoryKey[] = ['base', 'text', 'border', 'brand', 'feedback', 'components', 'effects'];
+const CATEGORY_ORDER: CategoryKey[] = ['base', 'text', 'border', 'brand', 'gradients', 'feedback', 'components', 'effects'];
 
 /* ─── Main Component ─── */
 interface ThemeEditorPanelProps {
@@ -344,17 +352,28 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({ localConfig,
                   </div>
                   <div className="border-b mb-3" style={{ borderColor: 'var(--color-border)' }} />
                   {!collapsed[catKey] && (
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                      {cat.tokens.map((token) => (
-                        <ColorInput
-                          key={token.key}
-                          label={token.label}
-                          value={currentScheme[token.key] || defaults[token.key]}
-                          onChange={(v) => updateSchemeField(token.key, v)}
-                          hint={token.hint}
-                        />
-                      ))}
-                    </div>
+                    <>
+                      <div className="grid grid-cols-2 gap-4 mb-4">
+                        {cat.tokens.map((token) => (
+                          <ColorInput
+                            key={token.key}
+                            label={token.label}
+                            value={currentScheme[token.key] || defaults[token.key]}
+                            onChange={(v) => updateSchemeField(token.key, v)}
+                            hint={token.hint}
+                          />
+                        ))}
+                      </div>
+                      {catKey === 'gradients' && (
+                        <div className="mb-4">
+                          <p className="text-[10px] font-semibold uppercase tracking-wide mb-2" style={{ color: 'var(--color-text-muted)' }}>Preview do Gradiente</p>
+                          <div
+                            className="h-10 rounded-xl shadow-inner"
+                            style={{ background: `linear-gradient(135deg, ${currentScheme.gradientStart || defaults.gradientStart} 0%, ${currentScheme.gradientMid || defaults.gradientMid} 40%, ${currentScheme.gradientEnd || defaults.gradientEnd} 70%, ${currentScheme.gradientStart || defaults.gradientStart} 100%)` }}
+                          />
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               );

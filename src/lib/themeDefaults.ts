@@ -35,6 +35,9 @@ export const DEFAULT_LIGHT: ColorScheme = {
   scrollbarThumb: '#c9a655',
   scrollbarTrack: 'transparent',
   ring: '#c9a65580',
+  gradientStart: '#c9a655',
+  gradientMid: '#e8d48b',
+  gradientEnd: '#a8873a',
 };
 
 export const DEFAULT_DARK: ColorScheme = {
@@ -72,6 +75,9 @@ export const DEFAULT_DARK: ColorScheme = {
   scrollbarThumb: '#c9a655',
   scrollbarTrack: 'transparent',
   ring: '#c9a65580',
+  gradientStart: '#c9a655',
+  gradientMid: '#e8d48b',
+  gradientEnd: '#a8873a',
 };
 
 export const DEFAULT_THEME_MODE: ThemeModeConfig = {

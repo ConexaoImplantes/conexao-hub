@@ -54,6 +54,9 @@ function buildCssVars(scheme: ColorScheme): string {
     '--color-scrollbar-thumb': scheme.scrollbarThumb,
     '--color-scrollbar-track': scheme.scrollbarTrack,
     '--color-ring': scheme.ring,
+    '--color-gradient-start': scheme.gradientStart,
+    '--color-gradient-mid': scheme.gradientMid,
+    '--color-gradient-end': scheme.gradientEnd,
   }).map(([k, v]) => `${k}: ${v};`).join('\n        ');
 }
 
