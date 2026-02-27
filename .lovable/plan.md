@@ -1,42 +1,66 @@
 
 
-## Adicionar tipo de material "Áudio" à plataforma
+## Plano: Ambiente de Gestores (role `manager`)
 
-### Contexto
-Áudio segue o mesmo padrão dos demais materiais: o admin cadastra uma **URL externa** (Google Drive, link direto MP3/WAV/OGG, etc.) e a plataforma reproduz via player embutido. **Não há upload de arquivos.**
+### Escopo
+Criar o perfil **Gestor** (`manager`) com acesso somente-leitura a: Materiais, Usuários, Trilhas (com timeline) e Métricas. Sem ações de edição/exclusão/exportação. Formulário de cadastro idêntico ao de consultores. Links de convite específicos.
 
-### Alterações necessárias
+### Estimativa de tokens
+~8.000–12.000 tokens de código (equivale a ~4-6 mensagens de implementação).
 
-**1. Migração SQL**
-- Adicionar `'audio'` ao enum `material_type` existente no banco
+---
 
-**2. `src/types.ts`**
-- Adicionar `'audio'` ao tipo `MaterialType`: `'image' | 'pdf' | 'video' | 'audio'`
+### Alterações
 
-**3. `src/contexts/LanguageContext.tsx`**
-- Adicionar traduções nos 3 idiomas:
-  - `filter.audio`, `material.type.audio`, placeholder de URL para áudio
+**1. Migração SQL — adicionar `manager` ao enum `app_role`**
+```sql
+ALTER TYPE public.app_role ADD VALUE IF NOT EXISTS 'manager';
+```
 
-**4. `src/components/hub/MaterialFormModal.tsx`**
-- Adicionar opção de tipo `audio` com ícone `Headphones`
-- Placeholder de URL: ex. "Link do áudio (MP3, Google Drive, etc.)"
+**2. RLS — permitir SELECT para managers nas tabelas relevantes**
+- `materials`, `material_assets`: adicionar policy SELECT para `has_role(auth.uid(), 'manager')` (ver todos, inclusive inativos)
+- `profiles`, `user_roles`: adicionar policy SELECT para managers (ver todos os usuários)
+- `collections`, `collection_items`: adicionar policy SELECT para managers
+- `access_logs`: adicionar policy SELECT para managers
+- `gamification_levels`: já tem SELECT público, OK
 
-**5. `src/components/hub/MaterialCard.tsx`**
-- Adicionar caso `'audio'` em `getIcon()`, `getLabel()`, `getGradient()`, `getBorderColor()`
+**3. `src/types.ts`**
+- Adicionar `'manager'` ao tipo `Role`
 
-**6. `src/components/hub/ViewerModal.tsx`**
-- Adicionar bloco para `material.type === 'audio'`:
-  - Player `<audio controls>` estilizado com ícone grande centralizado e título
-  - Suporte a Google Drive (extrair ID e montar URL de streaming) e links diretos
+**4. `src/contexts/LanguageContext.tsx`**
+- Traduções: "Gestor" / "Manager" / "Gestor"
 
-**7. `src/pages/Dashboard.tsx`**
-- Adicionar categoria de filtro para áudio com ícone `Headphones`
-- Incluir `audio` na contagem de materiais
+**5. `src/contexts/AuthContext.tsx` + `src/lib/mockDb.ts`**
+- Adicionar mock user para manager
+- Rota condicional: manager não é admin nem usuário comum → precisa de página própria
 
-**8. `src/pages/Admin.tsx`**
-- Adicionar `audio` nos filtros de tipo de material na gestão de conteúdo
+**6. `src/App.tsx` — roteamento**
+- Se `user.role === 'manager'` → renderizar `<ManagerDashboard />`
 
-### O que NÃO muda
-- Nenhum bucket de storage novo
-- Nenhuma lógica de upload — o fluxo é idêntico aos outros tipos: **admin cola a URL, plataforma reproduz**
+**7. NOVO: `src/pages/ManagerDashboard.tsx`**
+Página read-only com 4 abas:
+- **Materiais**: tabela com Título, Tipo, Status, Permissões (roles), Assets (idiomas), XP. Sem botões de editar/excluir/ativar.
+- **Usuários**: tabela com Nome, Email, WhatsApp, Perfil (role), Permissões, Status. Sem exportar CSV, sem editar/excluir.
+- **Trilhas**: cards de coleções. Ao clicar, abre timeline vertical com materiais da trilha (título, tipo, XP).
+- **Métricas**: gráficos de acesso (reutilizar lógica do Admin analytics) — sem exportar CSV/PDF.
+
+**8. `src/pages/Admin.tsx` — convites**
+- Adicionar `manager` na lista de roles do gerador de convites
+- Adicionar `manager` nos filtros de usuários
+
+**9. `src/pages/AuthPage.tsx`**
+- Mapeamento de label para `manager`: "Gestores"
+- Formulário de cadastro do manager = mesmo do consultant (nome, email, senha, whatsapp — sem CRO)
+
+**10. `src/components/hub/Layout.tsx`**
+- Garantir que o layout funcione para managers (header, logout, etc.)
+
+---
+
+### O que o Gestor NÃO pode fazer
+- Editar, excluir, ativar/desativar materiais
+- Editar, excluir, aprovar/rejeitar usuários
+- Exportar CSV ou PDF
+- Alterar configurações, temas, gamificação
+- Criar convites (apenas super_admin)
 
