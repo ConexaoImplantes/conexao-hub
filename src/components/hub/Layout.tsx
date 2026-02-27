@@ -102,7 +102,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             <p className="text-xs font-bold transition-colors" style={{ color: 'var(--color-text-main)' }}>{user?.name.split(' ')[0]}</p>
                         {user?.role !== 'super_admin' && user?.role !== 'manager' ? (
                               <p className="text-[9px] uppercase tracking-wide font-semibold mt-0.5 flex items-center gap-1" style={{ color: levelColor || 'var(--color-accent)' }}>
-                                <Star size={8} style={levelColor ? { fill: levelColor, color: levelColor } : {}} className={!levelColor ? 'fill-yellow-400 text-yellow-400' : ''} />
+                                <Star size={8} style={{ fill: levelColor || 'var(--color-warning)', color: levelColor || 'var(--color-warning)' }} />
                                 {getUserLevel(user?.points || 0)} · {user?.points || 0} XP
                               </p>
                             ) : (
@@ -113,7 +113,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                     <button
                         onClick={logout}
-                        className="group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full bg-red-500/10 text-red-500 hover:bg-red-500 hover:text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30"
+                        className="group relative w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-full transition-all duration-300 hover:text-white hover:shadow-lg"
+                        style={{ backgroundColor: 'var(--color-error-bg)', color: 'var(--color-error)' }}
+                        onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-error)'; }}
+                        onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--color-error-bg)'; e.currentTarget.style.color = 'var(--color-error)'; }}
                         title={t('common.logout')}
                     >
                         <LogOut size={16} className="sm:hidden transition-transform duration-300 group-hover:translate-x-0.5" />

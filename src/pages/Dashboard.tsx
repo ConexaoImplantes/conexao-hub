@@ -218,7 +218,7 @@ export const Dashboard: React.FC = () => {
           {user && (
             <div className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
               <div className="flex items-center gap-2 mb-3">
-                <Star size={14} className="fill-yellow-400 text-yellow-400" />
+                <Star size={14} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
                 <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nível {userLevel}</span>
                 <span className="ml-auto text-xs font-bold" style={{ color: 'var(--color-accent)' }}>{user.points} XP</span>
               </div>
@@ -286,10 +286,10 @@ export const Dashboard: React.FC = () => {
               )}
 
               <div className="hidden md:block mt-4 pt-4 px-2 border-t border-white/5">
-                <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-amber-500/10 to-yellow-500/10 border border-amber-500/20 p-5 group transition-all duration-300 hover:shadow-lg hover:shadow-amber-500/10 hover:border-amber-500/40">
-                  <div className="absolute -right-6 -top-6 w-24 h-24 bg-amber-500/20 rounded-full blur-2xl group-hover:bg-amber-500/30 transition-colors duration-500"></div>
+          <div className="relative overflow-hidden rounded-2xl p-5 group transition-all duration-300 hover:shadow-lg" style={{ background: 'linear-gradient(to br, color-mix(in srgb, var(--color-warning) 10%, transparent), color-mix(in srgb, var(--color-warning) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--color-warning) 20%, transparent)' }}>
+                  <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-warning) 20%, transparent)' }}></div>
                   <div className="relative z-10">
-                    <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-2">
+                    <div className="flex items-center gap-2 mb-2" style={{ color: 'var(--color-warning)' }}>
                       <Sparkles size={16} className="animate-pulse" />
                       <span className="text-xs font-bold uppercase tracking-wide">Dica Pro</span>
                     </div>
@@ -349,12 +349,12 @@ export const Dashboard: React.FC = () => {
                     </div>
                     {selectedCollection.points > 0 && (
                       <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
-                        <Star size={16} className="fill-yellow-400 text-yellow-400" />
+                        <Star size={16} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
                         {selectedCollection.points} XP ao concluir
                       </div>
                     )}
                     {progressPct === 100 && materialIds.length > 0 && (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }}>
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
                         <Trophy size={16} /> Trilha concluída!
                       </div>
                     )}
@@ -378,7 +378,7 @@ export const Dashboard: React.FC = () => {
                       <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-xs sm:text-sm"
                           style={prog?.status === 'completed'
-                            ? { backgroundColor: 'rgba(34,197,94,0.15)', color: '#22c55e' }
+                            ? { backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }
                             : { backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }
                           }>
                           {prog?.status === 'completed' ? <CheckCircle size={18} /> : idx + 1}
@@ -389,10 +389,10 @@ export const Dashboard: React.FC = () => {
                             <span className="text-[10px] sm:text-xs uppercase font-bold" style={{ color: 'var(--color-text-muted)' }}>{mat.type}</span>
                             {mat.points > 0 && (
                               <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
-                                <Star size={10} className="fill-yellow-400 text-yellow-400" />{mat.points} XP
+                                <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />{mat.points} XP
                               </span>
                             )}
-                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: '#22c55e' }}>Concluído</span>}
+                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: 'var(--color-success)' }}>Concluído</span>}
                             {prog?.status === 'started' && (
                               <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
                                 <PlayCircle size={10} /> Em andamento
@@ -421,7 +421,7 @@ export const Dashboard: React.FC = () => {
         {activeView === 'collections' && (
           <>
             <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
-              <div className="absolute inset-0 opacity-60" style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)' }} />
+              <div className="absolute inset-0 opacity-60" style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-gradient-mid) 10%, transparent), transparent)' }} />
               <div className="relative z-10 p-5 sm:p-8 md:p-10">
                 <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
                 <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
@@ -456,7 +456,7 @@ export const Dashboard: React.FC = () => {
         {activeView === 'materials' && (
           <>
             <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
-              <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), rgba(168,85,247,0.1), transparent)` }} />
+              <div className="absolute inset-0 opacity-60 dark:opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-gradient-mid) 10%, transparent), transparent)` }} />
               <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
               <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 sm:gap-8 backdrop-blur-sm">
                 <div>
@@ -467,7 +467,7 @@ export const Dashboard: React.FC = () => {
                   <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
                   <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)' }}>
                     <div className="pl-4 sm:pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={20} className="sm:hidden" /><Search size={22} className="hidden sm:block" /></div>
-                    <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 placeholder-gray-400 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+                    <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   </div>
                 </div>
               </div>

@@ -120,10 +120,10 @@ insert into public.system_config (id) values (1) on conflict do nothing;
 
   return (
     <div className="fixed inset-0 flex items-center justify-center p-4 bg-black/90 backdrop-blur-xl animate-fade-in" style={{ zIndex: 99999 }}>
-      <div className="rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-slide-up border border-yellow-500/30" style={{ backgroundColor: 'var(--color-surface)' }}>
+      <div className="rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden animate-slide-up" style={{ backgroundColor: 'var(--color-surface)', border: '1px solid color-mix(in srgb, var(--color-warning) 30%, transparent)' }}>
         <div className="p-6 border-b flex justify-between items-start" style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}>
             <div className="flex gap-4">
-                <div className="p-3 bg-yellow-500/10 rounded-xl text-yellow-500 animate-pulse">
+                <div className="p-3 rounded-xl animate-pulse" style={{ backgroundColor: 'var(--color-warning-bg)', color: 'var(--color-warning)' }}>
                     <Database size={24} />
                 </div>
                 <div>
@@ -145,9 +145,8 @@ insert into public.system_config (id) values (1) on conflict do nothing;
             <div className="absolute top-4 right-4 z-10">
                 <button
                     onClick={handleCopy}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all
-                        ${copied ? 'bg-green-500 text-white' : 'bg-white/10 text-white hover:bg-white/20'}
-                    `}
+                    className="flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all"
+                    style={copied ? { backgroundColor: 'var(--color-success)', color: 'white' } : { backgroundColor: 'rgba(255,255,255,0.1)', color: 'white' }}
                 >
                     {copied ? <Check size={14} /> : <Copy size={14} />}
                     {copied ? 'Copiado!' : 'Copiar SQL'}

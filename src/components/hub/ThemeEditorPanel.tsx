@@ -270,7 +270,7 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({ localConfig,
                   color: 'var(--color-text-main)',
                 }}
               >
-                <Sun size={16} className="text-orange-500" /> Light
+                <Sun size={16} style={{ color: 'var(--color-warning)' }} /> Light
               </button>
               <button
                 onClick={() => updateThemeMode({ defaultTheme: 'dark' })}
@@ -281,7 +281,7 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({ localConfig,
                   color: 'var(--color-text-main)',
                 }}
               >
-                <Moon size={16} className="text-blue-400" /> Dark
+                <Moon size={16} style={{ color: 'var(--color-accent)' }} /> Dark
               </button>
             </div>
           </div>

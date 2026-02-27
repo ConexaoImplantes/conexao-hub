@@ -40,11 +40,11 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
         <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
         {collection.points > 0 && (
           <div className="absolute top-3 right-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-white backdrop-blur-sm" style={{ backgroundColor: 'rgba(0,0,0,0.5)' }}>
-            <Star size={10} className="fill-yellow-400 text-yellow-400" /> {collection.points} XP
+            <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} /> {collection.points} XP
           </div>
         )}
         {isCompleted && (
-          <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-white backdrop-blur-sm" style={{ backgroundColor: 'rgba(34,197,94,0.8)' }}>
+          <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold text-white backdrop-blur-sm" style={{ backgroundColor: 'var(--color-success)' }}>
             <Trophy size={10} /> {t('collection.completed')}
           </div>
         )}
