@@ -158,6 +158,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
         if (authData.user) {
             await ensureProfile(authData.user.id, data);
+
+            // Mark invite token as used
+            if (data.inviteTokenId) {
+              await mockDb.markInviteTokenUsed(data.inviteTokenId, authData.user.id);
+            }
         }
 
     } catch (error: any) {
@@ -169,7 +174,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         throw error;
     }
 
-    alert("Cadastro realizado! Verifique seu e-mail para confirmar a conta (se configurado) ou aguarde aprovação.");
+    alert("Cadastro realizado! Aguarde a aprovação do administrador.");
   };
 
   const logout = async () => {

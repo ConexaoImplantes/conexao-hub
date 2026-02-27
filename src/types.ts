@@ -19,6 +19,7 @@ export interface UserProfile {
     theme: 'light' | 'dark';
     language: Language;
   };
+  rejectionReason?: string;
 }
 
 export interface MaterialAsset {

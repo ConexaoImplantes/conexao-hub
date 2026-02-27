@@ -41,7 +41,8 @@ const mapProfileFromDb = (data: any): UserProfile => ({
   status: data.status,
   allowedTypes: data.allowed_types,
   points: data.points || 0,
-  preferences: data.preferences || { theme: 'light', language: 'pt-br' }
+  preferences: data.preferences || { theme: 'light', language: 'pt-br' },
+  rejectionReason: data.rejection_reason,
 });
 
 const mapMaterialFromDb = (data: any): Material => {
@@ -143,8 +144,15 @@ export const mockDb = {
     return mapProfileFromDb(data);
   },
 
-  updateUserStatus: async (userId: string, status: UserStatus): Promise<void> => {
-    const { error } = await supabase.from('profiles').update({ status }).eq('id', userId);
+  updateUserStatus: async (userId: string, status: UserStatus, rejectionReason?: string): Promise<void> => {
+    const updateData: any = { status };
+    if (status === 'rejected' && rejectionReason) {
+      updateData.rejection_reason = rejectionReason;
+    }
+    if (status === 'active') {
+      updateData.rejection_reason = null;
+    }
+    const { error } = await supabase.from('profiles').update(updateData).eq('id', userId);
     if (error) throw error;
   },
 
@@ -490,6 +498,62 @@ export const mockDb = {
     if (status === 'completed') payload.completed_at = new Date().toISOString();
     const { error } = await supabase.from('collection_progress').upsert(payload, { onConflict: 'user_id,collection_id' });
     if (error) console.error('Error upserting collection progress:', error);
+  },
+
+  // ---- Invite Tokens ----
+
+  getInviteTokens: async () => {
+    const { data, error } = await supabase
+      .from('invite_tokens')
+      .select('*')
+      .order('created_at', { ascending: false });
+    if (error) throw error;
+    return (data || []).map((t: any) => ({
+      id: t.id,
+      token: t.token,
+      role: t.role,
+      usedBy: t.used_by,
+      usedAt: t.used_at,
+      expiresAt: t.expires_at,
+      createdAt: t.created_at,
+    }));
+  },
+
+  createInviteToken: async (role: string, expiresInDays: number = 7) => {
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + expiresInDays);
+    const { data, error } = await supabase
+      .from('invite_tokens')
+      .insert({ role: role as any, expires_at: expiresAt.toISOString() })
+      .select()
+      .single();
+    if (error) throw error;
+    return data;
+  },
+
+  deleteInviteToken: async (id: string) => {
+    const { error } = await supabase.from('invite_tokens').delete().eq('id', id);
+    if (error) throw error;
+  },
+
+  validateInviteToken: async (token: string) => {
+    const { data, error } = await supabase
+      .from('invite_tokens')
+      .select('*')
+      .eq('token', token)
+      .is('used_at', null)
+      .gt('expires_at', new Date().toISOString())
+      .single();
+    if (error || !data) return null;
+    return { id: data.id, token: data.token, role: data.role, expiresAt: data.expires_at };
+  },
+
+  markInviteTokenUsed: async (tokenId: string, userId: string) => {
+    const { error } = await supabase
+      .from('invite_tokens')
+      .update({ used_by: userId, used_at: new Date().toISOString() } as any)
+      .eq('id', tokenId);
+    if (error) console.error('Error marking token as used:', error);
   },
 
   login: async () => {},
