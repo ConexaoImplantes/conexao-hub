@@ -402,16 +402,16 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 )}
 
                 {type === 'html' && htmlInputMode === 'upload' ? (
-                  <label className="block">
+                  <div className="block">
                     <span className="text-sm font-semibold mb-1 block" style={{ color: 'var(--color-text-main)' }}>
                       Arquivo HTML <span className="text-red-500">*</span>
                     </span>
                     <div
                       className="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors hover:opacity-80"
                       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg)' }}
-                      onClick={() => fileInputRef.current?.click()}
+                      onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
                     >
-                      <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleHtmlFileUpload} />
+                      <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleHtmlFileUpload} onClick={(e) => e.stopPropagation()} />
                       <Upload size={24} className="mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} />
                       <p className="text-sm font-medium" style={{ color: 'var(--color-text-main)' }}>
                         {uploading ? 'Enviando...' : 'Clique para selecionar um arquivo .html'}
@@ -423,7 +423,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                         </p>
                       )}
                     </div>
-                  </label>
+                  </div>
                 ) : (
                 <label className="block">
                   <span className="text-sm font-semibold mb-1 flex items-center justify-between" style={{ color: 'var(--color-text-main)' }}>
