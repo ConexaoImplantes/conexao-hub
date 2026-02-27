@@ -1,52 +1,36 @@
 
 
-## Plano: Adicionar tipo "Página Interativa" (html)
+## Plano: Armazenar arquivos HTML no Storage
 
-### Resumo
-Adicionar `html` como novo `MaterialType` no banco e no front-end. Para usuários finais, exibir como **"Página Interativa"**. Para o Super Admin, mostrar "HTML" internamente nos seletores técnicos.
+### Contexto
+Atualmente, materiais do tipo "Página Interativa" usam apenas URLs externas. O objetivo é permitir o **upload de arquivos .html** diretamente na plataforma, armazenando-os no file storage do Lovable Cloud.
 
-### 1. Migração de banco de dados
-```sql
-ALTER TYPE public.material_type ADD VALUE IF NOT EXISTS 'html';
-```
+### 1. Criar bucket de storage `materials`
+Migration SQL para criar um bucket dedicado com políticas de acesso:
+- Bucket público para leitura (os arquivos são servidos via URL pública no iframe)
+- Upload restrito a `super_admin`
+- Aceitar apenas arquivos `.html` e `.htm` (com limite de tamanho)
 
-### 2. `src/types.ts`
-- Adicionar `'html'` ao tipo `MaterialType`
+### 2. Atualizar `AssetManagerModal.tsx`
+- Quando `material.type === 'html'`, substituir o campo de texto URL por um **input de upload de arquivo** (`<input type="file" accept=".html,.htm">`)
+- Fazer upload via `supabase.storage.from('materials').upload(...)` 
+- Gerar a URL pública automaticamente e salvar no campo `url` do asset
+- Manter opção de URL externa como alternativa (toggle entre "Upload" e "URL externa")
 
-### 3. Traduções (`src/contexts/LanguageContext.tsx`)
-- pt-br: `'material.type.html': 'Página Interativa'`
-- en-us: `'material.type.html': 'Interactive Page'`
-- es-es: `'material.type.html': 'Página Interactiva'`
-- Adicionar `'filter.html': 'Interativo'` / `'Interactive'` / `'Interactivo'` para filtros do Dashboard
+### 3. Atualizar `MaterialFormModal.tsx`
+- Na seção de URL do tipo `html`, adicionar o mesmo componente de upload como opção primária
+- Placeholder e labels atualizados para refletir upload de arquivo
 
-### 4. `MaterialCard.tsx`
-- Adicionar `case 'html'` no ícone (`Globe`), label, gradiente e borda
-
-### 5. `MaterialFormModal.tsx`
-- Adicionar `TypeCard` para `html` com ícone `Globe` e label "HTML" (visível só para admin)
-
-### 6. `ViewerModal.tsx`
-- Adicionar renderização para `material.type === 'html'`: `<iframe sandbox="allow-scripts allow-same-origin" src={asset.url}>` em tela cheia
-
-### 7. `Dashboard.tsx`
-- Adicionar botão de filtro `html` com ícone `Globe` na sidebar
-- Incluir contagem `html` no objeto `counts`
-
-### 8. `Admin.tsx` e `ManagerDashboard.tsx`
-- Adicionar `<option value="html">` nos selects de filtro por tipo
-
-### 9. Atualizar manuais (`docs/`)
-- Mencionar o novo tipo "Página Interativa" nos manuais de cliente, gestor e admin
+### 4. `ViewerModal.tsx` — sem alterações
+O iframe já renderiza qualquer URL, seja externa ou do storage.
 
 ### Arquivos afetados
-- 1 migração SQL
-- `src/types.ts`
-- `src/contexts/LanguageContext.tsx`
-- `src/components/hub/MaterialCard.tsx`
-- `src/components/hub/MaterialFormModal.tsx`
-- `src/components/hub/ViewerModal.tsx`
-- `src/pages/Dashboard.tsx`
-- `src/pages/Admin.tsx`
-- `src/pages/ManagerDashboard.tsx`
-- `docs/manual-cliente.md`, `docs/manual-gestor.md`, `docs/manual-admin.md`
+- 1 migration SQL (bucket + RLS policies)
+- `src/components/hub/AssetManagerModal.tsx` — upload de arquivo para tipo html
+- `src/components/hub/MaterialFormModal.tsx` — upload na criação do material
+
+### Segurança
+- Arquivos servidos com `sandbox` no iframe (já implementado)
+- Upload restrito a admins via RLS no bucket
+- Validação client-side do tipo de arquivo (`.html`, `.htm`)
 
