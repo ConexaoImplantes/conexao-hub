@@ -1,28 +1,66 @@
 
 
-## Plano: Criar Documento de Branding Completo
+## Plano: Criar Manuais de Uso por Perfil
 
-Criar o arquivo `docs/design-system.md` na raiz do projeto com a documentação completa e detalhada de:
+Criar 4 arquivos markdown na pasta `docs/` — um para cada perfil de usuário — com linguagem simples e extremamente detalhados.
 
-### Conteúdo do documento
+### Arquivos a criar
 
-1. **Todas as 38 cores do ColorScheme** — organizadas por categoria (Base, Tipografia, Bordas, Marca, Gradientes, Feedback, Componentes, Efeitos Visuais), com nome do token, variável CSS, valor HEX padrão (light e dark) e explicação de uso
-
-2. **Efeitos de Ambiente (EnvironmentEffects)** — todos os 13 tokens por ambiente (pageBg, blob1/2/3Color, blobOpacity/Size/Blur, grainOpacity/BlendMode/Contrast, glassOpacity/Blur/BorderOpacity) com valores padrão de cada ambiente (Global, Auth, Client, Manager, Admin)
-
-3. **Efeitos visuais CSS** — Liquid Glass, Liquid Glass Gold, Icon Box (3 tamanhos), scrollbar customizada, com o CSS completo
-
-4. **Animações** — Todas as 6 keyframes (blob, fade-in, slide-up, shimmer, float, accordion) com duração, easing e uso
-
-5. **Variáveis CSS shadcn/ui** — Tokens HSL de light e dark mode
-
-6. **Tipografia, espaçamento, breakpoints, border-radius** — Referência completa
-
-### Arquivo afetado
-
-| Arquivo | Ação |
+| Arquivo | Perfil |
 |---|---|
-| `docs/design-system.md` | Criar — documento completo de branding com todas as cores, efeitos, animações e tokens |
+| `docs/manual-cliente.md` | Cliente (client), Distribuidor (distributor), Consultor (consultant) |
+| `docs/manual-gestor.md` | Gestor (manager) |
+| `docs/manual-admin.md` | Super Administrador (super_admin) |
+| `docs/manual-cadastro.md` | Fluxo de cadastro, aprovação e login (todos os perfis) |
 
-O documento existente `docs/branding-guide.md` será mantido como está. O novo arquivo será a referência técnica definitiva, extraída diretamente do código fonte (`themeDefaults.ts`, `index.css`, `tailwind.config.ts`, `types.ts`, `BrandContext.tsx`).
+### Conteúdo de cada manual
+
+**`docs/manual-cadastro.md`** — Acesso à Plataforma
+- Como receber o link de convite
+- Tela de cadastro: campos obrigatórios (nome, email, senha, WhatsApp, CRO)
+- Perfil pré-definido pelo convite
+- Tela de "Cadastro em Análise" (aguardando aprovação)
+- Tela de "Cadastro Recusado" (motivo exibido)
+- Tela de "Cadastro Aprovado" (confetti + botão login)
+- Login com email e senha
+- Ambiente de teste (login mock por perfil)
+
+**`docs/manual-cliente.md`** — Dashboard do Cliente/Distribuidor/Consultor
+- Barra lateral: card de nível/XP, toggle Materiais/Trilhas, filtros por tipo (PDF, Imagem, Vídeo, Áudio), filtro por tags, dica de atalho
+- Visualização de materiais: busca, paginação, cards com tipo/idioma/XP
+- Sistema de XP: 30% ao iniciar, 70% ao concluir
+- Trilhas de aprendizagem: cards de coleção, progresso, timeline com materiais sequenciais
+- Conclusão de trilha: bônus XP, animação de celebração
+- Visualizador de materiais (modal)
+- Atalhos de teclado (Ctrl+F, Escape, ?)
+- Header: idioma (PT/EN/ES), tema claro/escuro, nível e XP, logout
+
+**`docs/manual-gestor.md`** — Painel do Gestor
+- 4 abas: Materiais, Usuários, Trilhas, Métricas
+- Aba Materiais: tabela com busca, filtro por tipo, colunas (título, tipo, status, permissões, assets, XP) — somente leitura
+- Aba Usuários: tabela com busca, filtro por perfil, colunas (usuário, contatos, perfil, permissões, status) — somente leitura
+- Aba Trilhas/Coleções: cards de trilhas, timeline com materiais — somente leitura
+- Aba Métricas: KPIs (total views, usuários únicos, top material, trilhas iniciadas/concluídas, taxa de conclusão), rankings (materiais, usuários), gráficos — somente leitura
+- Sem botões de ação (criar, editar, excluir, exportar)
+
+**`docs/manual-admin.md`** — Painel do Administrador
+- 5 abas: Materiais, Usuários, Trilhas, Métricas, Configurações
+- Aba Materiais: CRUD completo (criar, editar, ativar/desativar, excluir), busca, filtros por tipo e status, visualizar material, XP por material
+- Aba Usuários: gestão completa (aprovar, rejeitar com motivo, editar perfil/permissões, excluir, exportar CSV)
+- Aba Trilhas: CRUD de coleções, timeline expandível de conteúdos
+- Aba Métricas: mesmas do gestor + filtros avançados (tipo, perfil) + exportar CSV
+- Aba Configurações (5 sub-seções):
+  - Identidade Visual: nome do app, logo (URL ou upload)
+  - Integrações: webhook URL
+  - Temas: editor de cores (38+ tokens light/dark), modo de tema, efeitos por ambiente (blobs, grain, glass)
+  - Gamificação: CRUD de patentes (nome, XP mínimo, cor, ordenação)
+  - Convites: gerar links por perfil com validade, copiar, excluir
+
+### Padrão de escrita
+
+- Títulos claros com hierarquia (H1 > H2 > H3)
+- Linguagem simples, como se explicasse para alguém não-técnico
+- Passo a passo numerado para cada ação
+- Notas e dicas em blockquotes
+- Emojis para identificação visual rápida de seções
 
