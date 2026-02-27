@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType, Role, MaterialAsset } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones, Globe } from 'lucide-react';
+import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones, Globe, Upload } from 'lucide-react';
 import { TagInput } from './TagInput';
+import { supabase } from '@/integrations/supabase/client';
 
 interface TypeCardProps {
   value: MaterialType;
@@ -100,6 +101,9 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
   const [error, setError] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [points, setPoints] = useState(0);
+  const [htmlInputMode, setHtmlInputMode] = useState<'upload' | 'url'>('upload');
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (initialData) {
@@ -196,6 +200,32 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     if (type === 'image') return t('url.placeholder.image');
     if (type === 'html') return "URL da página HTML interativa...";
     return t('url.placeholder.pdf');
+  };
+
+  const handleHtmlFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.name.match(/\.(html|htm)$/i)) {
+      setError('Apenas arquivos .html ou .htm são permitidos.');
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) {
+      setError('O arquivo deve ter no máximo 5MB.');
+      return;
+    }
+    setUploading(true);
+    setError(null);
+    const filePath = `html/${Date.now()}-${file.name}`;
+    const { error: uploadError } = await supabase.storage.from('materials').upload(filePath, file, { contentType: 'text/html', upsert: false });
+    if (uploadError) {
+      setError(`Erro no upload: ${uploadError.message}`);
+      setUploading(false);
+      return;
+    }
+    const { data: publicUrlData } = supabase.storage.from('materials').getPublicUrl(filePath);
+    handleUrlPasteOrChange(activeTab, publicUrlData.publicUrl);
+    setUploading(false);
+    if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
   return createPortal(
@@ -349,6 +379,52 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                   />
                 </label>
 
+                {/* HTML type: toggle between upload and URL */}
+                {type === 'html' && (
+                  <div className="flex items-center gap-3 mb-1">
+                    <button type="button" onClick={() => setHtmlInputMode('upload')}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        backgroundColor: htmlInputMode === 'upload' ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'transparent',
+                        color: htmlInputMode === 'upload' ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                      }}>
+                      <Upload size={12} className="inline mr-1" /> Upload de arquivo
+                    </button>
+                    <button type="button" onClick={() => setHtmlInputMode('url')}
+                      className="text-xs font-semibold px-3 py-1.5 rounded-lg transition-all"
+                      style={{
+                        backgroundColor: htmlInputMode === 'url' ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'transparent',
+                        color: htmlInputMode === 'url' ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                      }}>
+                      <LinkIcon size={12} className="inline mr-1" /> URL externa
+                    </button>
+                  </div>
+                )}
+
+                {type === 'html' && htmlInputMode === 'upload' ? (
+                  <label className="block">
+                    <span className="text-sm font-semibold mb-1 block" style={{ color: 'var(--color-text-main)' }}>
+                      Arquivo HTML <span className="text-red-500">*</span>
+                    </span>
+                    <div
+                      className="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors hover:opacity-80"
+                      style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg)' }}
+                      onClick={() => fileInputRef.current?.click()}
+                    >
+                      <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleHtmlFileUpload} />
+                      <Upload size={24} className="mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} />
+                      <p className="text-sm font-medium" style={{ color: 'var(--color-text-main)' }}>
+                        {uploading ? 'Enviando...' : 'Clique para selecionar um arquivo .html'}
+                      </p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Máximo 5MB</p>
+                      {assets[activeTab]?.url && (
+                        <p className="text-xs mt-2 font-mono truncate" style={{ color: 'var(--color-success)' }}>
+                          ✓ {assets[activeTab]!.url.split('/').pop()}
+                        </p>
+                      )}
+                    </div>
+                  </label>
+                ) : (
                 <label className="block">
                   <span className="text-sm font-semibold mb-1 flex items-center justify-between" style={{ color: 'var(--color-text-main)' }}>
                      <span>URL <span className="text-red-500">*</span></span>
@@ -370,6 +446,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                       <LinkIcon className="absolute left-3 top-3 transition-colors" size={18} style={{ color: 'var(--color-text-muted)' }} />
                   </div>
                 </label>
+                )}
 
                 {type === 'video' && assets[activeTab]?.url && (
                     <div className="animate-fade-in">
