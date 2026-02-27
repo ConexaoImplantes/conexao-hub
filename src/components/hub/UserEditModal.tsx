@@ -115,6 +115,15 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onS
                 </div>
             </div>
 
+            {status === 'rejected' && user.rejectionReason && (
+              <div className="pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
+                <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-red-500">Motivo da Recusa</label>
+                <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/10">
+                  <p className="text-sm" style={{ color: 'var(--color-text-main)' }}>{user.rejectionReason}</p>
+                </div>
+              </div>
+            )}
+
             <div className="pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
                 <label className="block text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: 'var(--color-text-main)' }}>{t('user.access.types')}</label>
                 <p className="text-xs mb-3" style={{ color: 'var(--color-text-muted)' }}>{t('user.access.hint')}</p>

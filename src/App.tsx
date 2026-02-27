@@ -14,6 +14,7 @@ import { KeyboardHelpModal } from "./components/hub/KeyboardHelpModal";
 import { AuthPage } from "./pages/AuthPage";
 import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
+import { RegistrationProgress } from "./components/hub/RegistrationProgress";
 
 const queryClient = new QueryClient();
 
@@ -30,6 +31,11 @@ const AppContent = () => {
 
   if (!isAuthenticated || !user) {
     return <AuthPage />;
+  }
+
+  // Show progress screen for pending/rejected users (unless admin)
+  if (user.status === 'pending' || user.status === 'rejected') {
+    return <RegistrationProgress />;
   }
 
   const isAdmin = user.role === 'super_admin';

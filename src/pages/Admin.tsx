@@ -70,6 +70,7 @@ import { ViewerModal } from "../components/hub/ViewerModal";
 import { UserCommunicationModal } from "../components/hub/UserCommunicationModal";
 import { UserEditModal } from "../components/hub/UserEditModal";
 import { ConfirmModal } from "../components/hub/ConfirmModal";
+import { RejectUserModal } from "../components/hub/RejectUserModal";
 import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
 import {
@@ -230,7 +231,13 @@ export const Admin: React.FC = () => {
   const [newLevelPoints, setNewLevelPoints] = useState(0);
   const [newLevelColor, setNewLevelColor] = useState("#c9a655");
   const analyticsRef = useRef<HTMLDivElement>(null);
-
+  // Invite tokens state
+  const [inviteTokens, setInviteTokens] = useState<any[]>([]);
+  const [inviteRole, setInviteRole] = useState<Role>('client');
+  const [inviteExpiry, setInviteExpiry] = useState(7);
+  const [inviteGenerating, setInviteGenerating] = useState(false);
+  // Reject modal state
+  const [rejectingUser, setRejectingUser] = useState<UserProfile | null>(null);
   const exportAnalyticsCsv = () => {
     const headers = ['Material', 'Tipo', 'Visualizações', 'Usuários Únicos', 'Último Acesso'];
     const rows = aggregatedMetrics.map((item) => {
@@ -294,7 +301,10 @@ export const Admin: React.FC = () => {
     if (activeTab === "users") loadUsers();
     if (activeTab === "analytics") loadAnalytics();
     if (activeTab === "collections") loadCollections();
-    if (activeTab === "settings") loadGamificationLevels();
+    if (activeTab === "settings") {
+      loadGamificationLevels();
+      loadInviteTokens();
+    }
   }, [activeTab]);
 
   useEffect(() => {
@@ -315,6 +325,27 @@ export const Admin: React.FC = () => {
     getGamificationLevels().
     then(setGamificationLevels).
     catch((e) => console.error(e));
+  };
+  const loadInviteTokens = () => {
+    mockDb.getInviteTokens().then(setInviteTokens).catch((e) => console.error(e));
+  };
+  const generateInviteToken = async () => {
+    setInviteGenerating(true);
+    try {
+      await mockDb.createInviteToken(inviteRole, inviteExpiry);
+      loadInviteTokens();
+    } catch (e: any) {
+      alert('Erro ao gerar convite: ' + e.message);
+    }
+    setInviteGenerating(false);
+  };
+  const deleteInviteToken = async (id: string) => {
+    try {
+      await mockDb.deleteInviteToken(id);
+      loadInviteTokens();
+    } catch (e: any) {
+      alert('Erro: ' + e.message);
+    }
   };
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
@@ -413,13 +444,23 @@ export const Admin: React.FC = () => {
     });
   }, [materials, materialSearch, materialTypeFilter, materialStatusFilter, language]);
 
-  const handleUserStatus = async (userId: string, status: UserStatus) => {
+  const handleUserStatus = async (userId: string, status: UserStatus, rejectionReason?: string) => {
     try {
-      await mockDb.updateUserStatus(userId, status);
+      await mockDb.updateUserStatus(userId, status, rejectionReason);
       loadUsers();
     } catch (e: any) {
       alert("Erro: " + e.message);
     }
+  };
+
+  const handleRejectUser = (user: UserProfile) => {
+    setRejectingUser(user);
+  };
+
+  const handleConfirmReject = async (reason: string) => {
+    if (!rejectingUser) return;
+    await handleUserStatus(rejectingUser.id, 'rejected', reason);
+    setRejectingUser(null);
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -1331,7 +1372,7 @@ export const Admin: React.FC = () => {
                       {user.status === "pending" && (
                         <>
                           <button onClick={() => handleUserStatus(user.id, "active")} className="p-1.5 rounded-lg text-green-500"><CheckCircle size={16} /></button>
-                          <button onClick={() => handleUserStatus(user.id, "rejected")} className="p-1.5 rounded-lg text-red-500"><XCircle size={16} /></button>
+                          <button onClick={() => handleRejectUser(user)} className="p-1.5 rounded-lg text-red-500"><XCircle size={16} /></button>
                         </>
                       )}
                       <button onClick={() => setUserEditing(user)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
@@ -1458,7 +1499,7 @@ export const Admin: React.FC = () => {
                                 <CheckCircle size={18} />
                               </button>
                               <button
-                          onClick={() => handleUserStatus(user.id, "rejected")}
+                          onClick={() => handleRejectUser(user)}
                           className="p-2 rounded-lg text-red-500"
                           title={t("user.action.reject")}>
 
@@ -1658,82 +1699,110 @@ export const Admin: React.FC = () => {
 
                     <LinkIcon size={16} className="shrink-0 mt-0.5" style={{ color: "var(--color-accent)" }} />
                     <p className="text-sm leading-relaxed" style={{ color: "var(--color-text-muted)" }}>
-                      Compartilhe estes links para que novos usuários se cadastrem com o{" "}
-                      <strong style={{ color: "var(--color-text-main)" }}>perfil pré-definido e bloqueado</strong>. O
-                      usuário não poderá alterar o tipo de perfil ao se cadastrar pelo link.
+                      Gere <strong style={{ color: "var(--color-text-main)" }}>links únicos e seguros</strong> para cada convite.
+                      Cada link só pode ser usado uma vez e possui expiração configurável.
                     </p>
                   </div>
-                  <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    {[
-                { role: "client" as Role, icon: User, desc: "Acesso aos materiais. Pode informar o CRO." },
-                { role: "distributor" as Role, icon: Briefcase, desc: "Distribuidor de produtos e materiais." },
-                { role: "consultant" as Role, icon: Sparkles, desc: "Consultor especializado da plataforma." },
-                {
-                  role: "super_admin" as Role,
-                  icon: Settings,
-                  desc: "Acesso total à plataforma e administração."
-                }].
-                map(({ role, icon: Icon, desc }) => {
-                  const publishedUrl = "https://conexao-hub.lovable.app";
-                  const fullUrl = `${publishedUrl}/?role=${role}`;
-                  return (
-                    <div
-                      key={role}
-                      className="p-5 rounded-xl flex flex-col gap-3"
-                      style={{
-                        backgroundColor: "var(--color-bg)",
-                        border: "1px solid color-mix(in srgb, var(--color-border) 50%, transparent)"
-                      }}>
 
-                          <div className="flex items-center gap-3">
-                            <div
-                          className="icon-box-sm">
+                  {/* Generate Token */}
+                  <div className="p-4 rounded-xl flex flex-col sm:flex-row gap-3 items-end" style={{ backgroundColor: "var(--color-bg)" }}>
+                    <div className="flex-1 w-full">
+                      <label className="block text-xs font-bold uppercase tracking-wide mb-1.5" style={{ color: "var(--color-text-muted)" }}>Perfil</label>
+                      <select
+                        value={inviteRole}
+                        onChange={(e) => setInviteRole(e.target.value as Role)}
+                        className="w-full p-2.5 rounded-lg text-sm outline-none"
+                        style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
+                      >
+                        <option value="client">{t("role.client")}</option>
+                        <option value="distributor">{t("role.distributor")}</option>
+                        <option value="consultant">{t("role.consultant")}</option>
+                        <option value="super_admin">{t("role.super_admin")}</option>
+                      </select>
+                    </div>
+                    <div className="w-full sm:w-40">
+                      <label className="block text-xs font-bold uppercase tracking-wide mb-1.5" style={{ color: "var(--color-text-muted)" }}>Expiração</label>
+                      <select
+                        value={inviteExpiry}
+                        onChange={(e) => setInviteExpiry(Number(e.target.value))}
+                        className="w-full p-2.5 rounded-lg text-sm outline-none"
+                        style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
+                      >
+                        <option value={1}>1 dia</option>
+                        <option value={7}>7 dias</option>
+                        <option value={30}>30 dias</option>
+                      </select>
+                    </div>
+                    <button
+                      onClick={generateInviteToken}
+                      disabled={inviteGenerating}
+                      className="liquid-glass-gold px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
+                      style={{ color: "var(--color-accent)" }}
+                    >
+                      <Plus size={16} /> {inviteGenerating ? "Gerando..." : "Gerar Convite"}
+                    </button>
+                  </div>
 
-                              <Icon size={16} />
+                  {/* Tokens List */}
+                  <div className="space-y-3">
+                    <h4 className="text-xs font-bold uppercase tracking-wide" style={{ color: "var(--color-text-muted)" }}>
+                      Convites Gerados ({inviteTokens.length})
+                    </h4>
+                    {inviteTokens.length === 0 ? (
+                      <div className="text-center py-8" style={{ color: "var(--color-text-muted)" }}>
+                        <Share2 size={32} className="mx-auto mb-2 opacity-30" />
+                        <p className="text-sm">Nenhum convite gerado ainda.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        {inviteTokens.map((tk) => {
+                          const isUsed = !!tk.usedAt;
+                          const isExpired = new Date(tk.expiresAt) < new Date();
+                          const statusLabel = isUsed ? "Usado" : isExpired ? "Expirado" : "Ativo";
+                          const statusColor = isUsed ? "text-blue-600 bg-blue-500/10" : isExpired ? "text-red-600 bg-red-500/10" : "text-green-600 bg-green-500/10";
+                          const publishedUrl = window.location.origin;
+                          const fullUrl = `${publishedUrl}/?token=${tk.token}`;
+                          return (
+                            <div key={tk.id} className="p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center gap-3" style={{ backgroundColor: "var(--color-bg)" }}>
+                              <div className="flex-1 min-w-0 space-y-1">
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="text-xs font-bold uppercase px-2 py-0.5 rounded" style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-muted)" }}>
+                                    {t(`role.${tk.role}`)}
+                                  </span>
+                                  <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${statusColor}`}>
+                                    {statusLabel}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] font-mono truncate" style={{ color: "var(--color-text-muted)" }}>{fullUrl}</p>
+                                <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>
+                                  Criado: {new Date(tk.createdAt).toLocaleDateString("pt-BR")} · Expira: {new Date(tk.expiresAt).toLocaleDateString("pt-BR")}
+                                </p>
+                              </div>
+                              <div className="flex gap-2 shrink-0">
+                                {!isUsed && !isExpired && (
+                                  <button
+                                    onClick={() => handleCopyLink(fullUrl, tk.id)}
+                                    className={`p-2 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all ${copiedLink === tk.id ? "bg-green-500 text-white" : "liquid-glass-gold"}`}
+                                    style={copiedLink !== tk.id ? { color: "var(--color-accent)" } : {}}
+                                  >
+                                    {copiedLink === tk.id ? <><CheckCircle size={13} /> Copiado!</> : <><Copy size={13} /> Copiar</>}
+                                  </button>
+                                )}
+                                {!isUsed && (
+                                  <button
+                                    onClick={() => deleteInviteToken(tk.id)}
+                                    className="p-2 rounded-lg text-red-500"
+                                    title="Excluir convite"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                )}
+                              </div>
                             </div>
-                            <div>
-                              <p className="text-sm font-bold" style={{ color: "var(--color-text-main)" }}>
-                                {t(`role.${role}`)}
-                              </p>
-                              <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
-                                {desc}
-                              </p>
-                            </div>
-                          </div>
-                          <input
-                        readOnly
-                        value={fullUrl}
-                        className="p-2 rounded-lg text-[11px] truncate w-full font-mono outline-none"
-                        style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-muted)" }} />
-
-                          <div className="flex gap-2">
-                            <button
-                          onClick={() => window.open(fullUrl, "_blank")}
-                          className="flex-1 p-2 rounded-lg flex items-center justify-center gap-1.5 text-xs font-semibold transition-colors"
-                          style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-muted)" }}
-                          title="Abrir link">
-
-                              <ExternalLink size={13} /> Visualizar
-                            </button>
-                            <button
-                          onClick={() => handleCopyLink(fullUrl, role)}
-                          className={`flex-1 p-2 rounded-lg flex items-center justify-center gap-1.5 text-xs font-bold transition-all ${copiedLink === role ? "bg-green-500 text-white" : "liquid-glass-gold"}`}
-                          style={copiedLink !== role ? { color: "var(--color-accent)" } : {}}>
-
-                              {copiedLink === role ?
-                          <>
-                                  <CheckCircle size={13} /> Copiado!
-                                </> :
-
-                          <>
-                                  <Copy size={13} /> Copiar
-                                </>
-                          }
-                            </button>
-                          </div>
-                        </div>);
-
-                })}
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
                 </div>
             }
@@ -1997,6 +2066,14 @@ export const Admin: React.FC = () => {
         message={t("confirm.delete.message")}
         onConfirm={confirmDelete}
         onClose={() => setIsConfirmOpen(false)} />
+
+      {rejectingUser && (
+        <RejectUserModal
+          userName={rejectingUser.name}
+          onClose={() => setRejectingUser(null)}
+          onConfirm={handleConfirmReject}
+        />
+      )}
 
     </div>);
 

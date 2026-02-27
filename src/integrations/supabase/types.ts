@@ -189,6 +189,44 @@ export type Database = {
         }
         Relationships: []
       }
+      invite_tokens: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          token: string
+          used_at: string | null
+          used_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          token?: string
+          used_at?: string | null
+          used_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "invite_tokens_used_by_fkey"
+            columns: ["used_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       material_assets: {
         Row: {
           created_at: string
@@ -276,6 +314,7 @@ export type Database = {
           name: string
           points: number
           preferences: Json
+          rejection_reason: string | null
           status: Database["public"]["Enums"]["app_status"]
           updated_at: string
           whatsapp: string | null
@@ -289,6 +328,7 @@ export type Database = {
           name: string
           points?: number
           preferences?: Json
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["app_status"]
           updated_at?: string
           whatsapp?: string | null
@@ -302,6 +342,7 @@ export type Database = {
           name?: string
           points?: number
           preferences?: Json
+          rejection_reason?: string | null
           status?: Database["public"]["Enums"]["app_status"]
           updated_at?: string
           whatsapp?: string | null

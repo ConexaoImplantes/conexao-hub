@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Box, Sparkles, Info, Briefcase, User, Database, AlertTriangle, ChevronRight } from 'lucide-react';
+import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Box, Sparkles, Info, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react';
 import { seedUsers } from '../lib/seed';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
+import { mockDb } from '../lib/mockDb';
 
 export const AuthPage: React.FC = () => {
   const { login, register, loginMock, isDbMissing } = useAuth();
@@ -24,11 +25,30 @@ export const AuthPage: React.FC = () => {
   const [cro, setCro] = useState('');
   const [role, setRole] = useState('client');
   const [invitedRole, setInvitedRole] = useState<string | null>(null);
+  const [inviteToken, setInviteToken] = useState<{ id: string; token: string; role: string } | null>(null);
+  const [tokenValidating, setTokenValidating] = useState(false);
+  const [tokenError, setTokenError] = useState<string | null>(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(window.location.search);
+    const tokenParam = searchParams.get('token');
     const roleParam = searchParams.get('role');
-    if (roleParam && ['client', 'distributor', 'consultant', 'super_admin'].includes(roleParam)) {
+
+    if (tokenParam) {
+      setTokenValidating(true);
+      setIsLogin(false);
+      mockDb.validateInviteToken(tokenParam).then((result) => {
+        if (result) {
+          setInviteToken(result);
+          setInvitedRole(result.role);
+          setRole(result.role);
+          setTokenError(null);
+        } else {
+          setTokenError('Este link de convite é inválido ou expirou.');
+        }
+        setTokenValidating(false);
+      });
+    } else if (roleParam && ['client', 'distributor', 'consultant', 'super_admin'].includes(roleParam)) {
       setIsLogin(false);
       setInvitedRole(roleParam);
       setRole(roleParam);
@@ -51,7 +71,7 @@ export const AuthPage: React.FC = () => {
       if (isLogin) {
         await login(email, password);
       } else {
-        await register({ name, email, password, whatsapp, role, cro });
+        await register({ name, email, password, whatsapp, role, cro, inviteTokenId: inviteToken?.id });
       }
     } catch (err: any) {
       let msg = err.message || 'Erro inesperado';
@@ -139,6 +159,22 @@ export const AuthPage: React.FC = () => {
         </div>
 
         <div className="space-y-4 mb-6 relative z-10">
+            {tokenValidating && (
+              <div className="rounded-xl p-6 text-center animate-fade-in" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
+                <Loader2 size={24} className="animate-spin mx-auto mb-2" style={{ color: 'var(--color-accent)' }} />
+                <p className="text-sm font-medium" style={{ color: 'var(--color-text-main)' }}>Validando convite...</p>
+              </div>
+            )}
+
+            {tokenError && (
+              <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-sm flex flex-col gap-2 animate-slide-up">
+                <div className="flex items-start gap-3">
+                  <AlertTriangle className="shrink-0 mt-0.5" size={16} />
+                  <span className="leading-snug">{tokenError}</span>
+                </div>
+              </div>
+            )}
+
             {isDbMissing &&
           <button
             onClick={() => setShowSqlSetup(true)}
