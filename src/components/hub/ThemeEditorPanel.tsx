@@ -6,24 +6,22 @@ import { Switch } from '../ui/switch';
 
 /* ─── Color Input ─── */
 const ColorInput = ({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint: string }) => (
-  <div className="space-y-1.5">
-    <label className="block text-[11px] font-semibold uppercase tracking-wide" style={{ color: 'var(--color-text-muted)' }}>
-      {label}
-    </label>
-    <div className="flex items-center gap-2">
-      <div className="relative h-9 w-9 shrink-0">
-        <div className="absolute inset-0 rounded-lg shadow-sm border" style={{ backgroundColor: value || '#000000', borderColor: 'var(--color-border)' }} />
-        <input type="color" value={value?.startsWith('#') ? value.slice(0, 7) : '#000000'} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
-      </div>
-      <input
-        type="text"
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="flex-1 p-2 rounded-lg text-sm font-mono uppercase focus:ring-2 outline-none transition-colors"
-        style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-input-bg)', borderColor: 'var(--color-input-border)', border: '1px solid' }}
-      />
+  <div className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style={{ backgroundColor: 'var(--color-bg)' }}>
+    <div className="relative h-8 w-8 shrink-0 rounded-md overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
+      <div className="absolute inset-0" style={{ backgroundColor: value || '#000000' }} />
+      <input type="color" value={value?.startsWith('#') ? value.slice(0, 7) : '#000000'} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
     </div>
-    <p className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>{hint}</p>
+    <div className="flex-1 min-w-0">
+      <span className="text-[11px] font-semibold block truncate" style={{ color: 'var(--color-text-main)' }}>{label}</span>
+      <span className="text-[10px] block truncate" style={{ color: 'var(--color-text-muted)' }}>{hint}</span>
+    </div>
+    <input
+      type="text"
+      value={value}
+      onChange={(e) => onChange(e.target.value)}
+      className="w-[90px] p-1.5 rounded text-[11px] font-mono uppercase text-center focus:ring-2 outline-none transition-colors shrink-0"
+      style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-input-bg)', borderColor: 'var(--color-input-border)', border: '1px solid' }}
+    />
   </div>
 );
 
@@ -353,7 +351,7 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({ localConfig,
                   <div className="border-b mb-3" style={{ borderColor: 'var(--color-border)' }} />
                   {!collapsed[catKey] && (
                     <>
-                      <div className="grid grid-cols-2 gap-4 mb-4">
+                      <div className="space-y-1 mb-4">
                         {cat.tokens.map((token) => (
                           <ColorInput
                             key={token.key}
