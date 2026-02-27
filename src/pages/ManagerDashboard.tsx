@@ -31,6 +31,7 @@ import {
   FileText,
   Video,
   Headphones,
+  Globe,
   ChevronRight,
 } from "lucide-react";
 import {
@@ -183,6 +184,7 @@ export const ManagerDashboard: React.FC = () => {
     if (type === "image") return <ImageIcon size={14} />;
     if (type === "video") return <Video size={14} />;
     if (type === "audio") return <Headphones size={14} />;
+    if (type === "html") return <Globe size={14} />;
     return <FileText size={14} />;
   };
 
@@ -244,6 +246,7 @@ export const ManagerDashboard: React.FC = () => {
               <option value="image">{t("material.type.image")}</option>
               <option value="video">{t("material.type.video")}</option>
               <option value="audio">{t("material.type.audio")}</option>
+              <option value="html">{t("material.type.html")}</option>
             </select>
           </div>
 

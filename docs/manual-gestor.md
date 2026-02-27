@@ -48,6 +48,7 @@ No topo da aba, há uma barra com:
    - Imagem
    - Vídeo
    - Áudio
+   - Página Interativa
 
 ### Tabela de materiais
 
@@ -56,7 +57,7 @@ No topo da aba, há uma barra com:
 | Coluna | Descrição |
 |---|---|
 | **Título** | Nome do material no idioma selecionado |
-| **Tipo** | PDF, Imagem, Vídeo ou Áudio |
+| **Tipo** | PDF, Imagem, Vídeo, Áudio ou Página Interativa |
 | **Status** | Badge "Ativo" (verde) ou "Inativo" (cinza) |
 | **Permissões** | Círculos com a inicial de cada perfil que tem acesso (C=Cliente, D=Distribuidor, etc.) |
 | **Assets** | Badges com os idiomas disponíveis (PT, EN, ES) |

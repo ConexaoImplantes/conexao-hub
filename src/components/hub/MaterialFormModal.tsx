@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType, Role, MaterialAsset } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones } from 'lucide-react';
+import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones, Globe } from 'lucide-react';
 import { TagInput } from './TagInput';
 
 interface TypeCardProps {
@@ -194,6 +194,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     if (type === 'video') return "Cole o link do YouTube, Drive ou MP4 aqui...";
     if (type === 'audio') return t('url.placeholder.audio');
     if (type === 'image') return t('url.placeholder.image');
+    if (type === 'html') return "URL da página HTML interativa...";
     return t('url.placeholder.pdf');
   };
 
@@ -233,6 +234,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                   <TypeCard value="image" icon={ImageIcon} label="IMG" currentType={type} onSelect={setType} />
                   <TypeCard value="video" icon={Video} label="Video" currentType={type} onSelect={setType} />
                   <TypeCard value="audio" icon={Headphones} label="Áudio" currentType={type} onSelect={setType} />
+                  <TypeCard value="html" icon={Globe} label="HTML" currentType={type} onSelect={setType} />
                 </div>
               </div>
 

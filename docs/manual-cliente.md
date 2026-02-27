@@ -76,6 +76,7 @@ Uma lista vertical com os tipos de material:
 | 🖼️ | **Imagem** | Fotos e infográficos |
 | 🎬 | **Vídeo** | Vídeo-aulas e tutoriais |
 | 🎧 | **Áudio** | Podcasts e gravações |
+| 🌐 | **Página Interativa** | Landing pages, infográficos interativos e conteúdo HTML |
 
 Cada tipo mostra um **contador** (ex: "PDF 12") indicando quantos materiais estão disponíveis.
 
@@ -110,7 +111,7 @@ No topo da área principal, há uma barra de busca:
 
 Cada material é exibido como um **card** contendo:
 - **Título** do material (no idioma selecionado)
-- **Tipo** — ícone + texto (PDF, Imagem, Vídeo, Áudio)
+- **Tipo** — ícone + texto (PDF, Imagem, Vídeo, Áudio, Página Interativa)
 - **Idiomas disponíveis** — badges com as siglas (PT, EN, ES)
 - **XP** — quantidade de pontos que o material vale
 - **Status de progresso** — se você já iniciou ou concluiu
@@ -229,6 +230,7 @@ Ao clicar em um material (seja na grade ou na timeline da trilha), o **Visualiza
 - **Imagens:** Exibição em tela cheia com zoom
 - **Vídeos:** Player de vídeo integrado (com legenda quando disponível)
 - **Áudios:** Player de áudio
+- **Páginas Interativas:** Página HTML exibida em iframe seguro (sandbox)
 
 ### Controles
 - **Botão fechar (X)** — no canto superior direito
