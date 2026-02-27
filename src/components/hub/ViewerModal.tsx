@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType } from '../../types';
-import { X, ExternalLink, RefreshCw, PlayCircle, Youtube } from 'lucide-react';
+import { X, ExternalLink, RefreshCw, PlayCircle, Youtube, Headphones } from 'lucide-react';
 
 interface ViewerModalProps {
   material: Material | null;
@@ -124,6 +124,30 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
       <div className="flex-1 w-full h-full flex items-center justify-center bg-black overflow-hidden relative">
         {(() => {
+          if (material.type === 'audio') {
+            const audioSrc = embedConfig.provider === 'Google Drive' && embedConfig.nativeUrl ? embedConfig.nativeUrl : asset.url;
+            return (
+              <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-8 gap-8">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-purple-500/20 blur-3xl rounded-full"></div>
+                  <div className="relative w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm">
+                    <Headphones size={64} className="text-purple-400" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
+                <audio
+                  controls
+                  controlsList="nodownload"
+                  className="w-full max-w-lg"
+                  autoPlay
+                  preload="metadata"
+                >
+                  <source src={audioSrc} />
+                  <p className="text-white text-center">Seu navegador não suporta o player de áudio.</p>
+                </audio>
+              </div>
+            );
+          }
           if (material.type === 'image') {
             return (
               <div className="relative w-full h-full flex items-center justify-center p-4">

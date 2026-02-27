@@ -1,6 +1,6 @@
 export type Role = 'client' | 'distributor' | 'consultant' | 'super_admin';
 export type Language = 'pt-br' | 'en-us' | 'es-es';
-export type MaterialType = 'image' | 'pdf' | 'video';
+export type MaterialType = 'image' | 'pdf' | 'video' | 'audio';
 export type UserStatus = 'pending' | 'active' | 'inactive' | 'rejected';
 export type TranslationStatus = 'draft' | 'review' | 'published';
 export type ProgressStatus = 'started' | 'completed';
