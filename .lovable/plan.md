@@ -1,55 +1,103 @@
 
 
-## Diagnóstico
+## Análise do Estado Atual
 
-### Cor roxa encontrada
-Em `src/pages/Dashboard.tsx`, linhas 424 e 459, há `rgba(168,85,247,0.1)` hardcoded nos gradientes dos banners de "Trilhas" e "Materiais Disponíveis". Esse roxo não faz parte do branding.
+Hoje existe **1 ColorScheme** (light/dark) com 38 tokens aplicados globalmente. Porém:
 
-### Cores hardcoded fora do sistema de temas
-Encontrei dezenas de cores Tailwind hardcoded (`text-yellow-400`, `fill-yellow-400`, `text-green-600`, `bg-green-500/10`, `text-blue-400`, `text-orange-500`, `bg-red-500/10`, etc.) espalhadas por:
-- `Dashboard.tsx` — estrelas XP, status badges
-- `ManagerDashboard.tsx` — status badges, ranking medals, ícones
-- `MaterialCard.tsx`, `CollectionCard.tsx` — estrelas XP
-- `Layout.tsx` — estrela de nível
-- `ThemeEditorPanel.tsx` — ícones Sun/Moon
-- `UserEditModal.tsx` — status select
-- `CollectionFormModal.tsx`, `MaterialFormModal.tsx` — ícone XP
-- `TrailCompletionCelebration.tsx` — estrela XP
-- `SqlSetupModal.tsx` — ícone database
+- **GlobalEffects.tsx**: 3 blobs com cores hardcoded (`bg-amber-500`, `bg-yellow-500`, `bg-amber-400`) e grain com opacidade fixa (`opacity-20`)
+- **AuthPage.tsx**: Usa `var(--color-accent)` para blobs mas tem opacidades fixas
+- **Dashboard.tsx**: Usa variáveis de tema mas sem controle de efeitos de fundo
+- **ManagerDashboard.tsx**: Idem
+- **Admin.tsx**: Idem
+- **Layout.tsx** (header): Usa variáveis mas sem granularidade por ambiente
 
-Essas cores não são controladas pelo editor de temas do super_admin.
-
----
+Cada ambiente aplica cores em contextos diferentes (headers, cards, efeitos, backgrounds).
 
 ## Plano de Implementação
 
-### 1. Remover roxo do Dashboard
-Substituir `rgba(168,85,247,0.1)` por `color-mix(in srgb, var(--color-gradient-mid) 10%, transparent)` nas linhas 424 e 459.
+### 1. Expandir o tipo `ColorScheme` e criar `EnvironmentTheme`
 
-### 2. Substituir todas as cores Tailwind hardcoded por variáveis CSS do tema
-Em todos os arquivos listados acima, trocar:
-- `text-yellow-400` / `fill-yellow-400` → `style={{ color: 'var(--color-warning)' }}` (estrelas XP)
-- `text-green-600` / `bg-green-500/10` → `style={{ color: 'var(--color-success)', backgroundColor: 'var(--color-success-bg)' }}`
-- `text-red-600` / `bg-red-500/10` → `style={{ color: 'var(--color-error)', backgroundColor: 'var(--color-error-bg)' }}`
-- `text-yellow-600` / `bg-yellow-500/10` → `style={{ color: 'var(--color-warning)', backgroundColor: 'var(--color-warning-bg)' }}`
-- `text-blue-400` / `text-blue-500` → `style={{ color: 'var(--color-accent)' }}`
-- `text-orange-500` → `style={{ color: 'var(--color-warning)' }}`
-- `bg-yellow-100 text-yellow-700` (medals) → variáveis do tema
-- `bg-gray-100 text-gray-700` (medals) → variáveis do tema
-- `bg-orange-100 text-orange-700` (medals) → variáveis do tema
+Adicionar em `src/types.ts` um novo tipo `EnvironmentEffects` com tokens granulares para cada ambiente:
 
-### Arquivos a editar (~10)
-1. `src/pages/Dashboard.tsx` — roxo + estrelas
-2. `src/pages/ManagerDashboard.tsx` — status, medals, ícones
-3. `src/components/hub/MaterialCard.tsx` — estrela XP
-4. `src/components/hub/CollectionCard.tsx` — estrela XP
-5. `src/components/hub/Layout.tsx` — estrela nível
-6. `src/components/hub/ThemeEditorPanel.tsx` — ícones Sun/Moon
-7. `src/components/hub/UserEditModal.tsx` — status select
-8. `src/components/hub/CollectionFormModal.tsx` — ícone XP
-9. `src/components/hub/MaterialFormModal.tsx` — ícone XP
-10. `src/components/hub/TrailCompletionCelebration.tsx` — estrela XP
+```typescript
+export interface EnvironmentEffects {
+  // Background
+  pageBg: string;           // Fundo da página do ambiente
+  // Blob effects
+  blob1Color: string;       // Cor do blob 1
+  blob2Color: string;       // Cor do blob 2
+  blob3Color: string;       // Cor do blob 3
+  blobOpacity: string;      // Opacidade dos blobs (ex: "0.20")
+  blobSize: string;         // Tamanho dos blobs em rem (ex: "18")
+  blobBlur: string;         // Blur dos blobs em px (ex: "64")
+  // Grain / Noise
+  grainOpacity: string;     // Opacidade do grain (ex: "0.20")
+  grainBlendMode: string;   // Blend mode (ex: "multiply")
+  grainContrast: string;    // Contrast (ex: "150")
+  // Glassmorphism overrides
+  glassOpacity: string;     // Opacidade do efeito glass
+  glassBlur: string;        // Blur do glass em px
+  glassBorderOpacity: string; // Opacidade da borda glass
+}
 
-### Resultado
-Todas as cores visíveis da aplicação passarão a ser controladas pelos ~38 tokens do editor de temas no Admin. Nenhuma cor hardcoded restará nos componentes.
+export type EnvironmentKey = 'auth' | 'client' | 'manager' | 'admin' | 'global';
+
+export type EnvironmentThemes = Record<EnvironmentKey, EnvironmentEffects>;
+```
+
+### 2. Criar defaults para cada ambiente
+
+Em `src/lib/themeDefaults.ts`, adicionar `DEFAULT_ENVIRONMENT_EFFECTS` com valores padrão para cada ambiente (`auth`, `client`, `manager`, `admin`, `global`).
+
+### 3. Expandir `SystemConfig` e banco de dados
+
+- Adicionar campo `environment_themes` (jsonb) na tabela `system_config` via migration
+- Adicionar `environmentThemes: EnvironmentThemes` ao tipo `SystemConfig`
+
+### 4. Atualizar `BrandContext.tsx`
+
+- Injetar CSS variables por ambiente: `--env-blob1-color`, `--env-blob-opacity`, `--env-grain-opacity`, etc.
+- Expor o ambiente ativo para componentes consumirem
+
+### 5. Refatorar `GlobalEffects.tsx`
+
+- Receber o `environmentKey` ativo como prop ou via context
+- Substituir todas as cores hardcoded por CSS variables do ambiente:
+  - `bg-amber-500` → `style={{ backgroundColor: 'var(--env-blob1-color)' }}`
+  - `opacity-20` → `style={{ opacity: 'var(--env-blob-opacity)' }}`
+  - Grain opacity, contrast, blend mode → variáveis
+
+### 6. Criar aba "Ambientes" no ThemeEditorPanel
+
+Nova seção no editor de temas com **5 sub-abas** (Global, Login, Cliente, Gestor, Admin). Cada sub-aba expõe:
+
+- **Background**: Cor de fundo da página
+- **Blobs**: 3 color pickers (blob 1, 2, 3) + sliders para opacidade, tamanho, blur
+- **Grain**: Slider de opacidade, selector de blend mode, slider de contraste
+- **Glass**: Sliders para opacidade, blur, borda
+
+Layout em grid de 2 colunas seguindo o padrão atual do ThemeEditorPanel.
+
+### 7. Aplicar contexto de ambiente nos pages
+
+- `AuthPage.tsx`, `Dashboard.tsx`, `ManagerDashboard.tsx`, `Admin.tsx` — cada um define qual `environmentKey` está ativo (via context ou prop no GlobalEffects)
+- O GlobalEffects renderiza os efeitos com as variáveis CSS do ambiente ativo
+
+---
+
+### Resumo de arquivos afetados
+
+| Arquivo | Ação |
+|---|---|
+| `src/types.ts` | Adicionar `EnvironmentEffects`, `EnvironmentKey`, `EnvironmentThemes` |
+| `src/lib/themeDefaults.ts` | Adicionar defaults por ambiente |
+| `supabase/migrations/` | Migration para campo `environment_themes` |
+| `src/contexts/BrandContext.tsx` | Injetar CSS vars por ambiente |
+| `src/components/hub/GlobalEffects.tsx` | Refatorar para usar variáveis de ambiente |
+| `src/components/hub/ThemeEditorPanel.tsx` | Nova aba "Ambientes" com controles granulares |
+| `src/pages/AuthPage.tsx` | Definir environmentKey = 'auth' |
+| `src/pages/Dashboard.tsx` | Definir environmentKey = 'client' |
+| `src/pages/ManagerDashboard.tsx` | Definir environmentKey = 'manager' |
+| `src/pages/Admin.tsx` | Definir environmentKey = 'admin' |
+| `src/App.tsx` | Passar environmentKey ao GlobalEffects |
 
