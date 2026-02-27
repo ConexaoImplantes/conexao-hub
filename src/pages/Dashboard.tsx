@@ -482,7 +482,7 @@ export const Dashboard: React.FC = () => {
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhum resultado encontrado</h3>
                 <p className="text-sm max-w-xs" style={{ color: 'var(--color-text-muted)' }}>{t('no.materials')}</p>
                 {(searchTerm || filterType !== 'all' || filterTag) && (
-                  <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95 text-white" style={{ backgroundColor: 'var(--color-text-main)' }}>
+                  <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95" style={{ background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)', color: 'var(--color-accent-fg, #fff)' }}>
                     Limpar filtros
                   </button>
                 )}
