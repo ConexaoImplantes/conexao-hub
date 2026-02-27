@@ -1,51 +1,34 @@
 
 
-## Problema
+## Substituir todos os `alert()` por toasts da plataforma
 
-Quando o token é inválido/expirado/usado, o `validateInviteToken` retorna `null` e o `tokenError` é exibido, mas o formulário de cadastro continua visível e funcional. O usuário pode preencher e enviar o cadastro normalmente, criando conta sem convite válido. Além disso, acessar `?role=client` (sem token) também permite cadastro livre.
+### Problema
+Notificações usam `alert()` nativo do navegador em vez dos toasts estilizados da plataforma (sonner).
 
-## Plano de Correção
+### Arquivos e alterações
 
-### 1. Adicionar coluna `status` à tabela `invite_tokens`
+**1. `src/pages/Admin.tsx`** (~13 ocorrências)
+- Importar `toast` de `sonner`
+- Substituir cada `alert(mensagem)` por `toast.success(mensagem)` ou `toast.error(mensagem)` conforme o contexto (sucesso vs erro)
+- Linhas afetadas: 298, 340, 349, 382, 391, 409, 424, 454, 478, 560, 562, 1731
 
-**Migration SQL:**
-```sql
-CREATE TYPE public.invite_token_status AS ENUM ('active', 'used', 'expired');
+**2. `src/contexts/AuthContext.tsx`** (1 ocorrência)
+- Importar `toast` de `sonner`
+- Linha 177: `alert("Cadastro realizado...")` → `toast.success("Cadastro realizado...")`
 
-ALTER TABLE public.invite_tokens 
-  ADD COLUMN status public.invite_token_status NOT NULL DEFAULT 'active';
+**3. `src/pages/AuthPage.tsx`** (2 ocorrências)
+- Importar `toast` de `sonner`
+- Linha 104: `alert(result)` → `toast.success(result)`
+- Linha 106: `alert("Erro: " + e.message)` → `toast.error("Erro: " + e.message)`
 
--- Marcar tokens já usados
-UPDATE public.invite_tokens SET status = 'used' WHERE used_at IS NOT NULL;
+**4. `src/components/hub/UserCommunicationModal.tsx`** (3 ocorrências)
+- Importar `toast` de `sonner`
+- Linha 30: `alert('Webhook URL não configurada...')` → `toast.error(...)`
+- Linha 47: `alert(t('comm.success'))` → `toast.success(...)`
+- Linha 50: `alert('Erro ao enviar.')` → `toast.error(...)`
 
--- Marcar tokens expirados
-UPDATE public.invite_tokens SET status = 'expired' WHERE used_at IS NULL AND expires_at < now();
-```
-
-### 2. Bloquear formulário quando token inválido
-
-**Arquivo:** `src/pages/AuthPage.tsx`
-
-- Quando `tokenError` estiver definido (token inválido/expirado/usado), **esconder o formulário inteiro** e mostrar apenas a mensagem de erro com um botão "Voltar ao Login"
-- Remover o fallback `?role=` sem token — cadastro só é permitido com token válido
-- Após submit com sucesso, o token já é marcado como usado via `markInviteTokenUsed`
-
-### 3. Atualizar `validateInviteToken` para usar status
-
-**Arquivo:** `src/lib/mockDb.ts`
-
-- Adicionar filtro `.eq('status', 'active')` na query de validação (além dos filtros existentes de `used_at` e `expires_at`)
-
-### 4. Atualizar `markInviteTokenUsed` para setar status
-
-**Arquivo:** `src/lib/mockDb.ts`
-
-- Incluir `status: 'used'` no update junto com `used_by` e `used_at`
-
-### 5. Exibir status nos tokens do Admin
-
-**Arquivo:** `src/pages/Admin.tsx`
-
-- Mostrar badge de status (`Ativo`, `Usado`, `Expirado`) em cada token na lista de convites
-- Calcular status visualmente: se `used_at` → "Usado", se `expires_at < now()` → "Expirado", senão → "Ativo"
+### Regra de mapeamento
+- Mensagens de sucesso → `toast.success()`
+- Mensagens de erro → `toast.error()`
+- Mensagens informativas → `toast.info()`
 
