@@ -515,6 +515,7 @@ export const mockDb = {
       id: t.id,
       token: t.token,
       role: t.role,
+      status: t.status || (t.used_at ? 'used' : new Date(t.expires_at) < new Date() ? 'expired' : 'active'),
       usedBy: t.used_by,
       usedAt: t.used_at,
       expiresAt: t.expires_at,
@@ -544,6 +545,7 @@ export const mockDb = {
       .from('invite_tokens')
       .select('*')
       .eq('token', token)
+      .eq('status', 'active')
       .is('used_at', null)
       .gt('expires_at', new Date().toISOString())
       .single();
@@ -554,7 +556,7 @@ export const mockDb = {
   markInviteTokenUsed: async (tokenId: string, userId: string) => {
     const { error } = await supabase
       .from('invite_tokens')
-      .update({ used_by: userId, used_at: new Date().toISOString() } as any)
+      .update({ used_by: userId, used_at: new Date().toISOString(), status: 'used' } as any)
       .eq('id', tokenId);
     if (error) console.error('Error marking token as used:', error);
   },

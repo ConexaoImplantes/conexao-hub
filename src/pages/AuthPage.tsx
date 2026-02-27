@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Box, Sparkles, Info, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react';
+import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Sparkles, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react';
 import { seedUsers } from '../lib/seed';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
@@ -51,10 +51,10 @@ export const AuthPage: React.FC = () => {
         }
         setTokenValidating(false);
       });
-    } else if (roleParam && ['client', 'distributor', 'consultant', 'super_admin'].includes(roleParam)) {
+    } else if (roleParam) {
+      // Cadastro sem token não é permitido — redireciona para login
+      setTokenError('Cadastro permitido apenas via link de convite válido.');
       setIsLogin(false);
-      setInvitedRole(roleParam);
-      setRole(roleParam);
     }
   }, []);
 
@@ -170,11 +170,19 @@ export const AuthPage: React.FC = () => {
             )}
 
             {tokenError && (
-              <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-sm flex flex-col gap-2 animate-slide-up">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="shrink-0 mt-0.5" size={16} />
-                  <span className="leading-snug">{tokenError}</span>
+              <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-xl text-center animate-slide-up space-y-4">
+                <div className="p-3 bg-red-500/20 rounded-full w-fit mx-auto">
+                  <AlertTriangle size={28} className="text-red-500" />
                 </div>
+                <p className="text-sm font-semibold text-red-600 dark:text-red-400 leading-snug">{tokenError}</p>
+                <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Solicite um novo link de cadastro ao administrador.</p>
+                <button
+                  onClick={clearInvite}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all hover:scale-105"
+                  style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)', border: '1px solid var(--color-border)' }}
+                >
+                  <ArrowLeft size={16} /> Voltar ao Login
+                </button>
               </div>
             )}
 
@@ -194,17 +202,6 @@ export const AuthPage: React.FC = () => {
                 </button>
           }
 
-            {!isLogin && !invitedRole && !isDbMissing &&
-          <div className="rounded-xl p-4 text-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 10%, transparent)' }}>
-                    <div className="flex items-center justify-center gap-2 mb-2 font-bold text-xs uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>
-                        <Info size={14} /> Contas Demo
-                    </div>
-                    <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                        {t('auth.hint')}
-                    </p>
-                </div>
-          }
-
             {error &&
           <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-sm flex flex-col gap-2 animate-slide-up">
                 <div className="flex items-start gap-3">
@@ -220,6 +217,7 @@ export const AuthPage: React.FC = () => {
           }
         </div>
 
+        {!tokenError && !tokenValidating && (isLogin || inviteToken) && (
         <form onSubmit={handleSubmit} className="space-y-5 relative z-10">
           {!isLogin &&
           <div className="group">
@@ -258,16 +256,6 @@ export const AuthPage: React.FC = () => {
               </div>
 
               <div className="grid grid-cols-1 gap-5">
-                 {!invitedRole &&
-              <div className="group">
-                      <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Tipo de Perfil</label>
-                      <select className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={role} onChange={(e) => setRole(e.target.value)}>
-                        <option value="client">Cliente</option>
-                        <option value="distributor">Distribuidor</option>
-                        <option value="consultant">Consultor</option>
-                      </select>
-                    </div>
-              }
                  {invitedRole &&
               <div className="rounded-xl p-4 flex items-center gap-3" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
                       <div className="p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
@@ -295,11 +283,12 @@ export const AuthPage: React.FC = () => {
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2 text-zinc-900">
                 {!isLogin && invitedRole && <UserPlus size={20} />}
-                {isLogin ? 'Entrar na Plataforma' : invitedRole ? 'Confirmar Cadastro' : 'Criar Nova Conta'}
+                {isLogin ? 'Entrar na Plataforma' : 'Confirmar Cadastro'}
                 <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
              </span>
           </button>
         </form>
+        )}
 
         <div className="mt-8 text-center text-sm space-y-8 relative z-10">
           {!invitedRole &&
