@@ -1,56 +1,51 @@
 
 
-## Plano Completo
+## Problema
 
-Entendi todas as mudanças solicitadas. Aqui está o resumo do que farei:
+Quando o token é inválido/expirado/usado, o `validateInviteToken` retorna `null` e o `tokenError` é exibido, mas o formulário de cadastro continua visível e funcional. O usuário pode preencher e enviar o cadastro normalmente, criando conta sem convite válido. Além disso, acessar `?role=client` (sem token) também permite cadastro livre.
 
-1. **Corrigir exclusão de usuários** -- o `deleteUser` atual só remove da tabela `profiles`, deixando o registro em `auth.users` e `user_roles` intactos. O usuário pode fazer login de novo e o trigger recria o perfil.
-2. **Adicionar botão para deletar tokens de convite usados** -- atualmente o botão de excluir só aparece em tokens **não usados** (`!isUsed`). Tokens usados/expirados ficam acumulando sem opção de limpeza.
-3. **Adicionar personalização de gradientes** no painel de temas -- os gradientes da plataforma (logo, botões, texto shimmer, liquid-glass-gold, hero banners) estão hardcoded com `#c9a655`/`#e8d48b`/`#a8873a`. Precisam ser configuráveis via ThemeEditorPanel.
+## Plano de Correção
 
----
+### 1. Adicionar coluna `status` à tabela `invite_tokens`
 
-### Tarefa 1: Edge Function `delete-user` + atualizar `mockDb.deleteUser`
+**Migration SQL:**
+```sql
+CREATE TYPE public.invite_token_status AS ENUM ('active', 'used', 'expired');
 
-**Criar:** `supabase/functions/delete-user/index.ts`
-- CORS headers
-- Valida JWT do chamador via `supabase.auth.getUser()`
-- Verifica role `super_admin` via `has_role()`
-- Deleta `user_roles` onde `user_id = userId`
-- Deleta `profiles` onde `id = userId`
-- Usa `supabaseAdmin.auth.admin.deleteUser(userId)` com service role key
-- `verify_jwt = false` no config.toml, validação manual no código
+ALTER TABLE public.invite_tokens 
+  ADD COLUMN status public.invite_token_status NOT NULL DEFAULT 'active';
 
-**Atualizar:** `src/lib/mockDb.ts` (linha 182-185)
-- Substituir delete direto por `supabase.functions.invoke('delete-user', { body: { userId } })`
+-- Marcar tokens já usados
+UPDATE public.invite_tokens SET status = 'used' WHERE used_at IS NOT NULL;
 
-### Tarefa 2: Permitir exclusão de tokens usados/expirados
+-- Marcar tokens expirados
+UPDATE public.invite_tokens SET status = 'expired' WHERE used_at IS NULL AND expires_at < now();
+```
 
-**Atualizar:** `src/pages/Admin.tsx` (linha ~1791)
-- Remover a condição `{!isUsed && (...)}` que esconde o botão de excluir em tokens usados
-- Mostrar o botão `Trash2` para **todos** os tokens (usados, expirados e ativos)
+### 2. Bloquear formulário quando token inválido
 
-### Tarefa 3: Personalização de gradientes no tema
+**Arquivo:** `src/pages/AuthPage.tsx`
 
-**Adicionar ao `ColorScheme`** (em `src/types.ts`):
-- `gradientStart` -- cor inicial do gradiente dourado (default: `#c9a655`)
-- `gradientMid` -- cor intermediária (default: `#e8d48b`)
-- `gradientEnd` -- cor final (default: `#a8873a`)
+- Quando `tokenError` estiver definido (token inválido/expirado/usado), **esconder o formulário inteiro** e mostrar apenas a mensagem de erro com um botão "Voltar ao Login"
+- Remover o fallback `?role=` sem token — cadastro só é permitido com token válido
+- Após submit com sucesso, o token já é marcado como usado via `markInviteTokenUsed`
 
-**Atualizar `src/lib/themeDefaults.ts`:**
-- Adicionar os 3 novos tokens nos defaults light e dark
+### 3. Atualizar `validateInviteToken` para usar status
 
-**Atualizar `src/contexts/BrandContext.tsx`:**
-- Gerar CSS vars `--color-gradient-start`, `--color-gradient-mid`, `--color-gradient-end`
+**Arquivo:** `src/lib/mockDb.ts`
 
-**Atualizar `src/components/hub/ThemeEditorPanel.tsx`:**
-- Nova categoria "Gradientes" com os 3 tokens
-- Preview do gradiente resultante em tempo real
+- Adicionar filtro `.eq('status', 'active')` na query de validação (além dos filtros existentes de `used_at` e `expires_at`)
 
-**Atualizar CSS e componentes** para usar as variáveis:
-- `src/index.css`: `.liquid-glass-gold` usar as vars
-- `src/pages/AuthPage.tsx`: logo, botão submit, texto shimmer
-- `src/pages/Dashboard.tsx`: hero banners
+### 4. Atualizar `markInviteTokenUsed` para setar status
 
-**Migration SQL:** adicionar os novos campos no `theme_light` e `theme_dark` defaults da tabela `system_config`
+**Arquivo:** `src/lib/mockDb.ts`
+
+- Incluir `status: 'used'` no update junto com `used_by` e `used_at`
+
+### 5. Exibir status nos tokens do Admin
+
+**Arquivo:** `src/pages/Admin.tsx`
+
+- Mostrar badge de status (`Ativo`, `Usado`, `Expirado`) em cada token na lista de convites
+- Calcular status visualmente: se `used_at` → "Usado", se `expires_at < now()` → "Expirado", senão → "Ativo"
 
