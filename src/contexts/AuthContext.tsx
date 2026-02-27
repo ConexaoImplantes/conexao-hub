@@ -110,7 +110,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       const mockId = role === 'super_admin' ? 'mock-admin' :
                      role === 'client' ? 'mock-client' :
-                     role === 'distributor' ? 'mock-distrib' : 'mock-consult';
+                     role === 'distributor' ? 'mock-distrib' :
+                     role === 'manager' ? 'mock-manager' : 'mock-consult';
 
       const profile = await mockDb.getProfileById(mockId);
       if (profile) {

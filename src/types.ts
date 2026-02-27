@@ -1,4 +1,4 @@
-export type Role = 'client' | 'distributor' | 'consultant' | 'super_admin';
+export type Role = 'client' | 'distributor' | 'consultant' | 'manager' | 'super_admin';
 export type Language = 'pt-br' | 'en-us' | 'es-es';
 export type MaterialType = 'image' | 'pdf' | 'video' | 'audio';
 export type UserStatus = 'pending' | 'active' | 'inactive' | 'rejected';
