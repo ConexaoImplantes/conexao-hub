@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType } from '../../types';
-import { X, ExternalLink, RefreshCw, PlayCircle, Youtube, Headphones } from 'lucide-react';
+import { X, ExternalLink, RefreshCw, PlayCircle, Youtube, Headphones, Globe } from 'lucide-react';
 
 interface ViewerModalProps {
   material: Material | null;
@@ -124,6 +124,19 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
       <div className="flex-1 w-full h-full flex items-center justify-center bg-black overflow-hidden relative">
         {(() => {
+          if (material.type === 'html') {
+            return (
+              <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
+                <iframe
+                  src={asset.url}
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                  className="w-full h-full rounded-lg bg-white shadow-2xl"
+                  title="Interactive Page"
+                  style={{ border: 'none' }}
+                />
+              </div>
+            );
+          }
           if (material.type === 'audio') {
             const audioSrc = embedConfig.provider === 'Google Drive' && embedConfig.nativeUrl ? embedConfig.nativeUrl : asset.url;
             return (

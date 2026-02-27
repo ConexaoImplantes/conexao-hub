@@ -499,7 +499,7 @@ export type Database = {
         | "super_admin"
         | "manager"
       app_status: "pending" | "active" | "inactive" | "rejected"
-      material_type: "pdf" | "image" | "video" | "audio"
+      material_type: "pdf" | "image" | "video" | "audio" | "html"
       progress_status: "started" | "completed"
       translation_status: "draft" | "review" | "published"
     }
@@ -638,7 +638,7 @@ export const Constants = {
         "manager",
       ],
       app_status: ["pending", "active", "inactive", "rejected"],
-      material_type: ["pdf", "image", "video", "audio"],
+      material_type: ["pdf", "image", "video", "audio", "html"],
       progress_status: ["started", "completed"],
       translation_status: ["draft", "review", "published"],
     },

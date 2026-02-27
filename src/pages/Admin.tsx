@@ -650,6 +650,7 @@ export const Admin: React.FC = () => {
                 <option value="image">{t("material.type.image")}</option>
                 <option value="video">{t("material.type.video")}</option>
                 <option value="audio">{t("material.type.audio")}</option>
+                <option value="html">{t("material.type.html")}</option>
               </select>
               <select
               className="flex-1 md:w-40 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none"
@@ -1037,6 +1038,8 @@ export const Admin: React.FC = () => {
               <option value="pdf">{t("material.type.pdf")}</option>
               <option value="image">{t("material.type.image")}</option>
               <option value="video">{t("material.type.video")}</option>
+              <option value="audio">{t("material.type.audio")}</option>
+              <option value="html">{t("material.type.html")}</option>
               <option value="trails">Trilhas</option>
             </select>
             <select

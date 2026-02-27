@@ -1,6 +1,6 @@
 import React from 'react';
 import { Material, Language, UserProgress } from '../../types';
-import { FileText, Image as ImageIcon, Video, Eye, Lock, ChevronRight, CheckCircle, PlayCircle, Star, Tag, Headphones } from 'lucide-react';
+import { FileText, Image as ImageIcon, Video, Eye, Lock, ChevronRight, CheckCircle, PlayCircle, Star, Tag, Headphones, Globe } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 
 interface MaterialCardProps {
@@ -18,6 +18,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
       case 'image': return <ImageIcon size={24} />;
       case 'video': return <Video size={24} />;
       case 'audio': return <Headphones size={24} />;
+      case 'html': return <Globe size={24} />;
     }
   };
 
@@ -27,6 +28,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
       case 'image': return t('material.type.image');
       case 'video': return t('material.type.video');
       case 'audio': return t('material.type.audio');
+      case 'html': return t('material.type.html');
     }
   }
 
@@ -36,6 +38,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         case 'image': return 'from-amber-500/20 to-yellow-500/5';
         case 'video': return 'from-amber-400/20 to-yellow-400/5';
         case 'audio': return 'from-amber-400/20 to-yellow-400/5';
+        case 'html': return 'from-teal-500/20 to-cyan-500/5';
         default: return 'from-amber-500/20 to-transparent';
       }
   }
@@ -46,6 +49,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         case 'image': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
         case 'video': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
         case 'audio': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
+        case 'html': return 'group-hover:border-teal-500/50 group-hover:shadow-teal-500/20';
         default: return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
      }
   }

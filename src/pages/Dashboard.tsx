@@ -12,7 +12,7 @@ import { usePagination } from '../hooks/usePagination';
 import {
   Search, Grid, FileText, Image as ImageIcon, Video, Filter, ChevronRight, ChevronLeft,
   Layers, Sparkles, BookOpen, Tag, Star, ArrowLeft, Trophy, CheckCircle, PlayCircle, Lock,
-  Headphones
+  Headphones, Globe
 } from 'lucide-react';
 import { Progress } from '../components/ui/progress';
 import { TrailCompletionCelebration } from '../components/hub/TrailCompletionCelebration';
@@ -127,6 +127,7 @@ export const Dashboard: React.FC = () => {
       image: base.filter(m => m.type === 'image').length,
       video: base.filter(m => m.type === 'video').length,
       audio: base.filter(m => m.type === 'audio').length,
+      html: base.filter(m => m.type === 'html').length,
     };
   }, [materials, user]);
 
@@ -260,6 +261,7 @@ export const Dashboard: React.FC = () => {
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="image" icon={ImageIcon} label={t('filter.image')} count={counts.image} active={filterType === 'image'} /></div>
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="video" icon={Video} label={t('filter.video')} count={counts.video} active={filterType === 'video'} /></div>
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="audio" icon={Headphones} label={t('filter.audio')} count={counts.audio} active={filterType === 'audio'} /></div>
+              <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="html" icon={Globe} label={t('filter.html')} count={counts.html} active={filterType === 'html'} /></div>
 
               {/* Tag filter */}
               {allTags.length > 0 && (

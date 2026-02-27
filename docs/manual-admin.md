@@ -41,7 +41,7 @@ O painel do administrador possui **5 abas**:
 A barra de ferramentas no topo contém:
 
 1. **Campo de busca** — busca pelo título do material.
-2. **Filtro por tipo** — Todos, PDF, Imagem, Vídeo, Áudio.
+2. **Filtro por tipo** — Todos, PDF, Imagem, Vídeo, Áudio, Página Interativa.
 3. **Filtro por status** — Todos, Ativo, Inativo.
 4. **Botão "+ Adicionar Material"** — abre o formulário de criação.
 
@@ -52,7 +52,7 @@ Colunas (desktop):
 | Coluna | Descrição |
 |---|---|
 | **Título** | Nome do material |
-| **Tipo** | PDF, Imagem, Vídeo ou Áudio |
+| **Tipo** | PDF, Imagem, Vídeo, Áudio ou Página Interativa |
 | **Status** | Ativo (verde) ou Inativo (cinza) |
 | **Permissões** | Perfis com acesso (C, D, G, A...) |
 | **Assets** | Idiomas disponíveis (PT, EN, ES) |
@@ -73,7 +73,7 @@ Colunas (desktop):
 1. Clique em **"+ Adicionar Material"**.
 2. O modal de criação abre com os campos:
    - **Título** (em PT, EN, ES) — pelo menos PT é obrigatório
-   - **Tipo** — PDF, Imagem, Vídeo ou Áudio
+   - **Tipo** — PDF, Imagem, Vídeo, Áudio ou Página Interativa (HTML)
    - **XP** — pontos de experiência
    - **Tags** — palavras-chave para filtro
    - **Perfis permitidos** — quais perfis podem ver o material
