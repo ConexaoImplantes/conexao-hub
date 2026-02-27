@@ -13,7 +13,10 @@ export const AuthPage: React.FC = () => {
   const { t } = useLanguage();
   const { config } = useBrand();
 
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return !params.has('token') && !params.has('role');
+  });
   const [error, setError] = useState('');
   const [showSqlSetup, setShowSqlSetup] = useState(false);
   const [email, setEmail] = useState('');
