@@ -1,103 +1,28 @@
 
 
-## Análise do Estado Atual
+## Plano: Criar Documento de Branding Completo
 
-Hoje existe **1 ColorScheme** (light/dark) com 38 tokens aplicados globalmente. Porém:
+Criar o arquivo `docs/design-system.md` na raiz do projeto com a documentação completa e detalhada de:
 
-- **GlobalEffects.tsx**: 3 blobs com cores hardcoded (`bg-amber-500`, `bg-yellow-500`, `bg-amber-400`) e grain com opacidade fixa (`opacity-20`)
-- **AuthPage.tsx**: Usa `var(--color-accent)` para blobs mas tem opacidades fixas
-- **Dashboard.tsx**: Usa variáveis de tema mas sem controle de efeitos de fundo
-- **ManagerDashboard.tsx**: Idem
-- **Admin.tsx**: Idem
-- **Layout.tsx** (header): Usa variáveis mas sem granularidade por ambiente
+### Conteúdo do documento
 
-Cada ambiente aplica cores em contextos diferentes (headers, cards, efeitos, backgrounds).
+1. **Todas as 38 cores do ColorScheme** — organizadas por categoria (Base, Tipografia, Bordas, Marca, Gradientes, Feedback, Componentes, Efeitos Visuais), com nome do token, variável CSS, valor HEX padrão (light e dark) e explicação de uso
 
-## Plano de Implementação
+2. **Efeitos de Ambiente (EnvironmentEffects)** — todos os 13 tokens por ambiente (pageBg, blob1/2/3Color, blobOpacity/Size/Blur, grainOpacity/BlendMode/Contrast, glassOpacity/Blur/BorderOpacity) com valores padrão de cada ambiente (Global, Auth, Client, Manager, Admin)
 
-### 1. Expandir o tipo `ColorScheme` e criar `EnvironmentTheme`
+3. **Efeitos visuais CSS** — Liquid Glass, Liquid Glass Gold, Icon Box (3 tamanhos), scrollbar customizada, com o CSS completo
 
-Adicionar em `src/types.ts` um novo tipo `EnvironmentEffects` com tokens granulares para cada ambiente:
+4. **Animações** — Todas as 6 keyframes (blob, fade-in, slide-up, shimmer, float, accordion) com duração, easing e uso
 
-```typescript
-export interface EnvironmentEffects {
-  // Background
-  pageBg: string;           // Fundo da página do ambiente
-  // Blob effects
-  blob1Color: string;       // Cor do blob 1
-  blob2Color: string;       // Cor do blob 2
-  blob3Color: string;       // Cor do blob 3
-  blobOpacity: string;      // Opacidade dos blobs (ex: "0.20")
-  blobSize: string;         // Tamanho dos blobs em rem (ex: "18")
-  blobBlur: string;         // Blur dos blobs em px (ex: "64")
-  // Grain / Noise
-  grainOpacity: string;     // Opacidade do grain (ex: "0.20")
-  grainBlendMode: string;   // Blend mode (ex: "multiply")
-  grainContrast: string;    // Contrast (ex: "150")
-  // Glassmorphism overrides
-  glassOpacity: string;     // Opacidade do efeito glass
-  glassBlur: string;        // Blur do glass em px
-  glassBorderOpacity: string; // Opacidade da borda glass
-}
+5. **Variáveis CSS shadcn/ui** — Tokens HSL de light e dark mode
 
-export type EnvironmentKey = 'auth' | 'client' | 'manager' | 'admin' | 'global';
+6. **Tipografia, espaçamento, breakpoints, border-radius** — Referência completa
 
-export type EnvironmentThemes = Record<EnvironmentKey, EnvironmentEffects>;
-```
-
-### 2. Criar defaults para cada ambiente
-
-Em `src/lib/themeDefaults.ts`, adicionar `DEFAULT_ENVIRONMENT_EFFECTS` com valores padrão para cada ambiente (`auth`, `client`, `manager`, `admin`, `global`).
-
-### 3. Expandir `SystemConfig` e banco de dados
-
-- Adicionar campo `environment_themes` (jsonb) na tabela `system_config` via migration
-- Adicionar `environmentThemes: EnvironmentThemes` ao tipo `SystemConfig`
-
-### 4. Atualizar `BrandContext.tsx`
-
-- Injetar CSS variables por ambiente: `--env-blob1-color`, `--env-blob-opacity`, `--env-grain-opacity`, etc.
-- Expor o ambiente ativo para componentes consumirem
-
-### 5. Refatorar `GlobalEffects.tsx`
-
-- Receber o `environmentKey` ativo como prop ou via context
-- Substituir todas as cores hardcoded por CSS variables do ambiente:
-  - `bg-amber-500` → `style={{ backgroundColor: 'var(--env-blob1-color)' }}`
-  - `opacity-20` → `style={{ opacity: 'var(--env-blob-opacity)' }}`
-  - Grain opacity, contrast, blend mode → variáveis
-
-### 6. Criar aba "Ambientes" no ThemeEditorPanel
-
-Nova seção no editor de temas com **5 sub-abas** (Global, Login, Cliente, Gestor, Admin). Cada sub-aba expõe:
-
-- **Background**: Cor de fundo da página
-- **Blobs**: 3 color pickers (blob 1, 2, 3) + sliders para opacidade, tamanho, blur
-- **Grain**: Slider de opacidade, selector de blend mode, slider de contraste
-- **Glass**: Sliders para opacidade, blur, borda
-
-Layout em grid de 2 colunas seguindo o padrão atual do ThemeEditorPanel.
-
-### 7. Aplicar contexto de ambiente nos pages
-
-- `AuthPage.tsx`, `Dashboard.tsx`, `ManagerDashboard.tsx`, `Admin.tsx` — cada um define qual `environmentKey` está ativo (via context ou prop no GlobalEffects)
-- O GlobalEffects renderiza os efeitos com as variáveis CSS do ambiente ativo
-
----
-
-### Resumo de arquivos afetados
+### Arquivo afetado
 
 | Arquivo | Ação |
 |---|---|
-| `src/types.ts` | Adicionar `EnvironmentEffects`, `EnvironmentKey`, `EnvironmentThemes` |
-| `src/lib/themeDefaults.ts` | Adicionar defaults por ambiente |
-| `supabase/migrations/` | Migration para campo `environment_themes` |
-| `src/contexts/BrandContext.tsx` | Injetar CSS vars por ambiente |
-| `src/components/hub/GlobalEffects.tsx` | Refatorar para usar variáveis de ambiente |
-| `src/components/hub/ThemeEditorPanel.tsx` | Nova aba "Ambientes" com controles granulares |
-| `src/pages/AuthPage.tsx` | Definir environmentKey = 'auth' |
-| `src/pages/Dashboard.tsx` | Definir environmentKey = 'client' |
-| `src/pages/ManagerDashboard.tsx` | Definir environmentKey = 'manager' |
-| `src/pages/Admin.tsx` | Definir environmentKey = 'admin' |
-| `src/App.tsx` | Passar environmentKey ao GlobalEffects |
+| `docs/design-system.md` | Criar — documento completo de branding com todas as cores, efeitos, animações e tokens |
+
+O documento existente `docs/branding-guide.md` será mantido como está. O novo arquivo será a referência técnica definitiva, extraída diretamente do código fonte (`themeDefaults.ts`, `index.css`, `tailwind.config.ts`, `types.ts`, `BrandContext.tsx`).
 
