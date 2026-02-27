@@ -323,19 +323,7 @@ export const ThemeEditorPanel: React.FC<ThemeEditorPanelProps> = ({ localConfig,
           </button>
         </div>
 
-        {/* Live Preview - Full Width */}
-        <div className="mb-6">
-          <div className="flex items-center gap-2 mb-2">
-            <Eye size={16} style={{ color: 'var(--color-text-muted)' }} />
-            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-              Preview em Tempo Real
-            </span>
-            <span className="ml-auto text-[11px] font-semibold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>
-              {Object.keys(currentScheme).length} tokens · {editingMode === 'light' ? '☀️ Light' : '🌙 Dark'}
-            </span>
-          </div>
-          <LivePreview themeName={editingMode === 'light' ? 'Light' : 'Dark'} scheme={currentScheme} />
-        </div>
+
 
         {/* Token Editor - Two Columns */}
         <div className="grid md:grid-cols-2 gap-x-6 gap-y-2">
