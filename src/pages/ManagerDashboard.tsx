@@ -90,14 +90,16 @@ export const ManagerDashboard: React.FC = () => {
         const cols = await mockDb.getCollections("manager");
         setCollections(cols);
       } else if (activeTab === "analytics") {
-        const [logs, mats, colProgress] = await Promise.all([
+        const [logs, mats, colProgress, cols] = await Promise.all([
           mockDb.getAccessLogs(),
           mockDb.getMaterials("manager"),
           mockDb.getAllCollectionProgress(),
+          mockDb.getCollections("manager"),
         ]);
         setAccessLogs(logs);
         setMaterials(mats);
         setCollectionProgress(colProgress);
+        setCollections(cols);
       }
     } catch (e) {
       console.error(e);
@@ -738,6 +740,85 @@ export const ManagerDashboard: React.FC = () => {
                     </div>
                   </div>
                 </div>
+              </div>
+
+              {/* Trail Metrics */}
+              <div>
+                <h3 className="text-sm font-bold uppercase tracking-wider mb-4 flex items-center gap-2" style={{ color: "var(--color-text-muted)" }}>
+                  <Layers size={14} /> Métricas por Trilha
+                </h3>
+                {collections.length === 0 ? (
+                  <div className="rounded-xl shadow-sm p-8 text-center" style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-muted)" }}>
+                    <Layers size={40} className="mx-auto mb-3 opacity-30" />
+                    <p>Nenhuma trilha cadastrada.</p>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {collections.map((col) => {
+                      const colTitle = typeof col.title === "object" ? (col.title as any)[language] || (col.title as any)["pt-br"] || Object.values(col.title)[0] : col.title;
+                      const trailProgress = collectionProgress.filter((p) => p.collectionId === col.id);
+                      const started = trailProgress.length;
+                      const completed = trailProgress.filter((p) => p.status === "completed").length;
+                      const inProgress = started - completed;
+                      const completionRate = started > 0 ? Math.round((completed / started) * 100) : 0;
+                      const uniqueUsers = new Set(trailProgress.map((p) => p.userId)).size;
+
+                      return (
+                        <div key={col.id} className="rounded-xl shadow-sm p-5 space-y-4" style={{ backgroundColor: "var(--color-surface)" }}>
+                          <div className="flex items-start justify-between gap-2">
+                            <div className="flex items-center gap-2 min-w-0">
+                              <div className="icon-box-sm flex-shrink-0"><BookOpen size={14} /></div>
+                              <h4 className="font-bold text-sm truncate" style={{ color: "var(--color-text-main)" }} title={String(colTitle)}>
+                                {String(colTitle)}
+                              </h4>
+                            </div>
+                            <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                              style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>
+                              <Star size={10} /> {col.points || 0} XP
+                            </span>
+                          </div>
+
+                          {/* Progress bar */}
+                          <div>
+                            <div className="flex justify-between text-xs mb-1.5">
+                              <span style={{ color: "var(--color-text-muted)" }}>Taxa de conclusão</span>
+                              <span className="font-bold" style={{ color: "var(--color-accent)" }}>{completionRate}%</span>
+                            </div>
+                            <div className="w-full rounded-full h-2 overflow-hidden" style={{ backgroundColor: "var(--color-bg)" }}>
+                              <div className="h-full rounded-full transition-all duration-500" style={{ width: `${completionRate}%`, backgroundColor: "var(--color-accent)" }} />
+                            </div>
+                          </div>
+
+                          {/* Stats grid */}
+                          <div className="grid grid-cols-3 gap-2">
+                            <div className="text-center p-2 rounded-lg" style={{ backgroundColor: "var(--color-bg)" }}>
+                              <p className="text-lg font-bold" style={{ color: "var(--color-text-main)" }}>{uniqueUsers}</p>
+                              <p className="text-[10px] font-medium" style={{ color: "var(--color-text-muted)" }}>Usuários</p>
+                            </div>
+                            <div className="text-center p-2 rounded-lg" style={{ backgroundColor: "var(--color-bg)" }}>
+                              <p className="text-lg font-bold" style={{ color: "var(--color-warning)" }}>{inProgress}</p>
+                              <p className="text-[10px] font-medium" style={{ color: "var(--color-text-muted)" }}>Em progresso</p>
+                            </div>
+                            <div className="text-center p-2 rounded-lg" style={{ backgroundColor: "var(--color-bg)" }}>
+                              <p className="text-lg font-bold" style={{ color: "var(--color-success)" }}>{completed}</p>
+                              <p className="text-[10px] font-medium" style={{ color: "var(--color-text-muted)" }}>Concluídas</p>
+                            </div>
+                          </div>
+
+                          {/* Roles */}
+                          <div className="flex gap-1 flex-wrap">
+                            {col.allowedRoles.map((r) => (
+                              <span key={r} className="text-[10px] px-2 py-0.5 rounded-full font-bold"
+                                style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>
+                                {t(`role.${r}`)}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
           )}
