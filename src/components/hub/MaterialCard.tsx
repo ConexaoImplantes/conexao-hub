@@ -35,7 +35,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         case 'pdf': return 'from-amber-600/20 to-yellow-600/5';
         case 'image': return 'from-amber-500/20 to-yellow-500/5';
         case 'video': return 'from-amber-400/20 to-yellow-400/5';
-        case 'audio': return 'from-purple-500/20 to-violet-500/5';
+        case 'audio': return 'from-amber-400/20 to-yellow-400/5';
         default: return 'from-amber-500/20 to-transparent';
       }
   }
@@ -45,7 +45,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         case 'pdf': return 'group-hover:border-amber-600/50 group-hover:shadow-amber-600/20';
         case 'image': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
         case 'video': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
-        case 'audio': return 'group-hover:border-purple-500/50 group-hover:shadow-purple-500/20';
+        case 'audio': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
         default: return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
      }
   }
@@ -80,7 +80,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         {progress && (
           <div className="mb-2">
             {progress.status === 'completed' ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, #22c55e 15%, transparent)', color: '#22c55e' }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
                 <CheckCircle size={10} /> {t('progress.completed')}
               </span>
             ) : (
@@ -103,7 +103,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
 
         {material.points > 0 && (
           <div className="flex items-center gap-1 text-[10px] font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
-            <Star size={10} className="fill-yellow-400 text-yellow-400" /> {material.points} XP
+            <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} /> {material.points} XP
           </div>
         )}
 

@@ -258,8 +258,11 @@ export const ManagerDashboard: React.FC = () => {
                       <p className="font-medium text-sm truncate" style={{ color: "var(--color-text-main)" }}>{displayTitle}</p>
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-xs capitalize opacity-75" style={{ color: "var(--color-text-muted)" }}>{mat.type}</span>
-                        <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold ${mat.active ? "bg-green-500/10 text-green-600" : ""}`}
-                          style={!mat.active ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold"
+                          style={{
+                            backgroundColor: mat.active ? 'var(--color-success-bg)' : 'var(--color-bg)',
+                            color: mat.active ? 'var(--color-success)' : 'var(--color-text-muted)',
+                          }}>
                           {mat.active ? t("active") : t("inactive")}
                         </span>
                         <span className="inline-flex items-center gap-1 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
@@ -304,8 +307,11 @@ export const ManagerDashboard: React.FC = () => {
                           <td className="p-4 font-medium max-w-xs truncate" title={displayTitle}>{displayTitle}</td>
                           <td className="p-4 capitalize opacity-75">{mat.type}</td>
                           <td className="p-4 text-center">
-                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${mat.active ? "bg-green-500/10 text-green-600" : ""}`}
-                              style={!mat.active ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold"
+                              style={{
+                                backgroundColor: mat.active ? 'var(--color-success-bg)' : 'var(--color-bg)',
+                                color: mat.active ? 'var(--color-success)' : 'var(--color-text-muted)',
+                              }}>
                               {mat.active ? t("active") : t("inactive")}
                             </span>
                           </td>
@@ -391,12 +397,15 @@ export const ManagerDashboard: React.FC = () => {
                     <div className="flex items-center gap-2 flex-wrap">
                       {u.whatsapp && <span className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>{u.whatsapp}</span>}
                       <span className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>{t(`role.${u.role}`)}</span>
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
-                        u.status === "active" ? "bg-green-500/10 text-green-600" :
-                        u.status === "pending" ? "bg-yellow-500/10 text-yellow-600" :
-                        u.status === "rejected" ? "bg-red-500/10 text-red-600" :
-                        ""
-                      }`} style={u.status === "inactive" ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                      <span className="text-[10px] px-2 py-0.5 rounded-full font-bold"
+                        style={{
+                          backgroundColor: u.status === "active" ? "var(--color-success-bg)" :
+                            u.status === "pending" ? "var(--color-warning-bg)" :
+                            u.status === "rejected" ? "var(--color-error-bg)" : "var(--color-bg)",
+                          color: u.status === "active" ? "var(--color-success)" :
+                            u.status === "pending" ? "var(--color-warning)" :
+                            u.status === "rejected" ? "var(--color-error)" : "var(--color-text-muted)",
+                        }}>
                         {t(`user.status.${u.status}`)}
                       </span>
                     </div>
@@ -446,12 +455,15 @@ export const ManagerDashboard: React.FC = () => {
                           </div>
                         </td>
                         <td className="p-4 text-center">
-                          <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold ${
-                            u.status === "active" ? "bg-green-500/10 text-green-600" :
-                            u.status === "pending" ? "bg-yellow-500/10 text-yellow-600" :
-                            u.status === "rejected" ? "bg-red-500/10 text-red-600" :
-                            ""
-                          }`} style={u.status === "inactive" ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-bold"
+                            style={{
+                              backgroundColor: u.status === "active" ? "var(--color-success-bg)" :
+                                u.status === "pending" ? "var(--color-warning-bg)" :
+                                u.status === "rejected" ? "var(--color-error-bg)" : "var(--color-bg)",
+                              color: u.status === "active" ? "var(--color-success)" :
+                                u.status === "pending" ? "var(--color-warning)" :
+                                u.status === "rejected" ? "var(--color-error)" : "var(--color-text-muted)",
+                            }}>
                             {t(`user.status.${u.status}`)}
                           </span>
                         </td>
@@ -652,7 +664,7 @@ export const ManagerDashboard: React.FC = () => {
                   <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
                     <div className="px-6 py-4" style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}>
                       <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
-                        <Trophy size={18} className="text-yellow-500" /> {t("analytics.rank.materials")}
+                        <Trophy size={18} style={{ color: "var(--color-warning)" }} /> {t("analytics.rank.materials")}
                       </h3>
                     </div>
                     <div className="p-5 space-y-4">
@@ -665,8 +677,11 @@ export const ManagerDashboard: React.FC = () => {
                           <div key={item.id} className="relative">
                             <div className="flex justify-between text-sm mb-1.5">
                               <span className="font-medium truncate pr-2 flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
-                                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${index === 0 ? "bg-yellow-100 text-yellow-700" : index === 1 ? "bg-gray-100 text-gray-700" : index === 2 ? "bg-orange-100 text-orange-700" : ""}`}
-                                  style={index > 2 ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                                  style={{
+                                    backgroundColor: index === 0 ? "var(--color-warning-bg)" : index === 1 ? "var(--color-bg)" : index === 2 ? "var(--color-warning-bg)" : "var(--color-bg)",
+                                    color: index === 0 ? "var(--color-warning)" : index === 1 ? "var(--color-text-muted)" : index === 2 ? "var(--color-warning)" : "var(--color-text-muted)",
+                                  }}>
                                   {index + 1}
                                 </span>
                                 {title}
@@ -689,7 +704,7 @@ export const ManagerDashboard: React.FC = () => {
                   <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
                     <div className="px-6 py-4" style={{ backgroundColor: "color-mix(in srgb, var(--color-bg) 30%, transparent)" }}>
                       <h3 className="font-bold flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
-                        <Users size={18} className="text-blue-500" /> {t("analytics.rank.users")}
+                        <Users size={18} style={{ color: "var(--color-accent)" }} /> {t("analytics.rank.users")}
                       </h3>
                     </div>
                     <div className="p-5 space-y-4">
@@ -700,8 +715,11 @@ export const ManagerDashboard: React.FC = () => {
                           <div key={index} className="relative">
                             <div className="flex justify-between text-sm mb-1.5">
                               <span className="font-medium truncate pr-2 flex items-center gap-2" style={{ color: "var(--color-text-main)" }}>
-                                <span className={`w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold ${index === 0 ? "bg-yellow-100 text-yellow-700" : index === 1 ? "bg-gray-100 text-gray-700" : index === 2 ? "bg-orange-100 text-orange-700" : ""}`}
-                                  style={index > 2 ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                                <span className="w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold"
+                                  style={{
+                                    backgroundColor: index === 0 ? "var(--color-warning-bg)" : index === 1 ? "var(--color-bg)" : index === 2 ? "var(--color-warning-bg)" : "var(--color-bg)",
+                                    color: index === 0 ? "var(--color-warning)" : index === 1 ? "var(--color-text-muted)" : index === 2 ? "var(--color-warning)" : "var(--color-text-muted)",
+                                  }}>
                                   {index + 1}
                                 </span>
                                 {u.name}

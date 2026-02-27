@@ -63,12 +63,15 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onS
                     <select
                         value={status}
                         onChange={e => setStatus(e.target.value as UserStatus)}
-                        className={`w-full p-2.5 rounded-lg outline-none font-medium
-                            ${status === 'active' ? 'bg-green-500/10 text-green-600' :
-                              status === 'pending' ? 'bg-yellow-500/10 text-yellow-600' :
-                              status === 'rejected' ? 'bg-red-500/10 text-red-600' : 'bg-gray-50 dark:bg-black/20'}
-                        `}
-                        style={status === 'inactive' ? { color: 'var(--color-text-muted)' } : {}}
+                        className="w-full p-2.5 rounded-lg outline-none font-medium"
+                        style={{
+                          backgroundColor: status === 'active' ? 'var(--color-success-bg)' :
+                            status === 'pending' ? 'var(--color-warning-bg)' :
+                            status === 'rejected' ? 'var(--color-error-bg)' : 'var(--color-bg)',
+                          color: status === 'active' ? 'var(--color-success)' :
+                            status === 'pending' ? 'var(--color-warning)' :
+                            status === 'rejected' ? 'var(--color-error)' : 'var(--color-text-muted)',
+                        }}
                     >
                         <option value="active">{t('user.status.active')}</option>
                         <option value="pending">{t('user.status.pending')}</option>
@@ -81,8 +84,8 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onS
                     <select
                         value={role}
                         onChange={e => setRole(e.target.value as Role)}
-                        className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 outline-none"
-                        style={{ color: 'var(--color-text-main)' }}
+                        className="w-full p-2.5 rounded-lg outline-none"
+                        style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)' }}
                     >
                         <option value="client">{t('role.client')}</option>
                         <option value="distributor">{t('role.distributor')}</option>
@@ -96,29 +99,29 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onS
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>Nome Completo</label>
-                        <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)' }} />
+                        <input type="text" required value={name} onChange={e => setName(e.target.value)} className="w-full p-2.5 rounded-lg outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-bg)' }} />
                     </div>
                     <div>
                         <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>CRO (Opcional)</label>
-                        <input type="text" value={cro} onChange={e => setCro(e.target.value)} className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)' }} />
+                        <input type="text" value={cro} onChange={e => setCro(e.target.value)} className="w-full p-2.5 rounded-lg outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-bg)' }} />
                     </div>
                 </div>
                 <div className="grid md:grid-cols-2 gap-4">
                     <div>
                         <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>E-mail</label>
-                        <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)' }} />
+                        <input type="email" required value={email} onChange={e => setEmail(e.target.value)} className="w-full p-2.5 rounded-lg outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-bg)' }} />
                     </div>
                     <div>
                         <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>WhatsApp</label>
-                        <input type="tel" required value={whatsapp} onChange={e => setWhatsapp(e.target.value)} className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)' }} />
+                        <input type="tel" required value={whatsapp} onChange={e => setWhatsapp(e.target.value)} className="w-full p-2.5 rounded-lg outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', backgroundColor: 'var(--color-bg)' }} />
                     </div>
                 </div>
             </div>
 
             {status === 'rejected' && user.rejectionReason && (
               <div className="pt-4 border-t" style={{ borderColor: 'var(--color-border)' }}>
-                <label className="block text-xs font-bold mb-2 uppercase tracking-wide text-red-500">Motivo da Recusa</label>
-                <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/10">
+                <label className="block text-xs font-bold mb-2 uppercase tracking-wide" style={{ color: 'var(--color-error)' }}>Motivo da Recusa</label>
+                <div className="p-3 rounded-lg" style={{ backgroundColor: 'var(--color-error-bg)', border: '1px solid color-mix(in srgb, var(--color-error) 10%, transparent)' }}>
                   <p className="text-sm" style={{ color: 'var(--color-text-main)' }}>{user.rejectionReason}</p>
                 </div>
               </div>
@@ -133,12 +136,12 @@ export const UserEditModal: React.FC<UserEditModalProps> = ({ user, onClose, onS
                             key={type}
                             type="button"
                             onClick={() => toggleType(type)}
-                            className={`flex-1 p-3 rounded-lg flex flex-col items-center gap-2 transition-all
-                                ${allowedTypes.includes(type)
-                                    ? 'bg-amber-500/10 text-amber-600'
-                                    : 'opacity-60 hover:opacity-100'}
-                            `}
-                            style={!allowedTypes.includes(type) ? { backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' } : {}}
+                            className="flex-1 p-3 rounded-lg flex flex-col items-center gap-2 transition-all"
+                            style={{
+                              backgroundColor: allowedTypes.includes(type) ? 'color-mix(in srgb, var(--color-accent) 10%, transparent)' : 'var(--color-bg)',
+                              color: allowedTypes.includes(type) ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                              opacity: allowedTypes.includes(type) ? 1 : 0.6,
+                            }}
                         >
                             {type === 'pdf' && <FileText size={20} />}
                             {type === 'image' && <ImageIcon size={20} />}

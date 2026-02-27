@@ -178,7 +178,7 @@ export const TrailCompletionCelebration: React.FC<TrailCompletionCelebrationProp
             <div
               className="liquid-glass-gold flex items-center gap-2 px-5 py-3 rounded-2xl mb-6"
             >
-              <Star size={18} className="fill-yellow-400 text-yellow-400" />
+              <Star size={18} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
               <span className="font-bold text-sm" style={{ color: 'var(--color-accent)' }}>
                 +{bonusXp} {t('trail.celebration.bonus')}
               </span>

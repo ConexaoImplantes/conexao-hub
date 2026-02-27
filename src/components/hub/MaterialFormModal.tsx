@@ -214,7 +214,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
         </div>
 
         {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 px-6 py-2.5 flex items-center gap-2 text-sm text-red-600 dark:text-red-400 font-medium">
+            <div className="px-6 py-2.5 flex items-center gap-2 text-sm font-medium" style={{ backgroundColor: 'var(--color-error-bg)', color: 'var(--color-error)' }}>
                 <AlertCircle size={16} />
                 {error}
             </div>
@@ -241,11 +241,11 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 <label className="text-[11px] font-bold uppercase mb-2 block tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Status</label>
                 <div
                   onClick={() => setActive(!active)}
-                  className={`cursor-pointer p-3 rounded-xl flex items-center justify-between transition-colors h-[68px] ${active ? 'bg-green-500/10 text-green-600 dark:text-green-400' : ''}`}
-                  style={!active ? { backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' } : {}}
+                  className="cursor-pointer p-3 rounded-xl flex items-center justify-between transition-colors h-[68px]"
+                  style={{ backgroundColor: active ? 'var(--color-success-bg)' : 'var(--color-bg)', color: active ? 'var(--color-success)' : 'var(--color-text-muted)' }}
                 >
                   <span className="text-sm font-medium">{active ? t('active') : t('inactive')}</span>
-                  <div className={`w-9 h-5 rounded-full relative transition-colors shrink-0 ${active ? 'bg-green-500' : 'bg-gray-300 dark:bg-gray-600'}`}>
+                  <div className="w-9 h-5 rounded-full relative transition-colors shrink-0" style={{ backgroundColor: active ? 'var(--color-success)' : 'var(--color-border)' }}>
                     <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm ${active ? 'left-[18px]' : 'left-0.5'}`} />
                   </div>
                 </div>
@@ -254,7 +254,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
               {/* XP Points */}
               <div className="sm:w-28">
                 <label className="text-[11px] font-bold uppercase mb-2 flex items-center gap-1 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                  <Star size={12} className="text-yellow-400" /> XP
+                  <Star size={12} style={{ color: 'var(--color-warning)' }} /> XP
                 </label>
                 <input
                   type="number"
@@ -324,7 +324,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                       style={{ color: activeTab === lang ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
                     >
                       <span className="text-base">{flag}</span> {label}
-                      {isCompleted && <span className="w-1.5 h-1.5 rounded-full bg-green-500" title="Conteúdo inserido"></span>}
+                      {isCompleted && <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: 'var(--color-success)' }} title="Conteúdo inserido"></span>}
                       {activeTab === lang && <div className="absolute bottom-0 left-0 right-0 h-0.5 rounded-t-full" style={{ backgroundColor: 'var(--color-accent)' }} />}
                     </button>
                   );
