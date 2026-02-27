@@ -1,12 +1,15 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { SystemConfig, ColorScheme } from '../types';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { SystemConfig, ColorScheme, EnvironmentKey, EnvironmentEffects } from '../types';
 import { mockDb } from '../lib/mockDb';
-import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE } from '../lib/themeDefaults';
+import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE, DEFAULT_ENVIRONMENT_THEMES } from '../lib/themeDefaults';
 import { useTheme } from './ThemeContext';
+
 interface BrandContextType {
   config: SystemConfig;
   updateConfig: (newConfig: SystemConfig) => Promise<void>;
   isLoading: boolean;
+  activeEnvironment: EnvironmentKey;
+  setActiveEnvironment: (env: EnvironmentKey) => void;
 }
 
 const BrandContext = createContext<BrandContextType | undefined>(undefined);
@@ -16,6 +19,7 @@ const defaults: SystemConfig = {
   themeLight: DEFAULT_LIGHT,
   themeDark: DEFAULT_DARK,
   themeMode: DEFAULT_THEME_MODE,
+  environmentThemes: DEFAULT_ENVIRONMENT_THEMES,
 };
 
 function buildCssVars(scheme: ColorScheme): string {
@@ -60,10 +64,29 @@ function buildCssVars(scheme: ColorScheme): string {
   }).map(([k, v]) => `${k}: ${v};`).join('\n        ');
 }
 
+function buildEnvCssVars(effects: EnvironmentEffects): string {
+  return Object.entries({
+    '--env-page-bg': effects.pageBg,
+    '--env-blob1-color': effects.blob1Color,
+    '--env-blob2-color': effects.blob2Color,
+    '--env-blob3-color': effects.blob3Color,
+    '--env-blob-opacity': effects.blobOpacity,
+    '--env-blob-size': effects.blobSize + 'rem',
+    '--env-blob-blur': effects.blobBlur + 'px',
+    '--env-grain-opacity': effects.grainOpacity,
+    '--env-grain-blend': effects.grainBlendMode,
+    '--env-grain-contrast': effects.grainContrast,
+    '--env-glass-opacity': effects.glassOpacity,
+    '--env-glass-blur': effects.glassBlur + 'px',
+    '--env-glass-border-opacity': effects.glassBorderOpacity,
+  }).map(([k, v]) => `${k}: ${v};`).join('\n        ');
+}
+
 export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { applyThemeMode } = useTheme();
   const [config, setConfig] = useState<SystemConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeEnvironment, setActiveEnvironment] = useState<EnvironmentKey>('global');
 
   useEffect(() => {
     mockDb.getSystemConfig()
@@ -85,23 +108,27 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.head.appendChild(styleTag);
     }
 
+    const envThemes = config.environmentThemes || DEFAULT_ENVIRONMENT_THEMES;
+    const activeEffects = envThemes[activeEnvironment] || envThemes.global || DEFAULT_ENVIRONMENT_THEMES.global;
+
     const css = `
       :root {
         ${buildCssVars(config.themeLight)}
+        ${buildEnvCssVars(activeEffects)}
       }
       .dark {
         ${buildCssVars(config.themeDark)}
+        ${buildEnvCssVars(activeEffects)}
       }
     `;
 
     styleTag.innerHTML = css;
     document.title = config.appName;
 
-    // Apply theme mode
     if (config.themeMode) {
       applyThemeMode(config.themeMode.mode, config.themeMode.defaultTheme);
     }
-  }, [config, applyThemeMode]);
+  }, [config, applyThemeMode, activeEnvironment]);
 
   const updateConfig = async (newConfig: SystemConfig) => {
     try {
@@ -114,7 +141,7 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <BrandContext.Provider value={{ config: config || defaults, updateConfig, isLoading }}>
+    <BrandContext.Provider value={{ config: config || defaults, updateConfig, isLoading, activeEnvironment, setActiveEnvironment }}>
       {!isLoading && config ? children : (
         <div className="h-screen w-full flex flex-col gap-4 items-center justify-center bg-gray-50 text-gray-500 font-medium animate-pulse">
           <div className="w-12 h-12 rounded-full border-4 border-gray-200 border-t-blue-500 animate-spin"></div>

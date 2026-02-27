@@ -1,4 +1,4 @@
-import { ColorScheme, ThemeModeConfig } from '../types';
+import { ColorScheme, ThemeModeConfig, EnvironmentEffects, EnvironmentThemes } from '../types';
 
 export const DEFAULT_LIGHT: ColorScheme = {
   background: '#f8fafc',
@@ -87,6 +87,73 @@ export const DEFAULT_THEME_MODE: ThemeModeConfig = {
 
 /** Merge partial/legacy scheme with defaults */
 export function mergeScheme(partial: Partial<ColorScheme> | undefined, defaults: ColorScheme): ColorScheme {
+  if (!partial) return { ...defaults };
+  return { ...defaults, ...partial };
+}
+
+/* ─── Environment Effects Defaults ─── */
+
+const DEFAULT_GLOBAL_EFFECTS: EnvironmentEffects = {
+  pageBg: '#0f172a',
+  blob1Color: '#c9a655',
+  blob2Color: '#e8d48b',
+  blob3Color: '#a8873a',
+  blobOpacity: '0.20',
+  blobSize: '18',
+  blobBlur: '64',
+  grainOpacity: '0.20',
+  grainBlendMode: 'multiply',
+  grainContrast: '150',
+  glassOpacity: '0.40',
+  glassBlur: '24',
+  glassBorderOpacity: '0.10',
+};
+
+export const DEFAULT_ENVIRONMENT_THEMES: EnvironmentThemes = {
+  global: { ...DEFAULT_GLOBAL_EFFECTS },
+  auth: {
+    ...DEFAULT_GLOBAL_EFFECTS,
+    blob1Color: '#c9a655',
+    blob2Color: '#c9a655',
+    blob3Color: '#c9a655',
+    blobOpacity: '0.15',
+    blobSize: '24',
+    blobBlur: '100',
+    grainOpacity: '0.10',
+  },
+  client: {
+    ...DEFAULT_GLOBAL_EFFECTS,
+    blob1Color: '#c9a655',
+    blob2Color: '#e8d48b',
+    blob3Color: '#a8873a',
+    blobOpacity: '0.20',
+    blobSize: '18',
+    blobBlur: '64',
+  },
+  manager: {
+    ...DEFAULT_GLOBAL_EFFECTS,
+    blob1Color: '#c9a655',
+    blob2Color: '#d4b366',
+    blob3Color: '#b8953e',
+    blobOpacity: '0.15',
+    blobSize: '20',
+    blobBlur: '80',
+  },
+  admin: {
+    ...DEFAULT_GLOBAL_EFFECTS,
+    blob1Color: '#c9a655',
+    blob2Color: '#e8d48b',
+    blob3Color: '#a8873a',
+    blobOpacity: '0.18',
+    blobSize: '18',
+    blobBlur: '64',
+  },
+};
+
+export function mergeEnvironmentEffects(
+  partial: Partial<EnvironmentEffects> | undefined,
+  defaults: EnvironmentEffects
+): EnvironmentEffects {
   if (!partial) return { ...defaults };
   return { ...defaults, ...partial };
 }

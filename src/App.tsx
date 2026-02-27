@@ -1,3 +1,4 @@
+import React from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -7,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { BrandProvider } from "./contexts/BrandContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { useBrand } from "./contexts/BrandContext";
 import { ShortcutProvider } from "./contexts/ShortcutContext";
 import { Layout } from "./components/hub/Layout";
 import { GlobalEffects } from "./components/hub/GlobalEffects";
@@ -23,6 +25,18 @@ const queryClient = new QueryClient({
 
 const AppContent = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
+  const { setActiveEnvironment } = useBrand();
+
+  // Set active environment based on user role
+  React.useEffect(() => {
+    if (!isAuthenticated || !user) {
+      setActiveEnvironment('auth');
+      return;
+    }
+    if (user.role === 'super_admin') setActiveEnvironment('admin');
+    else if (user.role === 'manager') setActiveEnvironment('manager');
+    else setActiveEnvironment('client');
+  }, [isAuthenticated, user, setActiveEnvironment]);
 
   if (isLoading) {
     return (
