@@ -43,22 +43,26 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
       }
   }
 
-  const getBorderColor = () => {
-     switch (material.type) {
-        case 'pdf': return 'group-hover:border-amber-600/50 group-hover:shadow-amber-600/20';
-        case 'image': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
-        case 'video': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
-        case 'audio': return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
-        case 'html': return 'group-hover:border-teal-500/50 group-hover:shadow-teal-500/20';
-        default: return 'group-hover:border-amber-500/50 group-hover:shadow-amber-500/20';
-     }
-  }
 
   const displayTitle = material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || t('untitled');
   const languages: Language[] = ['pt-br', 'en-us', 'es-es'];
 
   return (
-    <div className={`group relative backdrop-blur-md border border-white/10 dark:border-white/5 rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl ${getBorderColor()}`} style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+    <div
+      className="group relative backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+      style={{
+        backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)',
+        border: '1px solid color-mix(in srgb, var(--color-border) 20%, transparent)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
+        e.currentTarget.style.borderColor = `var(--color-hover-border)`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = '';
+        e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-border) 20%, transparent)';
+      }}
+    >
       <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 pointer-events-none overflow-hidden transition-opacity duration-700">
         <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-10 animate-shimmer" style={{ left: '-150%' }} />
@@ -111,7 +115,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           </div>
         )}
 
-        <div className="mt-auto pt-4 border-t border-white/5 group-hover:border-white/10 transition-colors">
+        <div className="mt-auto pt-4 transition-colors" style={{ borderTop: '1px solid color-mix(in srgb, var(--color-border) 15%, transparent)' }}>
           <div className="flex items-center justify-between mb-3">
              <p className="text-[10px] uppercase tracking-wider font-bold opacity-70" style={{ color: 'var(--color-text-muted)' }}>{t('versions')}</p>
              <div className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" style={{ color: 'var(--color-accent)' }}>

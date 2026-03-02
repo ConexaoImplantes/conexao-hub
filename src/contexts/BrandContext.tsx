@@ -60,6 +60,10 @@ function buildCssVars(scheme: ColorScheme): string {
     '--color-gradient-start': scheme.gradientStart,
     '--color-gradient-mid': scheme.gradientMid,
     '--color-gradient-end': scheme.gradientEnd,
+    '--color-hover-bg': scheme.hoverBg,
+    '--color-hover-border': scheme.hoverBorder,
+    '--color-hover-scale': scheme.hoverScale,
+    '--color-hover-shadow': scheme.hoverShadow,
   }).map(([k, v]) => `${k}: ${v};`).join('\n        ');
 }
 

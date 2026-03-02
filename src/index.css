@@ -109,6 +109,10 @@ All colors MUST be HSL.
   --color-gradient-start: #c9a655;
   --color-gradient-mid: #e8d48b;
   --color-gradient-end: #a8873a;
+  --color-hover-bg: #334155;
+  --color-hover-border: #c9a65540;
+  --color-hover-scale: 1.02;
+  --color-hover-shadow: #c9a65525;
 }
 
 /* Custom scrollbar - accent color, 5px */

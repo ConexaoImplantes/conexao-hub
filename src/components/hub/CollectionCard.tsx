@@ -28,7 +28,22 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   const isCompleted = totalItems > 0 && completedItems === totalItems;
 
   return (
-    <div onClick={() => onClick(collection)} className="group relative cursor-pointer rounded-2xl overflow-hidden border border-white/10 transition-all duration-500 hover:-translate-y-2 hover:shadow-2xl" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+    <div
+      onClick={() => onClick(collection)}
+      className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+      style={{
+        backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)',
+        border: '1px solid color-mix(in srgb, var(--color-border) 20%, transparent)',
+      }}
+      onMouseEnter={(e) => {
+        e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
+        e.currentTarget.style.borderColor = `var(--color-hover-border)`;
+      }}
+      onMouseLeave={(e) => {
+        e.currentTarget.style.boxShadow = '';
+        e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-border) 20%, transparent)';
+      }}
+    >
       <div className="relative h-40 overflow-hidden">
         {collection.coverImage ? (
           <img src={collection.coverImage} alt={displayTitle} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
