@@ -3,14 +3,13 @@ import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
 import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Sparkles, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react';
-import { seedUsers } from '../lib/seed';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
 import { mockDb } from '../lib/mockDb';
 import { toast } from 'sonner';
 
 export const AuthPage: React.FC = () => {
-  const { login, register, loginMock, isDbMissing } = useAuth();
+  const { login, register, isDbMissing } = useAuth();
   const { t } = useLanguage();
   const { config } = useBrand();
 
@@ -23,7 +22,7 @@ export const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [isSeeding, setIsSeeding] = useState(false);
+  
   const [name, setName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
   const [cro, setCro] = useState('');
@@ -64,11 +63,6 @@ export const AuthPage: React.FC = () => {
     setError('');
 
     if (!isLogin) {
-      const demoEmails = ['admin@demo.com', 'client@demo.com', 'distributor@demo.com', 'consultant@demo.com'];
-      if (demoEmails.includes(email.trim().toLowerCase())) {
-        setError('Este e-mail é reservado para demonstração. Utilize os botões de "Ambiente de Teste".');
-        return;
-      }
     }
 
     try {
@@ -89,26 +83,6 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  const handleMockLogin = async (role: Role) => {
-    try {
-      await loginMock(role);
-    } catch (e: any) {
-      setError('Erro no login mock: ' + e.message);
-    }
-  };
-
-  const handleSeed = async () => {
-    if (!window.confirm("Isso tentará criar as contas demo no banco de dados REAL. Continuar?")) return;
-    setIsSeeding(true);
-    try {
-      const result = await seedUsers();
-      toast.success(result);
-    } catch (e: any) {
-      toast.error("Erro: " + e.message);
-    } finally {
-      setIsSeeding(false);
-    }
-  };
 
   const clearInvite = () => {
     const newUrl = window.location.protocol + "//" + window.location.host + window.location.pathname;
@@ -291,42 +265,6 @@ export const AuthPage: React.FC = () => {
         </form>
         )}
 
-        <div className="mt-8 text-center text-sm space-y-8 relative z-10">
-          {!invitedRole &&
-          <>
-                
-
-
-
-                
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                
-
-
-
-
-
-            </>
-          }
-        </div>
 
         {showSqlSetup && <SqlSetupModal onClose={() => setShowSqlSetup(false)} />}
     </div>
