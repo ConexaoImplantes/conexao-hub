@@ -32,18 +32,21 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       <header className="sticky top-0 z-40 w-full px-2 sm:px-4 pt-2 sm:pt-4 pointer-events-none">
         <div className="container mx-auto">
             <div
-              className="liquid-glass rounded-2xl p-2 pl-3 sm:p-3 sm:pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 relative overflow-hidden"
-              style={levelColor ? {
-                border: `1px solid ${levelColor}25`,
-                backgroundColor: `${levelColor}08`,
-                boxShadow: `0 0 20px ${levelColor}08, inset 0 0 30px ${levelColor}05`,
-              } : {}}
+              className="rounded-2xl p-2 pl-3 sm:p-3 sm:pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 relative overflow-hidden"
+              style={{
+                background: levelColor
+                  ? `linear-gradient(135deg, ${levelColor}12 0%, color-mix(in srgb, var(--color-header-bg) 80%, transparent) 50%, ${levelColor}08 100%)`
+                  : `linear-gradient(135deg, color-mix(in srgb, var(--color-glass-tint) 25%, transparent) 0%, color-mix(in srgb, var(--color-header-bg) 80%, transparent) 50%, color-mix(in srgb, var(--color-glass-tint) 15%, transparent) 100%)`,
+                backdropFilter: `blur(var(--env-glass-blur)) saturate(180%)`,
+                WebkitBackdropFilter: `blur(var(--env-glass-blur)) saturate(180%)`,
+                border: levelColor
+                  ? `1px solid ${levelColor}25`
+                  : `1px solid color-mix(in srgb, var(--color-glass-tint) 20%, transparent)`,
+                boxShadow: levelColor
+                  ? `0 0 20px ${levelColor}08, inset 0 0 30px ${levelColor}05`
+                  : `0 8px 32px var(--color-shadow), inset 0 1px 0 color-mix(in srgb, var(--color-glass-tint) 30%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-glass-tint) 10%, transparent)`,
+              }}
             >
-              {levelColor && (
-                <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
-                  background: `linear-gradient(135deg, ${levelColor}12 0%, transparent 50%, ${levelColor}08 100%)`,
-                }} />
-              )}
             <div className="flex items-center space-x-4 group cursor-default">
                 <div className="relative">
                     <div className="absolute inset-0 blur-lg opacity-20 group-hover:opacity-40 transition-opacity duration-500 rounded-full" style={{ backgroundColor: 'var(--color-accent)' }}></div>
@@ -78,7 +81,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                 <div className="flex items-center gap-1.5 sm:gap-3 pl-1 sm:pl-2">
                     <div className="flex items-center gap-2 sm:gap-3 rounded-full p-1 pr-2 sm:pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
-                        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-md ring-2 ring-white/20 transition-all" style={{ background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)' }}>
+                        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-md transition-all" style={{ background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)', color: 'var(--color-accent-fg)', boxShadow: '0 0 0 2px color-mix(in srgb, var(--color-text-main) 20%, transparent)' }}>
                             {user?.name.charAt(0)}
                         </div>
                         <div className="hidden md:block leading-none">
