@@ -95,15 +95,16 @@ All colors MUST be HSL.
 }
 
 /* Hub Conexao CSS Variables - injected dynamically by BrandContext */
+/* Dark-mode fallbacks (overridden at runtime) */
 :root {
-  --color-bg: #f8fafc;
-  --color-surface: #ffffff;
-  --color-border: #e2e8f0;
-  --color-text-main: #1e293b;
-  --color-text-muted: #64748b;
+  --color-bg: #0f172a;
+  --color-surface: #1e293b;
+  --color-border: transparent;
+  --color-text-main: #f8fafc;
+  --color-text-muted: #94a3b8;
   --color-accent: #c9a655;
   --color-success: #22c55e;
-  --color-warning: #f59e0b;
+  --color-warning: #eab308;
   --color-error: #ef4444;
   --color-gradient-start: #c9a655;
   --color-gradient-mid: #e8d48b;
