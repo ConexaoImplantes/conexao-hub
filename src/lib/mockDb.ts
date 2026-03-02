@@ -25,11 +25,11 @@ export interface GamificationLevel {
 let isMockMode = false;
 
 const localUsers: UserProfile[] = [
-    { id: 'mock-admin', name: 'Super Admin (Mock)', email: 'admin@demo.com', role: 'super_admin', whatsapp: '11999999999', status: 'active', points: 0, preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-client', name: 'Cliente Exemplo', email: 'client@demo.com', role: 'client', whatsapp: '11988888888', cro: '12345', status: 'active', points: 150, preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-distrib', name: 'Distribuidor Demo', email: 'distributor@demo.com', role: 'distributor', whatsapp: '11977777777', status: 'active', points: 320, preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-consult', name: 'Consultor Demo', email: 'consultant@demo.com', role: 'consultant', whatsapp: '11966666666', status: 'active', points: 780, preferences: { theme: 'light', language: 'pt-br' } },
-    { id: 'mock-manager', name: 'Gestor Demo', email: 'manager@demo.com', role: 'manager', whatsapp: '11955555555', status: 'active', points: 0, preferences: { theme: 'light', language: 'pt-br' } }
+    { id: 'mock-admin', name: 'Super Admin (Mock)', email: 'admin@demo.com', role: 'super_admin', whatsapp: '11999999999', status: 'active', points: 0, preferences: { theme: 'dark', language: 'pt-br' } },
+    { id: 'mock-client', name: 'Cliente Exemplo', email: 'client@demo.com', role: 'client', whatsapp: '11988888888', cro: '12345', status: 'active', points: 150, preferences: { theme: 'dark', language: 'pt-br' } },
+    { id: 'mock-distrib', name: 'Distribuidor Demo', email: 'distributor@demo.com', role: 'distributor', whatsapp: '11977777777', status: 'active', points: 320, preferences: { theme: 'dark', language: 'pt-br' } },
+    { id: 'mock-consult', name: 'Consultor Demo', email: 'consultant@demo.com', role: 'consultant', whatsapp: '11966666666', status: 'active', points: 780, preferences: { theme: 'dark', language: 'pt-br' } },
+    { id: 'mock-manager', name: 'Gestor Demo', email: 'manager@demo.com', role: 'manager', whatsapp: '11955555555', status: 'active', points: 0, preferences: { theme: 'dark', language: 'pt-br' } }
 ];
 
 const mapProfileFromDb = (data: any): UserProfile => ({
@@ -42,7 +42,7 @@ const mapProfileFromDb = (data: any): UserProfile => ({
   status: data.status,
   allowedTypes: data.allowed_types,
   points: data.points || 0,
-  preferences: data.preferences || { theme: 'light', language: 'pt-br' },
+  preferences: data.preferences || { theme: 'dark', language: 'pt-br' },
   rejectionReason: data.rejection_reason,
 });
 

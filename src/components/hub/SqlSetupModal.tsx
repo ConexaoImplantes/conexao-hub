@@ -28,7 +28,7 @@ create table if not exists public.profiles (
   cro text,
   allowed_types text[],
   status text default 'pending' check (status in ('pending', 'active', 'inactive', 'rejected')),
-  preferences jsonb default '{"theme": "light", "language": "pt-br"}'::jsonb,
+  preferences jsonb default '{"theme": "dark", "language": "pt-br"}'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );

@@ -2,7 +2,6 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { SystemConfig, ColorScheme, EnvironmentKey, EnvironmentEffects } from '../types';
 import { mockDb } from '../lib/mockDb';
 import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE, DEFAULT_ENVIRONMENT_THEMES } from '../lib/themeDefaults';
-import { useTheme } from './ThemeContext';
 
 interface BrandContextType {
   config: SystemConfig;
@@ -83,7 +82,6 @@ function buildEnvCssVars(effects: EnvironmentEffects): string {
 }
 
 export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { applyThemeMode } = useTheme();
   const [config, setConfig] = useState<SystemConfig | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [activeEnvironment, setActiveEnvironment] = useState<EnvironmentKey>('global');
@@ -113,10 +111,6 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     const css = `
       :root {
-        ${buildCssVars(config.themeLight)}
-        ${buildEnvCssVars(activeEffects)}
-      }
-      .dark {
         ${buildCssVars(config.themeDark)}
         ${buildEnvCssVars(activeEffects)}
       }
@@ -124,11 +118,7 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     styleTag.innerHTML = css;
     document.title = config.appName;
-
-    if (config.themeMode) {
-      applyThemeMode(config.themeMode.mode, config.themeMode.defaultTheme);
-    }
-  }, [config, applyThemeMode, activeEnvironment]);
+  }, [config, activeEnvironment]);
 
   const updateConfig = async (newConfig: SystemConfig) => {
     try {
