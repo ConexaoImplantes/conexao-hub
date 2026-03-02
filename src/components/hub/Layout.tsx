@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
-import { useTheme } from '../../contexts/ThemeContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBrand } from '../../contexts/BrandContext';
-import { Moon, Sun, LogOut, Globe, Star } from 'lucide-react';
+import { LogOut, Globe, Star } from 'lucide-react';
 import { getUserLevel } from '../../types';
 import { mockDb, GamificationLevel } from '../../lib/mockDb';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
-  const { theme, toggleTheme, canToggle } = useTheme();
   const { language, setLanguage, t } = useLanguage();
   const { config } = useBrand();
   const [levels, setLevels] = useState<GamificationLevel[]>([]);
@@ -22,7 +20,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const getLevelColor = (): string | null => {
     if (!user || user.role === 'super_admin' || user.role === 'manager' || levels.length === 0) return null;
     const points = user.points || 0;
-    // Find the highest level the user qualifies for
     const sorted = [...levels].sort((a, b) => b.minPoints - a.minPoints);
     const currentLevel = sorted.find(l => points >= l.minPoints);
     return currentLevel?.color || null;
@@ -42,7 +39,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 boxShadow: `0 0 20px ${levelColor}08, inset 0 0 30px ${levelColor}05`,
               } : {}}
             >
-              {/* Subtle gradient overlay with level color */}
               {levelColor && (
                 <div className="absolute inset-0 rounded-2xl pointer-events-none" style={{
                   background: `linear-gradient(135deg, ${levelColor}12 0%, transparent 50%, ${levelColor}08 100%)`,
@@ -79,19 +75,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                         <option value="es-es">ES</option>
                     </select>
                 </div>
-
-                {canToggle && (
-                <button
-                onClick={toggleTheme}
-                className="relative overflow-hidden w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center transition-all duration-300 group"
-                style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)', color: 'var(--color-text-muted)' }}
-                >
-                    <div className="relative z-10 transition-transform duration-500 group-hover:rotate-180">
-                        {theme === 'light' ? <Moon size={16} className="sm:hidden" /> : <Sun size={16} className="sm:hidden" />}
-                        {theme === 'light' ? <Moon size={18} className="hidden sm:block" /> : <Sun size={18} className="hidden sm:block" />}
-                    </div>
-                </button>
-                )}
 
                 <div className="flex items-center gap-1.5 sm:gap-3 pl-1 sm:pl-2">
                     <div className="flex items-center gap-2 sm:gap-3 rounded-full p-1 pr-2 sm:pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>

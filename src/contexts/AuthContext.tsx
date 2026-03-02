@@ -128,7 +128,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           whatsapp: data.whatsapp,
           cro: data.cro || null,
           status: 'pending' as const,
-          preferences: { theme: 'light', language: 'pt-br' }
+          preferences: { theme: 'dark', language: 'pt-br' }
       }, { onConflict: 'id' });
 
       if (profileError) {

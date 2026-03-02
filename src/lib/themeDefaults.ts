@@ -81,7 +81,7 @@ export const DEFAULT_DARK: ColorScheme = {
 };
 
 export const DEFAULT_THEME_MODE: ThemeModeConfig = {
-  mode: 'dual',
+  mode: 'single',
   defaultTheme: 'dark',
 };
 
