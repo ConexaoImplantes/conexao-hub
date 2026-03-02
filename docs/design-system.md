@@ -5,7 +5,7 @@
 
 ---
 
-## 1. ColorScheme — 38 Tokens de Cor
+## 1. ColorScheme — 42 Tokens de Cor
 
 Todas as cores são configuráveis em tempo real pelo admin e injetadas via `BrandContext` como CSS custom properties no `:root` e `.dark`.
 
@@ -84,7 +84,7 @@ background: linear-gradient(135deg,
 | `tooltipBg` | `--color-tooltip-bg` | `#0f172a` | `#f8fafc` | Fundo de tooltips. Invertido em relação ao tema (escuro no light, claro no dark). |
 | `tooltipText` | `--color-tooltip-text` | `#f8fafc` | `#0f172a` | Texto de tooltips. Invertido em relação ao tema. |
 
-### 1.8 Efeitos Visuais (8 tokens)
+### 1.8 Efeitos Visuais (7 tokens)
 
 | Token | Variável CSS | Light | Dark | Descrição |
 |---|---|---|---|---|
@@ -95,6 +95,15 @@ background: linear-gradient(135deg,
 | `scrollbarThumb` | `--color-scrollbar-thumb` | `#c9a655` | `#c9a655` | Cor do polegar da scrollbar customizada. Dourado em ambos os temas. |
 | `scrollbarTrack` | `--color-scrollbar-track` | `transparent` | `transparent` | Cor da trilha da scrollbar. Transparente para estética minimalista. |
 | `ring` | `--color-ring` | `#c9a65580` | `#c9a65580` | Cor do focus ring (outline) em elementos interativos. Accent com 50% opacidade. |
+
+### 1.9 Efeitos de Hover (4 tokens)
+
+| Token | Variável CSS | Light | Dark | Descrição |
+|---|---|---|---|---|
+| `hoverBg` | `--color-hover-bg` | `#334155` | `#334155` | Cor de fundo ao passar o mouse em cards, divs e componentes interativos. |
+| `hoverBorder` | `--color-hover-border` | `#c9a65540` | `#c9a65540` | Cor da borda no estado hover. Accent dourado com ~25% opacidade. |
+| `hoverScale` | — | `1.02` | `1.02` | Fator de escala (transform) no hover. Não é variável CSS, aplicado via JS. |
+| `hoverShadow` | `--color-hover-shadow` | `#c9a65525` | `#c9a65525` | Cor da sombra no hover. Accent dourado com ~15% opacidade. |
 
 ---
 
