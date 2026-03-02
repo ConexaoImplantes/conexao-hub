@@ -130,6 +130,11 @@ export interface ColorScheme {
   gradientStart: string;
   gradientMid: string;
   gradientEnd: string;
+  // Hover
+  hoverBg: string;
+  hoverBorder: string;
+  hoverScale: string;
+  hoverShadow: string;
 }
 
 export interface ThemeModeConfig {

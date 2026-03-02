@@ -38,6 +38,10 @@ export const DEFAULT_LIGHT: ColorScheme = {
   gradientStart: '#c9a655',
   gradientMid: '#e8d48b',
   gradientEnd: '#a8873a',
+  hoverBg: '#334155',
+  hoverBorder: '#c9a65540',
+  hoverScale: '1.02',
+  hoverShadow: '#c9a65525',
 };
 
 export const DEFAULT_DARK: ColorScheme = {
@@ -78,6 +82,10 @@ export const DEFAULT_DARK: ColorScheme = {
   gradientStart: '#c9a655',
   gradientMid: '#e8d48b',
   gradientEnd: '#a8873a',
+  hoverBg: '#334155',
+  hoverBorder: '#c9a65540',
+  hoverScale: '1.02',
+  hoverShadow: '#c9a65525',
 };
 
 export const DEFAULT_THEME_MODE: ThemeModeConfig = {

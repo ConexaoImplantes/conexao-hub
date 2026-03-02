@@ -43,7 +43,7 @@ const SliderInput = ({ label, value, onChange, min, max, step, hint, unit }: { l
 );
 
 /* ─── CATEGORY DEFINITIONS ─── */
-type CategoryKey = 'base' | 'text' | 'border' | 'brand' | 'feedback' | 'components' | 'effects' | 'gradients';
+type CategoryKey = 'base' | 'text' | 'border' | 'brand' | 'feedback' | 'components' | 'header' | 'hover' | 'effects' | 'gradients';
 interface TokenDef { key: keyof ColorScheme; label: string; hint: string }
 
 const CATEGORIES: Record<CategoryKey, { title: string; tokens: TokenDef[] }> = {
@@ -52,7 +52,6 @@ const CATEGORIES: Record<CategoryKey, { title: string; tokens: TokenDef[] }> = {
     tokens: [
       { key: 'background', label: 'Background', hint: 'Fundo geral da página' },
       { key: 'surface', label: 'Surface', hint: 'Cards, painéis e modais' },
-      { key: 'surfaceHover', label: 'Surface Hover', hint: 'Hover de cards/items' },
       { key: 'card', label: 'Card', hint: 'Background de cards' },
     ],
   },
@@ -104,16 +103,30 @@ const CATEGORIES: Record<CategoryKey, { title: string; tokens: TokenDef[] }> = {
       { key: 'tooltipText', label: 'Tooltip Texto', hint: 'Texto de tooltips' },
     ],
   },
+  header: {
+    title: '🏛️ Cabeçalho',
+    tokens: [
+      { key: 'headerBg', label: 'Header Background', hint: 'Fundo do cabeçalho' },
+      { key: 'glassTint', label: 'Glass Tint', hint: 'Tintura do efeito glass' },
+      { key: 'ring', label: 'Focus Ring', hint: 'Anel de foco geral' },
+    ],
+  },
+  hover: {
+    title: '👆 Efeitos de Hover',
+    tokens: [
+      { key: 'surfaceHover', label: 'Surface Hover', hint: 'Hover de cards/items' },
+      { key: 'hoverBg', label: 'Hover Background', hint: 'Background ao passar o mouse' },
+      { key: 'hoverBorder', label: 'Hover Borda', hint: 'Cor da borda no hover' },
+      { key: 'hoverShadow', label: 'Hover Sombra', hint: 'Cor da sombra no hover' },
+    ],
+  },
   effects: {
     title: '✨ Efeitos & UI',
     tokens: [
       { key: 'overlay', label: 'Overlay', hint: 'Fundo de modais/backdrops' },
       { key: 'shadow', label: 'Shadow', hint: 'Cor das sombras' },
-      { key: 'glassTint', label: 'Glass Tint', hint: 'Tintura do efeito glass' },
-      { key: 'headerBg', label: 'Header Background', hint: 'Fundo do cabeçalho' },
       { key: 'scrollbarThumb', label: 'Scrollbar', hint: 'Cor da barra de rolagem' },
       { key: 'scrollbarTrack', label: 'Scrollbar Track', hint: 'Trilha da barra de rolagem' },
-      { key: 'ring', label: 'Focus Ring', hint: 'Anel de foco geral' },
     ],
   },
   gradients: {
@@ -126,7 +139,7 @@ const CATEGORIES: Record<CategoryKey, { title: string; tokens: TokenDef[] }> = {
   },
 };
 
-const CATEGORY_ORDER: CategoryKey[] = ['base', 'text', 'border', 'brand', 'gradients', 'feedback', 'components', 'effects'];
+const CATEGORY_ORDER: CategoryKey[] = ['base', 'text', 'border', 'brand', 'gradients', 'header', 'hover', 'feedback', 'components', 'effects'];
 
 /* ─── Environment Tab Labels ─── */
 const ENV_TABS: { key: EnvironmentKey; label: string; icon: React.ReactNode }[] = [
