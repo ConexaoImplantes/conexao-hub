@@ -1,28 +1,40 @@
 
 
-## Plano: Cabeçalho Totalmente Personalizável
+## Plano: Seção Cabeçalho + Tokens de Hover no Editor de Temas
 
-### Problema Atual
-O cabeçalho usa a classe CSS `.liquid-glass` que tem cores hardcoded (`rgba(255,255,255,...)`) e ignora completamente a variável `--color-header-bg` que já existe no sistema de temas. Além disso, vários elementos têm opacidades e cores fixas (anel do avatar `ring-white/20`, bordas, sombras).
+### Problema
+1. Os tokens `headerBg` e `glassTint` existem na categoria "Efeitos & UI" mas não são facilmente encontráveis — o admin espera uma seção dedicada "Cabeçalho"
+2. Não existem tokens dedicados para personalizar efeitos de hover (cor de fundo ao passar o mouse em cards, botões, divs, bordas)
 
 ### Alterações
 
-**1. `src/components/hub/Layout.tsx`**
-- Substituir a classe `liquid-glass` por inline styles usando variáveis CSS do tema:
-  - `--color-header-bg` para o fundo
-  - `--color-glass-tint` para o tint do glass
-  - `--env-glass-blur`, `--env-glass-opacity`, `--env-glass-border-opacity` para os efeitos
-- Substituir `ring-white/20` do avatar por `color-mix(in srgb, var(--color-text-main) 20%, transparent)`
-- Garantir que **todas** as cores do header (fundo, bordas, sombras, glow do logo, seletor de idioma, botão logout) usem exclusivamente variáveis CSS `var(--color-*)`
+**1. Novos tokens de hover no `ColorScheme` (`src/types.ts`)**
+Adicionar 4 novos tokens:
+- `hoverBg` — cor de fundo ao passar o mouse em cards/divs
+- `hoverBorder` — cor da borda no hover
+- `hoverScale` — não é cor, mas controla intensidade (string, ex: "1.02")
+- `hoverShadow` — cor da sombra no hover
 
-**2. `src/index.css`**
-- Atualizar a classe `.liquid-glass` para usar variáveis CSS em vez de rgba hardcoded, ou criar uma variante `.liquid-glass-header` que respeite `--color-header-bg`
-- Substituir todos os `rgba(255,255,255,...)` fixos por referências a `--color-glass-tint` e `--color-header-bg`
+**2. Atualizar defaults (`src/lib/themeDefaults.ts`)**
+Adicionar valores padrão para os novos tokens no `DEFAULT_DARK`
 
-**3. `src/components/hub/ThemeEditorPanel.tsx`**
-- Verificar que o campo `headerBg` está exposto e funcional no editor (já existe na linha 113)
-- Confirmar que `glassTint` também está acessível
+**3. Injetar variáveis CSS (`src/contexts/BrandContext.tsx`)**
+Adicionar no `buildCssVars`:
+- `--color-hover-bg`
+- `--color-hover-border`  
+- `--color-hover-shadow`
 
-### Resultado
-Todas as cores visíveis no cabeçalho serão controladas pelo painel de temas do Super Admin, incluindo fundo, transparência do glass, bordas, sombras e elementos internos.
+**4. Reorganizar categorias no editor (`src/components/hub/ThemeEditorPanel.tsx`)**
+- Criar nova categoria **"🏛️ Cabeçalho"** com: `headerBg`, `glassTint`, `ring`
+- Criar nova categoria **"👆 Efeitos de Hover"** com: `surfaceHover`, `hoverBg`, `hoverBorder`, `hoverShadow`
+- Remover esses tokens da categoria "Efeitos & UI" para evitar duplicação
+
+**5. Aplicar tokens de hover nos componentes**
+- `MaterialCard.tsx` — substituir `hover:shadow-2xl` e borders hardcoded por `var(--color-hover-*)`
+- `CollectionCard.tsx` — mesma lógica
+- `Layout.tsx` — botões do header já usam variáveis, verificar hover states
+- `src/index.css` — atualizar `.liquid-glass` hover se houver
+
+**6. CSS fallbacks (`src/index.css`)**
+Adicionar fallbacks para os novos tokens no `:root`
 
