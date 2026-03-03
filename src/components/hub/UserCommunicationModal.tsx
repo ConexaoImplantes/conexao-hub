@@ -95,11 +95,11 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
             <div className="space-y-4 animate-fade-in">
               <div>
                 <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-main)' }}>{t('comm.email.subject')}</label>
-                <input type="text" required className="w-full p-2.5 rounded-lg border bg-gray-50 dark:bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={subject} onChange={e => setSubject(e.target.value)} />
+                <input type="text" required className="w-full p-2.5 rounded-lg border bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={subject} onChange={e => setSubject(e.target.value)} />
               </div>
               <div>
                 <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-main)' }}>{t('comm.email.subtitle')}</label>
-                <input type="text" className="w-full p-2.5 rounded-lg border bg-gray-50 dark:bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={subtitle} onChange={e => setSubtitle(e.target.value)} />
+                <input type="text" className="w-full p-2.5 rounded-lg border bg-black/20 outline-none focus:ring-2" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={subtitle} onChange={e => setSubtitle(e.target.value)} />
               </div>
             </div>
           )}
@@ -120,7 +120,7 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
             <label className="block text-xs font-semibold mb-1.5" style={{ color: 'var(--color-text-main)' }}>
                {mode === 'email' ? t('comm.email.body') : t('comm.wa.message')}
             </label>
-            <textarea required rows={5} className="w-full p-2.5 rounded-lg border bg-gray-50 dark:bg-black/20 outline-none focus:ring-2 resize-none" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={body} onChange={e => setBody(e.target.value)} />
+            <textarea required rows={5} className="w-full p-2.5 rounded-lg border bg-black/20 outline-none focus:ring-2 resize-none" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={body} onChange={e => setBody(e.target.value)} />
           </div>
 
           {(mode === 'email' || (mode === 'whatsapp' && waType === 'file')) && (
@@ -128,7 +128,7 @@ export const UserCommunicationModal: React.FC<UserCommunicationModalProps> = ({ 
                <label className="block text-xs font-semibold mb-1.5 flex items-center gap-2" style={{ color: 'var(--color-text-main)' }}>
                  <Paperclip size={14} /> {t('comm.file.url')}
                </label>
-               <input type="text" required={mode === 'whatsapp' && waType === 'file'} placeholder="https://..." className="w-full p-2.5 rounded-lg border bg-gray-50 dark:bg-black/20 outline-none focus:ring-2 font-mono text-xs" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={fileUrl} onChange={e => setFileUrl(e.target.value)} />
+               <input type="text" required={mode === 'whatsapp' && waType === 'file'} placeholder="https://..." className="w-full p-2.5 rounded-lg border bg-black/20 outline-none focus:ring-2 font-mono text-xs" style={{ color: 'var(--color-text-main)', borderColor: 'var(--color-border)' }} value={fileUrl} onChange={e => setFileUrl(e.target.value)} />
             </div>
           )}
         </form>

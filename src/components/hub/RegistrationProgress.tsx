@@ -79,7 +79,7 @@ export const RegistrationProgress: React.FC = () => {
         <div className="absolute bottom-[20%] right-[20%] w-96 h-96 rounded-full blur-[100px] animate-blob animation-delay-2000" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)' }} />
       </div>
 
-      <div className="w-full max-w-md backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+      <div className="w-full max-w-md backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/10" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
         
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent to-transparent opacity-50" style={{ backgroundImage: 'linear-gradient(to right, transparent, var(--color-accent), transparent)' }} />
 

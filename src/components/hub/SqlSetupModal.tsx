@@ -135,7 +135,7 @@ insert into public.system_config (id) values (1) on conflict do nothing;
                 </div>
             </div>
             {onClose && (
-                <button onClick={onClose} className="p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors" style={{ color: 'var(--color-text-muted)' }}>
+                <button onClick={onClose} className="p-2 hover:bg-gray-800 rounded-full transition-colors" style={{ color: 'var(--color-text-muted)' }}>
                     <X size={24} />
                 </button>
             )}
