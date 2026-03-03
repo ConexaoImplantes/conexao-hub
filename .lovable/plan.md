@@ -1,55 +1,44 @@
 
 
-## Problema
+## Diagnóstico
 
-A tabela `user_progress` tem constraint `UNIQUE(user_id, material_id)` — o progresso é global. Se o usuário vê um material na aba "Materiais", ele é marcado como concluído e isso reflete nas trilhas também.
+A imagem do usuário mostra a interface com fundo branco e elementos claros. O problema é que existem **dezenas de classes Tailwind com prefixo `dark:`** e bases claras (`bg-gray-50`, `bg-white`) espalhadas por vários componentes. Embora a classe `.dark` esteja no `<html>`, algo no ambiente do usuário (cache, extensão de navegador, ou race condition) pode estar impedindo a aplicação correta.
 
-## Solução
+A solução definitiva é **eliminar todas as referências a light mode do código**: remover prefixos `dark:`, substituir bases claras por equivalentes escuros, e garantir que não haja nenhuma dependência do seletor `.dark`.
 
-Adicionar `collection_id` (nullable) à tabela `user_progress` para separar o contexto:
-- `collection_id = NULL` → visualização avulsa (aba Materiais)
-- `collection_id = UUID` → visualização dentro de uma trilha específica
+## Plano
 
-### 1. Migração SQL
+### 1. Limpar `src/index.css`
+- Remover todos os seletores `.dark .icon-box`, `.dark .icon-box-sm`, `.dark .icon-box-lg`, `.dark .liquid-glass-gold` — mesclar os estilos diretamente no seletor principal (sem condicional)
 
-- Adicionar coluna `collection_id UUID NULL` em `user_progress`
-- Dropar constraint `user_progress_user_id_material_id_key`
-- Criar nova constraint `UNIQUE(user_id, material_id, collection_id)` com `NULLS NOT DISTINCT` (para que NULL = NULL na unicidade)
-- Atualizar policies de RLS que já existem (sem mudança necessária, pois filtram por `user_id`)
+### 2. Limpar componentes com `dark:` e `bg-gray-50` / `bg-white`
+Arquivos afetados (10 arquivos, ~180 ocorrências):
+- `src/pages/AuthPage.tsx` — `dark:bg-white/5` → `bg-white/5`, `dark:border-white/10` → `border-white/10`, `dark:text-red-400` → `text-red-400`, `dark:hover:bg-white/10` → `hover:bg-white/10`
+- `src/pages/Admin.tsx` — `bg-gray-50 dark:bg-black/20` → `bg-black/20`
+- `src/pages/Dashboard.tsx` — `bg-white/10`, `bg-white/20` (já ok, são transparências sobre escuro)
+- `src/components/hub/UserCommunicationModal.tsx` — `bg-gray-50 dark:bg-black/20` → `bg-black/20`
+- `src/components/hub/SqlSetupModal.tsx` — `hover:bg-gray-100 dark:hover:bg-gray-800` → `hover:bg-gray-800`
+- `src/components/hub/ThemeEditorPanel.tsx` — `hover:bg-black/5 dark:hover:bg-white/5` → `hover:bg-white/5`
+- `src/components/hub/CollectionFormModal.tsx` — `bg-white` em toggle thumb (aceitável, é branco sobre fundo colorido)
+- `src/components/hub/MaterialFormModal.tsx` — idem toggle thumb
+- `src/components/hub/MaterialCard.tsx` — `bg-white/20` (já ok, é glow effect)
+- `src/components/hub/ViewerModal.tsx` — `bg-white` em iframes de PDF/HTML (aceitável, conteúdo externo)
 
-### 2. Atualizar `src/types.ts` — `UserProgress`
+### 3. Limpar `src/components/ui/chart.tsx`
+- Remover referência a `light` no objeto `THEMES`
 
-Adicionar campo opcional `collectionId?: string`
+### Resumo
+- Remover **todos** os prefixos `dark:` substituindo pelo estilo dark direto
+- Remover **todas** as bases claras (`bg-gray-50`, `bg-gray-100`) substituindo por equivalentes escuros
+- Manter `bg-white` apenas onde faz sentido visual (thumb de toggle, iframes de conteúdo externo, badges sobre vídeo)
+- Consolidar `.dark .X` no CSS em `.X` direto
 
-### 3. Atualizar `src/lib/mockDb.ts`
-
-- `upsertProgress`: aceitar parâmetro opcional `collectionId`, incluir no payload e no `onConflict`
-- `getUserProgress`: mapear `collection_id` do resultado
-
-### 4. Atualizar `src/pages/Dashboard.tsx`
-
-- **`handleViewMaterial`**: passar `selectedCollection?.id` quando `activeView === 'collection-detail'`
-- **`handleCloseViewer`**: idem — passar `collectionId` ao `upsertProgress`
-- **Cálculo de progresso da trilha** (linhas ~317 e ~173): filtrar `userProgress` por `collectionId === selectedCollection.id` em vez de só `materialId`
-- **`CollectionCard`** (progresso nas cards da lista): mesma lógica — filtrar por `collectionId`
-- Guardar no estado `viewingMaterial` o `collectionId` atual para usar no `handleCloseViewer`
-
-### 5. Atualizar `src/components/hub/CollectionCard.tsx`
-
-Verificar se o cálculo de progresso filtra por `collectionId`.
-
-### Resumo do fluxo
-
-```text
-Aba Materiais → abre material → upsertProgress(userId, matId, status, null)
-Aba Trilhas → abre material dentro da trilha X → upsertProgress(userId, matId, status, X.id)
-Cálculo progresso trilha X → filtra userProgress WHERE collectionId = X.id
-```
-
-Arquivos alterados:
-- Migration SQL (nova)
-- `src/types.ts`
-- `src/lib/mockDb.ts`
-- `src/pages/Dashboard.tsx`
-- `src/components/hub/CollectionCard.tsx`
+**Arquivos editados:**
+- `src/index.css`
+- `src/pages/AuthPage.tsx`
+- `src/pages/Admin.tsx`
+- `src/components/hub/UserCommunicationModal.tsx`
+- `src/components/hub/SqlSetupModal.tsx`
+- `src/components/hub/ThemeEditorPanel.tsx`
+- `src/components/ui/chart.tsx`
 
