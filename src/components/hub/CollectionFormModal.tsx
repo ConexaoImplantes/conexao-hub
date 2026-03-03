@@ -276,7 +276,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
             <div>
               <div className="flex items-center justify-between mb-3">
                 <p className="text-sm font-semibold" style={{ color: 'var(--color-text-main)' }}>
-                  Materiais da Trilha
+                  Selecionar Materiais
                 </p>
                 <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
                   {selectedMaterialIds.length} selecionados
@@ -303,10 +303,32 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                       }}>
                       <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${isSelected ? '' : 'border'}`} style={isSelected ? { backgroundColor: 'var(--color-accent)' } : { borderColor: 'var(--color-border)' }}>
                         {isSelected && <Check size={10} className="text-white" />}
+                      </div>
+                      <span className="truncate flex-1">{title}</span>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>{m.type}</span>
+                        {m.points > 0 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
+                            <Star size={8} /> {m.points}
+                          </span>
+                        )}
+                      </div>
+                    </button>
+                  );
+                })}
+                {filteredMaterials.length === 0 && (
+                  <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-muted)' }}>Nenhum material encontrado.</p>
+                )}
+              </div>
             </div>
 
+            {/* Divider */}
+            {selectedMaterialIds.length > 0 && (
+              <div className="border-t" style={{ borderColor: 'var(--color-border)' }} />
+            )}
+
             {/* Section 5: Material ordering */}
-            {selectedMaterialIds.length > 1 && (
+            {selectedMaterialIds.length > 0 && (
               <div>
                 <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-main)' }}>
                   Ordem dos Materiais
@@ -346,23 +368,6 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                 </div>
               </div>
             )}
-                      <span className="truncate flex-1">{title}</span>
-                      <div className="flex items-center gap-2 shrink-0">
-                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>{m.type}</span>
-                        {m.points > 0 && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
-                            <Star size={8} /> {m.points}
-                          </span>
-                        )}
-                      </div>
-                    </button>
-                  );
-                })}
-                {filteredMaterials.length === 0 && (
-                  <p className="text-sm text-center py-4" style={{ color: 'var(--color-text-muted)' }}>Nenhum material encontrado.</p>
-                )}
-              </div>
-            </div>
           </div>
         </form>
 
