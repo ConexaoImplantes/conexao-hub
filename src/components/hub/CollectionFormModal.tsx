@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Collection, Language, Role } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search } from 'lucide-react';
+import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search, ChevronUp, ChevronDown } from 'lucide-react';
 import { mockDb } from '../../lib/mockDb';
 import { Material } from '../../types';
 
@@ -50,6 +50,24 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
 
   const toggleMaterial = (id: string) => {
     setSelectedMaterialIds((prev) => prev.includes(id) ? prev.filter((m) => m !== id) : [...prev, id]);
+  };
+
+  const moveUp = (index: number) => {
+    if (index === 0) return;
+    setSelectedMaterialIds((prev) => {
+      const next = [...prev];
+      [next[index - 1], next[index]] = [next[index], next[index - 1]];
+      return next;
+    });
+  };
+
+  const moveDown = (index: number) => {
+    setSelectedMaterialIds((prev) => {
+      if (index >= prev.length - 1) return prev;
+      const next = [...prev];
+      [next[index], next[index + 1]] = [next[index + 1], next[index]];
+      return next;
+    });
   };
 
   const filteredMaterials = allMaterials.filter((m) => {
@@ -285,7 +303,49 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                       }}>
                       <div className={`w-4 h-4 rounded flex items-center justify-center shrink-0 ${isSelected ? '' : 'border'}`} style={isSelected ? { backgroundColor: 'var(--color-accent)' } : { borderColor: 'var(--color-border)' }}>
                         {isSelected && <Check size={10} className="text-white" />}
+            </div>
+
+            {/* Section 5: Material ordering */}
+            {selectedMaterialIds.length > 1 && (
+              <div>
+                <p className="text-sm font-semibold mb-3" style={{ color: 'var(--color-text-main)' }}>
+                  Ordem dos Materiais
+                </p>
+                <div className="space-y-1.5 rounded-xl p-2" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)' }}>
+                  {selectedMaterialIds.map((id, index) => {
+                    const mat = allMaterials.find((m) => m.id === id);
+                    if (!mat) return null;
+                    const title = mat.title['pt-br'] || Object.values(mat.title)[0] || 'Sem título';
+                    return (
+                      <div key={id} className="flex items-center gap-2 p-2.5 rounded-lg text-sm" style={{ backgroundColor: 'var(--color-surface)' }}>
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
+                          {index + 1}
+                        </span>
+                        <span className="truncate flex-1" style={{ color: 'var(--color-text-main)' }}>{title}</span>
+                        <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded shrink-0" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>{mat.type}</span>
+                        {mat.points > 0 && (
+                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shrink-0" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }}>
+                            <Star size={8} /> {mat.points}
+                          </span>
+                        )}
+                        <div className="flex flex-col shrink-0">
+                          <button type="button" onClick={() => moveUp(index)} disabled={index === 0}
+                            className="p-0.5 rounded transition-colors disabled:opacity-30"
+                            style={{ color: 'var(--color-text-muted)' }}>
+                            <ChevronUp size={14} />
+                          </button>
+                          <button type="button" onClick={() => moveDown(index)} disabled={index === selectedMaterialIds.length - 1}
+                            className="p-0.5 rounded transition-colors disabled:opacity-30"
+                            style={{ color: 'var(--color-text-muted)' }}>
+                            <ChevronDown size={14} />
+                          </button>
+                        </div>
                       </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
                       <span className="truncate flex-1">{title}</span>
                       <div className="flex items-center gap-2 shrink-0">
                         <span className="text-[10px] uppercase font-bold px-1.5 py-0.5 rounded" style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-muted)' }}>{m.type}</span>
