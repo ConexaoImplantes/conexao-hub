@@ -100,7 +100,8 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
   const [activeTab, setActiveTab] = useState<Language>('pt-br');
   const [error, setError] = useState<string | null>(null);
   const [tags, setTags] = useState<string[]>([]);
-  const [points, setPoints] = useState(0);
+  const defaultPointsByType: Record<MaterialType, number> = { pdf: 150, image: 50, video: 100, audio: 150, html: 100 };
+  const [points, setPoints] = useState(defaultPointsByType['pdf']);
   const [htmlInputMode, setHtmlInputMode] = useState<'upload' | 'url'>('upload');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -260,11 +261,11 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
               <div className="flex-1">
                 <label className="text-[11px] font-bold uppercase mb-2 block tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Tipo</label>
                 <div className="flex gap-2">
-                  <TypeCard value="pdf" icon={FileText} label="PDF" currentType={type} onSelect={setType} />
-                  <TypeCard value="image" icon={ImageIcon} label="IMG" currentType={type} onSelect={setType} />
-                  <TypeCard value="video" icon={Video} label="Video" currentType={type} onSelect={setType} />
-                  <TypeCard value="audio" icon={Headphones} label="Áudio" currentType={type} onSelect={setType} />
-                  <TypeCard value="html" icon={Globe} label="HTML" currentType={type} onSelect={setType} />
+                  {(['pdf', 'image', 'video', 'audio', 'html'] as MaterialType[]).map(t => {
+                    const icons = { pdf: FileText, image: ImageIcon, video: Video, audio: Headphones, html: Globe };
+                    const labels = { pdf: 'PDF', image: 'IMG', video: 'Video', audio: 'Áudio', html: 'HTML' };
+                    return <TypeCard key={t} value={t} icon={icons[t]} label={labels[t]} currentType={type} onSelect={(val) => { setType(val); if (!initialData) setPoints(defaultPointsByType[val]); }} />;
+                  })}
                 </div>
               </div>
 
