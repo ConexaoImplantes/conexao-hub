@@ -1,40 +1,33 @@
 
 
-## Plano: Seção Cabeçalho + Tokens de Hover no Editor de Temas
+## Plano: Reordenação de materiais dentro das trilhas
 
 ### Problema
-1. Os tokens `headerBg` e `glassTint` existem na categoria "Efeitos & UI" mas não são facilmente encontráveis — o admin espera uma seção dedicada "Cabeçalho"
-2. Não existem tokens dedicados para personalizar efeitos de hover (cor de fundo ao passar o mouse em cards, botões, divs, bordas)
+Atualmente, ao criar/editar uma trilha, os materiais são selecionados via checkboxes mas a ordem é determinada apenas pela sequência de cliques. Não há como o admin visualizar nem alterar a ordem depois de selecionar.
 
-### Alterações
+### Solução
+Adicionar uma lista de **materiais selecionados ordenável** no `CollectionFormModal.tsx`, com botões de seta (↑ ↓) para mover cada item para cima ou para baixo.
 
-**1. Novos tokens de hover no `ColorScheme` (`src/types.ts`)**
-Adicionar 4 novos tokens:
-- `hoverBg` — cor de fundo ao passar o mouse em cards/divs
-- `hoverBorder` — cor da borda no hover
-- `hoverScale` — não é cor, mas controla intensidade (string, ex: "1.02")
-- `hoverShadow` — cor da sombra no hover
+### Alterações em `src/components/hub/CollectionFormModal.tsx`
 
-**2. Atualizar defaults (`src/lib/themeDefaults.ts`)**
-Adicionar valores padrão para os novos tokens no `DEFAULT_DARK`
+1. **Separar a UI em duas partes:**
+   - **Seleção** (já existente): lista de checkboxes com busca para adicionar/remover materiais
+   - **Ordenação** (nova): lista dos materiais selecionados com botões ↑↓ para reordenar
 
-**3. Injetar variáveis CSS (`src/contexts/BrandContext.tsx`)**
-Adicionar no `buildCssVars`:
-- `--color-hover-bg`
-- `--color-hover-border`  
-- `--color-hover-shadow`
+2. **Botões de reordenação por item:**
+   - Botão `ChevronUp` — move o material uma posição acima
+   - Botão `ChevronDown` — move o material uma posição abaixo
+   - Número da posição visível (1, 2, 3...)
+   - Desabilitado quando já está no topo/fundo
 
-**4. Reorganizar categorias no editor (`src/components/hub/ThemeEditorPanel.tsx`)**
-- Criar nova categoria **"🏛️ Cabeçalho"** com: `headerBg`, `glassTint`, `ring`
-- Criar nova categoria **"👆 Efeitos de Hover"** com: `surfaceHover`, `hoverBg`, `hoverBorder`, `hoverShadow`
-- Remover esses tokens da categoria "Efeitos & UI" para evitar duplicação
+3. **Funções auxiliares:**
+   - `moveUp(index)` — troca `selectedMaterialIds[index]` com `[index-1]`
+   - `moveDown(index)` — troca `selectedMaterialIds[index]` com `[index+1]`
 
-**5. Aplicar tokens de hover nos componentes**
-- `MaterialCard.tsx` — substituir `hover:shadow-2xl` e borders hardcoded por `var(--color-hover-*)`
-- `CollectionCard.tsx` — mesma lógica
-- `Layout.tsx` — botões do header já usam variáveis, verificar hover states
-- `src/index.css` — atualizar `.liquid-glass` hover se houver
+4. **Visual:** A lista de ordenação aparece abaixo da lista de seleção, mostrando apenas os materiais selecionados com título, tipo, XP e controles de posição.
 
-**6. CSS fallbacks (`src/index.css`)**
-Adicionar fallbacks para os novos tokens no `:root`
+### Escopo
+- Apenas `src/components/hub/CollectionFormModal.tsx` será alterado
+- Sem dependências novas (sem lib de drag-and-drop)
+- A ordem já é salva via `mockDb.setCollectionItems` que usa o index do array
 
