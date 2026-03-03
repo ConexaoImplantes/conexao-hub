@@ -1,6 +1,6 @@
 import { supabase } from './supabaseClient';
 import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress, ThemeModeConfig, EnvironmentThemes } from '../types';
-import { DEFAULT_LIGHT, DEFAULT_DARK, DEFAULT_THEME_MODE, mergeScheme, DEFAULT_ENVIRONMENT_THEMES } from './themeDefaults';
+import { DEFAULT_DARK, DEFAULT_THEME_MODE, mergeScheme, DEFAULT_ENVIRONMENT_THEMES } from './themeDefaults';
 
 export interface CollectionProgress {
   id: string;
@@ -87,7 +87,6 @@ export const mockDb = {
 
     const defaults: SystemConfig = {
         appName: 'Hub Conexão',
-        themeLight: DEFAULT_LIGHT,
         themeDark: DEFAULT_DARK,
         themeMode: DEFAULT_THEME_MODE,
     };
@@ -100,7 +99,6 @@ export const mockDb = {
       appName: data.app_name,
       logoUrl: data.logo_url,
       webhookUrl: data.webhook_url,
-      themeLight: mergeScheme(data.theme_light as unknown as Partial<ColorScheme>, DEFAULT_LIGHT),
       themeDark: mergeScheme(data.theme_dark as unknown as Partial<ColorScheme>, DEFAULT_DARK),
       themeMode: (data as any).theme_mode ? { ...DEFAULT_THEME_MODE, ...(data as any).theme_mode } : DEFAULT_THEME_MODE,
       environmentThemes: (data as any).environment_themes && Object.keys((data as any).environment_themes).length > 0
@@ -116,7 +114,6 @@ export const mockDb = {
         app_name: config.appName,
         logo_url: config.logoUrl,
         webhook_url: config.webhookUrl,
-        theme_light: config.themeLight as any,
         theme_dark: config.themeDark as any,
         theme_mode: config.themeMode as any,
         environment_themes: config.environmentThemes as any,

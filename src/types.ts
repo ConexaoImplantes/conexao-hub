@@ -16,7 +16,7 @@ export interface UserProfile {
   allowedTypes?: MaterialType[];
   points: number;
   preferences: {
-    theme: 'light' | 'dark';
+    theme: 'dark';
     language: Language;
   };
   rejectionReason?: string;
@@ -139,8 +139,8 @@ export interface ColorScheme {
 }
 
 export interface ThemeModeConfig {
-  mode: 'single' | 'dual';
-  defaultTheme: 'light' | 'dark';
+  mode: 'single';
+  defaultTheme: 'dark';
 }
 
 export interface EnvironmentEffects {
@@ -167,7 +167,6 @@ export interface SystemConfig {
   appName: string;
   logoUrl?: string;
   webhookUrl?: string;
-  themeLight: ColorScheme;
   themeDark: ColorScheme;
   themeMode: ThemeModeConfig;
   environmentThemes?: EnvironmentThemes;

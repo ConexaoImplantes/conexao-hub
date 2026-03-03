@@ -9,7 +9,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.remove('light');
     root.classList.add('dark');
   }, []);
 

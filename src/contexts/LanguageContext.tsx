@@ -193,7 +193,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.logo.url': 'URL do Logo',
     'settings.webhook.url': 'URL do Webhook (N8N)',
     'settings.webhook.hint': 'Esta URL será chamada via POST com um payload JSON sempre que uma mensagem for enviada.',
-    'settings.theme.light': 'Tema Light',
+    'settings.theme.light': '', // deprecated - dark only
     'settings.theme.dark': 'Tema Dark',
     'settings.theme.customize': 'Personalização de Temas',
     'settings.theme.base': 'Estrutura Base',
@@ -414,7 +414,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.logo.url': 'Logo URL',
     'settings.webhook.url': 'Webhook URL (N8N)',
     'settings.webhook.hint': 'This URL will be called via POST with a JSON payload whenever a message is sent.',
-    'settings.theme.light': 'Light Theme',
+    'settings.theme.light': '', // deprecated - dark only
     'settings.theme.dark': 'Dark Theme',
     'settings.theme.customize': 'Theme Customization',
     'settings.theme.base': 'Base Structure',
@@ -634,7 +634,7 @@ const translations: Record<Language, Record<string, string>> = {
     'settings.logo.url': 'URL del Logo',
     'settings.webhook.url': 'URL del Webhook (N8N)',
     'settings.webhook.hint': 'Esta URL será llamada via POST con un payload JSON cada vez que se envíe un mensaje.',
-    'settings.theme.light': 'Tema Claro',
+    'settings.theme.light': '', // deprecated - dark only
     'settings.theme.dark': 'Tema Oscuro',
     'settings.theme.customize': 'Personalización de Temas',
     'settings.theme.base': 'Estructura Base',
