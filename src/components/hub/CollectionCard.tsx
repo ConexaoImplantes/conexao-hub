@@ -23,7 +23,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   const displayDesc = collection.description?.[language] || collection.description?.['pt-br'] || '';
 
   const totalItems = materialIds.length;
-  const completedItems = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId)).length;
+  const completedItems = userProgress.filter(p => p.status === 'completed' && p.collectionId === collection.id && materialIds.includes(p.materialId)).length;
   const progressPct = totalItems > 0 ? Math.round((completedItems / totalItems) * 100) : 0;
   const isCompleted = totalItems > 0 && completedItems === totalItems;
 

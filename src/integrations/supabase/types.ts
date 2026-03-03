@@ -390,6 +390,7 @@ export type Database = {
       }
       user_progress: {
         Row: {
+          collection_id: string | null
           completed_at: string | null
           created_at: string
           id: string
@@ -399,6 +400,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          collection_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -408,6 +410,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          collection_id?: string | null
           completed_at?: string | null
           created_at?: string
           id?: string
@@ -417,6 +420,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "user_progress_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "collections"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "user_progress_material_id_fkey"
             columns: ["material_id"]

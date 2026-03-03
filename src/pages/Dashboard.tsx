@@ -28,7 +28,7 @@ export const Dashboard: React.FC = () => {
   const [userProgress, setUserProgress] = useState<UserProgress[]>([]);
   const [collectionItemMap, setCollectionItemMap] = useState<Record<string, string[]>>({});
   const [collectionMaterialsMap, setCollectionMaterialsMap] = useState<Record<string, Material[]>>({});
-  const [viewingMaterial, setViewingMaterial] = useState<{ mat: Material, lang: Language } | null>(null);
+  const [viewingMaterial, setViewingMaterial] = useState<{ mat: Material, lang: Language, collectionId?: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<MaterialType | 'all'>('all');
   const [filterTag, setFilterTag] = useState<string>('');
@@ -132,30 +132,32 @@ export const Dashboard: React.FC = () => {
   }, [materials, user]);
 
   const handleViewMaterial = async (mat: Material, lang: Language) => {
+    const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
     if (user) {
       mockDb.logAccess(mat.id, user.id, lang);
       // Mark as started / award XP on first view
-      const existing = userProgress.find(p => p.materialId === mat.id);
+      const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === currentCollectionId);
       if (!existing) {
-        await mockDb.upsertProgress(user.id, mat.id, 'started');
+        await mockDb.upsertProgress(user.id, mat.id, 'started', currentCollectionId);
         if (mat.points > 0) {
           const startXp = Math.floor(mat.points * 0.3);
           await mockDb.addPoints(user.id, startXp);
           addUserPoints(startXp);
         }
-        setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, status: 'started', createdAt: new Date().toISOString() }]);
+        setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, collectionId: currentCollectionId, status: 'started', createdAt: new Date().toISOString() }]);
       }
     }
-    setViewingMaterial({ mat, lang });
+    setViewingMaterial({ mat, lang, collectionId: currentCollectionId });
   };
 
   const handleCloseViewer = async () => {
     if (viewingMaterial && user) {
       const mat = viewingMaterial.mat;
-      const existing = userProgress.find(p => p.materialId === mat.id);
+      const colId = viewingMaterial.collectionId;
+      const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === colId);
 
       if (existing?.status !== 'completed') {
-        await mockDb.upsertProgress(user.id, mat.id, 'completed');
+        await mockDb.upsertProgress(user.id, mat.id, 'completed', colId);
 
         if (mat.points > 0) {
           const remainingXp = mat.points - Math.floor(mat.points * 0.3);
@@ -164,13 +166,13 @@ export const Dashboard: React.FC = () => {
         }
 
         setUserProgress(prev => {
-          const filtered = prev.filter(p => p.materialId !== mat.id);
-          return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
+          const filtered = prev.filter(p => !(p.materialId === mat.id && p.collectionId === colId));
+          return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, collectionId: colId, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
         });
 
-        if (activeView === 'collection-detail' && selectedCollection) {
+        if (colId && selectedCollection) {
           const materialIds = collectionItemMap[selectedCollection.id] || [];
-          const updatedCompleted = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
+          const updatedCompleted = userProgress.filter(p => p.status === 'completed' && p.collectionId === colId && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
           if (updatedCompleted >= materialIds.length && materialIds.length > 0) {
             if (selectedCollection.points > 0) {
               await mockDb.addPoints(user.id, selectedCollection.points);
@@ -314,7 +316,7 @@ export const Dashboard: React.FC = () => {
         {activeView === 'collection-detail' && selectedCollection && (() => {
           const colMaterials = collectionMaterialsMap[selectedCollection.id] || [];
           const materialIds = collectionItemMap[selectedCollection.id] || [];
-          const completedCount = userProgress.filter(p => p.status === 'completed' && materialIds.includes(p.materialId)).length;
+          const completedCount = userProgress.filter(p => p.status === 'completed' && p.collectionId === selectedCollection.id && materialIds.includes(p.materialId)).length;
           const progressPct = materialIds.length > 0 ? Math.round((completedCount / materialIds.length) * 100) : 0;
           const displayTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || '';
           const displayDesc = selectedCollection.description?.[language] || selectedCollection.description?.['pt-br'] || '';
@@ -372,7 +374,7 @@ export const Dashboard: React.FC = () => {
               ) : (
                 <div className="space-y-2 sm:space-y-3 pb-20">
                   {colMaterials.map((mat, idx) => {
-                    const prog = userProgress.find(p => p.materialId === mat.id);
+                    const prog = userProgress.find(p => p.materialId === mat.id && p.collectionId === selectedCollection.id);
                     const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
                     const availableLang = langs.find(l => mat.assets[l]?.url) || 'pt-br';
                     const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
@@ -494,7 +496,7 @@ export const Dashboard: React.FC = () => {
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-6">
                   {paginatedMaterials.map((mat, index) => (
                     <div key={mat.id} className="animate-slide-up" style={{ animationDelay: `${index * 70}ms` }}>
-                      <MaterialCard material={mat} onView={handleViewMaterial} progress={userProgress.find(p => p.materialId === mat.id)} />
+                      <MaterialCard material={mat} onView={handleViewMaterial} progress={userProgress.find(p => p.materialId === mat.id && !p.collectionId)} />
                     </div>
                   ))}
                 </div>

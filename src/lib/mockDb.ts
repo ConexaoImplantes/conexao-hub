@@ -419,16 +419,17 @@ export const mockDb = {
       id: p.id,
       userId: p.user_id,
       materialId: p.material_id,
+      collectionId: p.collection_id || undefined,
       status: p.status,
       completedAt: p.completed_at,
       createdAt: p.created_at,
     }));
   },
 
-  upsertProgress: async (userId: string, materialId: string, status: 'started' | 'completed'): Promise<void> => {
-    const payload: any = { user_id: userId, material_id: materialId, status };
+  upsertProgress: async (userId: string, materialId: string, status: 'started' | 'completed', collectionId?: string): Promise<void> => {
+    const payload: any = { user_id: userId, material_id: materialId, status, collection_id: collectionId || null };
     if (status === 'completed') payload.completed_at = new Date().toISOString();
-    const { error } = await supabase.from('user_progress').upsert(payload, { onConflict: 'user_id,material_id' });
+    const { error } = await supabase.from('user_progress').upsert(payload, { onConflict: 'user_id,material_id,collection_id' });
     if (error) console.error('Error upserting progress:', error);
   },
 
