@@ -113,7 +113,7 @@ export const AuthPage: React.FC = () => {
           <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full opacity-20 animate-pulse" style={{ borderColor: 'color-mix(in srgb, var(--env-blob1-color) 10%, transparent)' }}></div>
       </div>
 
-      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/20 dark:border-white/10 relative overflow-hidden group transition-all duration-500 ${invitedRole ? 'bg-white/90 dark:bg-black/80' : ''}`} style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/10 relative overflow-hidden group transition-all duration-500 ${invitedRole ? 'bg-black/80' : ''}`} style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
 
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent to-transparent opacity-50" style={{ backgroundImage: `linear-gradient(to right, transparent, var(--color-accent), transparent)` }}></div>
 
@@ -150,7 +150,7 @@ export const AuthPage: React.FC = () => {
                 <div className="p-3 bg-red-500/20 rounded-full w-fit mx-auto">
                   <AlertTriangle size={28} className="text-red-500" />
                 </div>
-                <p className="text-sm font-semibold text-red-600 dark:text-red-400 leading-snug">{tokenError}</p>
+                <p className="text-sm font-semibold text-red-400 leading-snug">{tokenError}</p>
                 <p className="text-xs" style={{ color: 'var(--color-text-muted)' }}>Solicite um novo link de cadastro ao administrador.</p>
                 <button
                   onClick={clearInvite}
@@ -179,7 +179,7 @@ export const AuthPage: React.FC = () => {
           }
 
             {error &&
-          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 rounded-xl text-sm flex flex-col gap-2 animate-slide-up">
+          <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-xl text-sm flex flex-col gap-2 animate-slide-up">
                 <div className="flex items-start gap-3">
                     <AlertTriangle className="shrink-0 mt-0.5" size={16} />
                     <span className="leading-snug">{error}</span>
@@ -198,13 +198,13 @@ export const AuthPage: React.FC = () => {
           {!isLogin &&
           <div className="group">
               <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Nome Completo</label>
-              <input type="text" required className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={name} onChange={(e) => setName(e.target.value)} />
+              <input type="text" required className="w-full p-4 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={name} onChange={(e) => setName(e.target.value)} />
             </div>
           }
 
           <div className="group">
             <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Email</label>
-            <input type="email" required className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
+            <input type="email" required className="w-full p-4 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
 
           <div className="group">
@@ -213,7 +213,7 @@ export const AuthPage: React.FC = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full p-4 pr-12 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10"
+                className="w-full p-4 pr-12 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10"
                 style={{ color: 'var(--color-text-main)' }}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)} />
@@ -228,7 +228,7 @@ export const AuthPage: React.FC = () => {
           <>
               <div className="group">
                 <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>WhatsApp</label>
-                <input type="tel" required className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
+                <input type="tel" required className="w-full p-4 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={whatsapp} onChange={(e) => setWhatsapp(e.target.value)} />
               </div>
 
               <div className="grid grid-cols-1 gap-5">
@@ -248,7 +248,7 @@ export const AuthPage: React.FC = () => {
                  {(role === 'client') &&
               <div className="group">
                     <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>CRO (Opcional)</label>
-                    <input type="text" className="w-full p-4 rounded-xl border border-white/10 bg-black/5 dark:bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-black/10 dark:hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={cro} onChange={(e) => setCro(e.target.value)} />
+                    <input type="text" className="w-full p-4 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={cro} onChange={(e) => setCro(e.target.value)} />
                  </div>
               }
               </div>

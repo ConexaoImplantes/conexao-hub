@@ -632,7 +632,7 @@ export const Admin: React.FC = () => {
               <input
               type="text"
               placeholder={t("search.placeholder")}
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none focus:ring-2"
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-black/20 text-sm outline-none focus:ring-2"
               style={{ color: "var(--color-text-main)" }}
               value={materialSearch}
               onChange={(e) => setMaterialSearch(e.target.value)} />
@@ -640,7 +640,7 @@ export const Admin: React.FC = () => {
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <select
-              className="flex-1 md:w-40 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none"
+              className="flex-1 md:w-40 p-2 rounded-lg bg-black/20 text-sm outline-none"
               style={{ color: "var(--color-text-main)" }}
               value={materialTypeFilter}
               onChange={(e) => setMaterialTypeFilter(e.target.value as any)}>
@@ -653,7 +653,7 @@ export const Admin: React.FC = () => {
                 <option value="html">{t("material.type.html")}</option>
               </select>
               <select
-              className="flex-1 md:w-40 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none"
+              className="flex-1 md:w-40 p-2 rounded-lg bg-black/20 text-sm outline-none"
               style={{ color: "var(--color-text-main)" }}
               value={materialStatusFilter}
               onChange={(e) => setMaterialStatusFilter(e.target.value as any)}>
@@ -1368,7 +1368,7 @@ export const Admin: React.FC = () => {
               <input
               type="text"
               placeholder="Buscar por nome ou email..."
-              className="w-full pl-10 pr-4 py-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none focus:ring-2"
+              className="w-full pl-10 pr-4 py-2 rounded-lg bg-black/20 text-sm outline-none focus:ring-2"
               style={{ color: "var(--color-text-main)" }}
               value={userSearch}
               onChange={(e) => setUserSearch(e.target.value)} />
@@ -1376,7 +1376,7 @@ export const Admin: React.FC = () => {
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <select
-              className="flex-1 md:w-40 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none"
+              className="flex-1 md:w-40 p-2 rounded-lg bg-black/20 text-sm outline-none"
               style={{ color: "var(--color-text-main)" }}
               value={userRoleFilter}
               onChange={(e) => setUserRoleFilter(e.target.value as any)}>
@@ -1388,7 +1388,7 @@ export const Admin: React.FC = () => {
                 <option value="manager">{t("role.manager")}</option>
               </select>
               <select
-              className="flex-1 md:w-40 p-2 rounded-lg bg-gray-50 dark:bg-black/20 text-sm outline-none"
+              className="flex-1 md:w-40 p-2 rounded-lg bg-black/20 text-sm outline-none"
               style={{ color: "var(--color-text-main)" }}
               value={userStatusFilter}
               onChange={(e) => setUserStatusFilter(e.target.value as any)}>
@@ -1687,7 +1687,7 @@ export const Admin: React.FC = () => {
                       type="text"
                       value={localConfig.appName}
                       onChange={(e) => setLocalConfig({ ...localConfig, appName: e.target.value })}
-                      className="w-full p-2.5 rounded-lg bg-gray-50 dark:bg-black/20 focus:ring-2 outline-none"
+                      className="w-full p-2.5 rounded-lg bg-black/20 focus:ring-2 outline-none"
                       style={{ color: "var(--color-text-main)" }} />
                   </div>
 
@@ -1833,7 +1833,7 @@ export const Admin: React.FC = () => {
                     placeholder="https://n8n.seu-dominio.com/webhook/..."
                     value={localConfig.webhookUrl || ""}
                     onChange={(e) => setLocalConfig({ ...localConfig, webhookUrl: e.target.value })}
-                    className="flex-1 p-2.5 rounded-r-lg bg-gray-50 dark:bg-black/20 focus:ring-2 outline-none font-mono text-sm"
+                    className="flex-1 p-2.5 rounded-r-lg bg-black/20 focus:ring-2 outline-none font-mono text-sm"
                     style={{ color: "var(--color-text-main)" }} />
 
                     </div>

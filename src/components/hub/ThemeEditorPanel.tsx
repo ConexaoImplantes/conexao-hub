@@ -7,7 +7,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
 
 /* ─── Color Input ─── */
 const ColorInput = ({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint: string }) => (
-  <div className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-black/5 dark:hover:bg-white/5 transition-colors" style={{ backgroundColor: 'var(--color-bg)' }}>
+  <div className="flex items-center gap-3 py-2 px-3 rounded-lg hover:bg-white/5 transition-colors" style={{ backgroundColor: 'var(--color-bg)' }}>
     <div className="relative h-8 w-8 shrink-0 rounded-md overflow-hidden border" style={{ borderColor: 'var(--color-border)' }}>
       <div className="absolute inset-0" style={{ backgroundColor: value || '#000000' }} />
       <input type="color" value={value?.startsWith('#') ? value.slice(0, 7) : '#000000'} onChange={(e) => onChange(e.target.value)} className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" />
