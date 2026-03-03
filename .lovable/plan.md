@@ -1,55 +1,55 @@
 
 
-## Diagnóstico
+## Problema
 
-O código atual tem um problema estrutural grave: a **Seção 5 (Ordenação)** foi inserida **dentro** da Seção 4 (Seleção), quebrando o JSX. Olhando as linhas 304-349:
+A tabela `user_progress` tem constraint `UNIQUE(user_id, material_id)` — o progresso é global. Se o usuário vê um material na aba "Materiais", ele é marcado como concluído e isso reflete nas trilhas também.
+
+## Solução
+
+Adicionar `collection_id` (nullable) à tabela `user_progress` para separar o contexto:
+- `collection_id = NULL` → visualização avulsa (aba Materiais)
+- `collection_id = UUID` → visualização dentro de uma trilha específica
+
+### 1. Migração SQL
+
+- Adicionar coluna `collection_id UUID NULL` em `user_progress`
+- Dropar constraint `user_progress_user_id_material_id_key`
+- Criar nova constraint `UNIQUE(user_id, material_id, collection_id)` com `NULLS NOT DISTINCT` (para que NULL = NULL na unicidade)
+- Atualizar policies de RLS que já existem (sem mudança necessária, pois filtram por `user_id`)
+
+### 2. Atualizar `src/types.ts` — `UserProgress`
+
+Adicionar campo opcional `collectionId?: string`
+
+### 3. Atualizar `src/lib/mockDb.ts`
+
+- `upsertProgress`: aceitar parâmetro opcional `collectionId`, incluir no payload e no `onConflict`
+- `getUserProgress`: mapear `collection_id` do resultado
+
+### 4. Atualizar `src/pages/Dashboard.tsx`
+
+- **`handleViewMaterial`**: passar `selectedCollection?.id` quando `activeView === 'collection-detail'`
+- **`handleCloseViewer`**: idem — passar `collectionId` ao `upsertProgress`
+- **Cálculo de progresso da trilha** (linhas ~317 e ~173): filtrar `userProgress` por `collectionId === selectedCollection.id` em vez de só `materialId`
+- **`CollectionCard`** (progresso nas cards da lista): mesma lógica — filtrar por `collectionId`
+- Guardar no estado `viewingMaterial` o `collectionId` atual para usar no `handleCloseViewer`
+
+### 5. Atualizar `src/components/hub/CollectionCard.tsx`
+
+Verificar se o cálculo de progresso filtra por `collectionId`.
+
+### Resumo do fluxo
 
 ```text
-Linha 304: checkbox div do item de seleção
-Linha 306: </div>  ← fecha o checkbox, mas NÃO o botão do item
-Linha 308: === SEÇÃO 5 INTEIRA INJETADA AQUI ===  ← ERRADO
-Linha 348: fim da seção 5
-Linha 349: <span>título</span>  ← continuação do item de seleção (???)
+Aba Materiais → abre material → upsertProgress(userId, matId, status, null)
+Aba Trilhas → abre material dentro da trilha X → upsertProgress(userId, matId, status, X.id)
+Cálculo progresso trilha X → filtra userProgress WHERE collectionId = X.id
 ```
 
-O resultado é uma UI quebrada e confusa onde seleção e ordenação se misturam.
-
-## Plano de correção
-
-Reescrever o `CollectionFormModal.tsx` com duas seções **completamente separadas e bem fechadas**:
-
-1. **Seção 4 - "Selecionar Materiais"**: Lista com checkboxes + busca. Cada item é um botão completo com checkbox, título, tipo e XP. Sem setas. Apenas adicionar/remover.
-
-2. **Divisor visual** (border-t) entre as seções.
-
-3. **Seção 5 - "Ordem dos Materiais"**: Aparece apenas quando `selectedMaterialIds.length > 0`. Lista numerada (1, 2, 3...) dos materiais selecionados com botões ChevronUp/ChevronDown. Mostra título, tipo, XP e controles de posição.
-
-### Mudanças concretas em `CollectionFormModal.tsx`:
-
-- **Fechar corretamente** o bloco da Seção 4 (a lista de seleção com todos os seus `</button>`, `</div>`) antes de iniciar a Seção 5
-- Adicionar um **divisor** (`border-t`) entre seleção e ordenação
-- A Seção 5 aparece quando há **1+** material selecionado (não 2+), para o admin sempre ver a ordem definida
-- Manter toda a lógica existente (`moveUp`, `moveDown`, `toggleMaterial`) sem alteração
-
-### Resultado visual esperado:
-
-```text
-┌─────────────────────────────────────┐
-│  ... campos de título, descrição    │
-│─────────────────────────────────────│
-│  SELECIONAR MATERIAIS    3 sel.     │
-│  🔍 Buscar...                       │
-│  ☑ Material A    PDF   150 XP       │
-│  ☐ Material B    VID   100 XP       │
-│  ☑ Material C    IMG    50 XP       │
-│  ☑ Material D    HTML  100 XP       │
-│─────────────────────────────────────│
-│  ORDEM DOS MATERIAIS                │
-│  ① Material A  PDF  150  ↑ ↓       │
-│  ② Material C  IMG   50  ↑ ↓       │
-│  ③ Material D  HTML 100  ↑ ↓       │
-└─────────────────────────────────────┘
-```
-
-Arquivo alterado: `src/components/hub/CollectionFormModal.tsx` (linhas 275-365 reescritas).
+Arquivos alterados:
+- Migration SQL (nova)
+- `src/types.ts`
+- `src/lib/mockDb.ts`
+- `src/pages/Dashboard.tsx`
+- `src/components/hub/CollectionCard.tsx`
 
