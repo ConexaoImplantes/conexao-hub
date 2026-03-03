@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Collection, Language, Role } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search, ChevronUp, ChevronDown } from 'lucide-react';
+import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search, ChevronUp, ChevronDown, Loader2, Sparkles } from 'lucide-react';
 import { mockDb } from '../../lib/mockDb';
 import { Material } from '../../types';
+import { supabase } from '../../integrations/supabase/client';
 
 interface CollectionFormModalProps {
   initialData?: Collection | null;
@@ -25,6 +26,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
   const [activeTab, setActiveTab] = useState<Language>('pt-br');
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
+  const [isGeneratingCover, setIsGeneratingCover] = useState(false);
 
   const [allMaterials, setAllMaterials] = useState<Material[]>([]);
   const [selectedMaterialIds, setSelectedMaterialIds] = useState<string[]>([]);
@@ -105,10 +107,31 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
         if (descriptions[lang]?.trim()) cleanedDescs[lang] = descriptions[lang]!.trim();
       });
 
+      let finalCoverImage = coverImage.trim() || undefined;
+
+      // Auto-generate cover if none provided
+      if (!finalCoverImage) {
+        setIsGeneratingCover(true);
+        try {
+          const tempId = initialData?.id || crypto.randomUUID();
+          const { data, error: fnError } = await supabase.functions.invoke('generate-trail-cover', {
+            body: { title: cleanedTitles['pt-br'], collectionId: tempId },
+          });
+          if (!fnError && data?.coverUrl) {
+            finalCoverImage = data.coverUrl;
+            setCoverImage(finalCoverImage!);
+          }
+        } catch (genErr) {
+          console.warn('Cover generation failed, continuing without cover:', genErr);
+        } finally {
+          setIsGeneratingCover(false);
+        }
+      }
+
       const payload: any = {
         title: cleanedTitles,
         description: Object.keys(cleanedDescs).length > 0 ? cleanedDescs : undefined,
-        coverImage: coverImage.trim() || undefined,
+        coverImage: finalCoverImage,
         allowedRoles,
         active,
         points: calculatedXP
@@ -213,7 +236,7 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
             {/* Section 2: Cover image */}
             <div>
               <label className="text-[11px] font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                <ImageIcon size={12} /> Capa (opcional)
+                <ImageIcon size={12} /> Capa
               </label>
               <div className="flex gap-3 items-start">
                 <input
@@ -228,6 +251,12 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                   <img src={coverImage} alt="Preview" className="w-16 h-16 object-cover rounded-lg shrink-0" onError={(e) => e.currentTarget.style.display = 'none'} />
                 )}
               </div>
+              {!coverImage && (
+                <p className="text-[10px] mt-1.5 flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+                  <Sparkles size={10} style={{ color: 'var(--color-accent)' }} />
+                  Sem URL? Uma capa será gerada automaticamente por IA ao salvar.
+                </p>
+              )}
             </div>
 
             {/* Divider */}
@@ -374,10 +403,16 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
         {/* Footer */}
         <div className="px-6 py-4 flex justify-end gap-3 shrink-0 border-t" style={{ borderColor: 'var(--color-border)' }}>
           <button type="button" onClick={onClose} className="px-5 py-2.5 rounded-lg font-medium transition-colors" style={{ color: 'var(--color-text-muted)' }}>Cancelar</button>
-          <button onClick={handleSubmit} disabled={isSaving}
+          <button onClick={handleSubmit} disabled={isSaving || isGeneratingCover}
             className="px-6 py-2.5 rounded-lg text-white font-medium flex items-center gap-2 shadow-lg transition-all active:scale-95 disabled:opacity-60"
             style={{ backgroundColor: 'var(--color-accent)' }}>
-            <Save size={18} />{isSaving ? 'Salvando...' : 'Salvar Trilha'}
+            {isGeneratingCover ? (
+              <><Loader2 size={18} className="animate-spin" /> Gerando capa...</>
+            ) : isSaving ? (
+              <><Loader2 size={18} className="animate-spin" /> Salvando...</>
+            ) : (
+              <><Save size={18} /> Salvar Trilha</>
+            )}
           </button>
         </div>
       </div>
