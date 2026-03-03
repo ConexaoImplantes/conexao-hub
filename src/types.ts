@@ -68,6 +68,7 @@ export interface UserProgress {
   id: string;
   userId: string;
   materialId: string;
+  collectionId?: string;
   status: ProgressStatus;
   completedAt?: string;
   createdAt: string;
