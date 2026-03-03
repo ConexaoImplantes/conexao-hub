@@ -497,6 +497,10 @@ ColorScheme.ring          → --color-ring
 ColorScheme.gradientStart → --color-gradient-start
 ColorScheme.gradientMid   → --color-gradient-mid
 ColorScheme.gradientEnd   → --color-gradient-end
+ColorScheme.hoverBg       → --color-hover-bg
+ColorScheme.hoverBorder   → --color-hover-border
+ColorScheme.hoverScale    → --color-hover-scale (valor numérico, sem unidade)
+ColorScheme.hoverShadow   → --color-hover-shadow
 ```
 
 ### 8.2 EnvironmentEffects → CSS Variables
