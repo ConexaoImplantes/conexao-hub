@@ -3,6 +3,7 @@ import { Collection, Language, UserProgress } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { Progress } from '../ui/progress';
 import { BookOpen, Trophy, ChevronRight, Star } from 'lucide-react';
+import { colorMix } from '../../lib/utils';
 
 interface CollectionCardProps {
   collection: Collection;
@@ -32,8 +33,8 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
       onClick={() => onClick(collection)}
       className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
       style={{
-        backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)',
-        border: '1px solid color-mix(in srgb, var(--color-border) 20%, transparent)',
+        backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)'),
+        border: `1px solid ${colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)')}`,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
@@ -41,14 +42,14 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '';
-        e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-border) 20%, transparent)';
+        e.currentTarget.style.borderColor = colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)');
       }}
     >
       <div className="relative h-40 overflow-hidden">
         {collection.coverImage ? (
           <img src={collection.coverImage} alt={displayTitle} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
         ) : (
-          <div className="w-full h-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 20%, transparent), color-mix(in srgb, var(--color-accent) 5%, transparent))' }}>
+          <div className="w-full h-full flex items-center justify-center" style={{ background: `linear-gradient(135deg, ${colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)')}, ${colorMix('var(--color-accent)', 5, 'rgba(201,166,85,0.05)')})` }}>
             <BookOpen size={48} style={{ color: 'var(--color-accent)', opacity: 0.4 }} />
           </div>
         )}

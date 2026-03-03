@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom';
 import { UserProfile, Role, UserStatus, MaterialType } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { X, Save, FileText, Image as ImageIcon, Video, User } from 'lucide-react';
+import { colorMix } from '../../lib/utils';
 
 interface UserEditModalProps {
   user: UserProfile;

@@ -7,7 +7,7 @@ import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
 import { mockDb } from '../lib/mockDb';
 import { toast } from 'sonner';
-
+import { colorMix } from '../lib/utils';
 export const AuthPage: React.FC = () => {
   const { login, register, isDbMissing } = useAuth();
   const { t } = useLanguage();
@@ -96,7 +96,7 @@ export const AuthPage: React.FC = () => {
         {config.logoUrl ?
     <img src={config.logoUrl} alt="Logo" className={`${size === "large" ? "h-28" : "h-16"} drop-shadow-[0_0_25px_rgba(255,255,255,0.3)] transition-all duration-500 hover:scale-105`} /> :
 
-    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: '0 25px 50px -12px color-mix(in srgb, var(--color-gradient-start) 40%, transparent)' }}>
+    <div className={`${size === "large" ? "w-24 h-24 text-5xl" : "w-16 h-16 text-3xl"} rounded-2xl flex items-center justify-center text-white font-bold shadow-2xl ring-4 ring-white/10 backdrop-blur-xl transition-transform duration-700 hover:rotate-12`} style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: `0 25px 50px -12px ${colorMix('var(--color-gradient-start)', 40, 'rgba(201,166,85,0.4)')}` }}>
               {config.appName.substring(0, 2).toUpperCase()}
             </div>
     }
@@ -110,10 +110,10 @@ export const AuthPage: React.FC = () => {
           <div className="absolute top-[20%] left-[20%] rounded-full animate-blob" style={{ width: 'var(--env-blob-size)', height: 'var(--env-blob-size)', backgroundColor: 'var(--env-blob1-color)', opacity: 'var(--env-blob-opacity)', filter: 'blur(var(--env-blob-blur))' }}></div>
           <div className="absolute bottom-[20%] right-[20%] rounded-full animate-blob animation-delay-2000" style={{ width: 'var(--env-blob-size)', height: 'var(--env-blob-size)', backgroundColor: 'var(--env-blob2-color)', opacity: 'var(--env-blob-opacity)', filter: 'blur(var(--env-blob-blur))' }}></div>
           <div className="absolute top-[40%] left-[60%] rounded-full animate-blob" style={{ width: 'var(--env-blob-size)', height: 'var(--env-blob-size)', backgroundColor: 'var(--env-blob3-color)', opacity: 'var(--env-blob-opacity)', filter: 'blur(var(--env-blob-blur))', animationDelay: '4s' }}></div>
-          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full opacity-20 animate-pulse" style={{ borderColor: 'color-mix(in srgb, var(--env-blob1-color) 10%, transparent)' }}></div>
+          <div className="absolute top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border rounded-full opacity-20 animate-pulse" style={{ borderColor: colorMix('var(--env-blob1-color)', 10, 'rgba(201,166,85,0.1)') }}></div>
       </div>
 
-      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/10 relative overflow-hidden group transition-all duration-500 ${invitedRole ? 'bg-black/80' : ''}`} style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+      <div className={`w-full max-w-[480px] backdrop-blur-2xl p-8 md:p-10 rounded-[2.5rem] shadow-2xl border border-white/10 relative overflow-hidden group transition-all duration-500 ${invitedRole ? 'bg-black/80' : ''}`} style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
 
         <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent to-transparent opacity-50" style={{ backgroundImage: `linear-gradient(to right, transparent, var(--color-accent), transparent)` }}></div>
 
@@ -139,7 +139,7 @@ export const AuthPage: React.FC = () => {
 
         <div className="space-y-4 mb-6 relative z-10">
             {tokenValidating && (
-              <div className="rounded-xl p-6 text-center animate-fade-in" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
+              <div className="rounded-xl p-6 text-center animate-fade-in" style={{ backgroundColor: colorMix('var(--color-accent)', 8, 'rgba(201,166,85,0.08)'), border: `1px solid ${colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)')}` }}>
                 <Loader2 size={24} className="animate-spin mx-auto mb-2" style={{ color: 'var(--color-accent)' }} />
                 <p className="text-sm font-medium" style={{ color: 'var(--color-text-main)' }}>Validando convite...</p>
               </div>
@@ -233,8 +233,8 @@ export const AuthPage: React.FC = () => {
 
               <div className="grid grid-cols-1 gap-5">
                  {invitedRole &&
-              <div className="rounded-xl p-4 flex items-center gap-3" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
-                      <div className="p-2 rounded-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
+               <div className="rounded-xl p-4 flex items-center gap-3" style={{ backgroundColor: colorMix('var(--color-accent)', 8, 'rgba(201,166,85,0.08)'), border: `1px solid ${colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)')}` }}>
+                      <div className="p-2 rounded-lg" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
                         <Shield size={16} />
                       </div>
                       <div>
@@ -255,7 +255,7 @@ export const AuthPage: React.FC = () => {
             </>
           }
 
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: '0 10px 25px -5px color-mix(in srgb, var(--color-gradient-start) 30%, transparent)' }}>
+          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: `0 10px 25px -5px ${colorMix('var(--color-gradient-start)', 30, 'rgba(201,166,85,0.3)')}` }}>
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2 text-zinc-900">
                 {!isLogin && invitedRole && <UserPlus size={20} />}

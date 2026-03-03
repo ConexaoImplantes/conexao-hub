@@ -1,5 +1,6 @@
 import React, { useState, KeyboardEvent } from 'react';
 import { X, Tag } from 'lucide-react';
+import { colorMix } from '../../lib/utils';
 
 interface TagInputProps {
   tags: string[];
