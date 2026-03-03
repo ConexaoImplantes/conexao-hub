@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { Progress } from '../components/ui/progress';
 import { TrailCompletionCelebration } from '../components/hub/TrailCompletionCelebration';
+import { colorMix } from '../lib/utils';
 
 export const Dashboard: React.FC = () => {
   const { user, addUserPoints } = useAuth();
@@ -219,7 +220,7 @@ export const Dashboard: React.FC = () => {
         <div className="sticky top-28 space-y-4 animate-slide-up">
           {/* Gamification card */}
           {user && (
-            <div className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+            <div className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
                 <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nível {userLevel}</span>
@@ -233,7 +234,7 @@ export const Dashboard: React.FC = () => {
           )}
 
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)' }}>
+          <div className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
             <button
               onClick={() => setActiveView('materials')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'materials' ? 'liquid-glass-gold' : ''}`}
@@ -252,7 +253,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Material filters (only in materials view) */}
           {activeView === 'materials' && (
-            <div className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 30%, transparent)' }}>
+            <div className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: colorMix('var(--color-surface)', 30, 'rgba(30,41,59,0.3)') }}>
               <div className="hidden md:flex items-center justify-between px-4 py-3 mb-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
                   <Layers size={14} style={{ color: 'var(--color-accent)' }} /> Biblioteca
@@ -279,7 +280,7 @@ export const Dashboard: React.FC = () => {
                         className={`px-2 py-0.5 rounded-full text-xs font-bold transition-all ${filterTag === tag ? 'liquid-glass-gold' : ''}`}
                         style={filterTag === tag
                           ? { color: 'var(--color-accent)' }
-                          : { backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }
+                          : { backgroundColor: colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)'), color: 'var(--color-accent)' }
                         }
                       >
                         {tag}
@@ -290,8 +291,8 @@ export const Dashboard: React.FC = () => {
               )}
 
               <div className="hidden md:block mt-4 pt-4 px-2 border-t border-white/5">
-          <div className="relative overflow-hidden rounded-2xl p-5 group transition-all duration-300 hover:shadow-lg" style={{ background: 'linear-gradient(to br, color-mix(in srgb, var(--color-warning) 10%, transparent), color-mix(in srgb, var(--color-warning) 5%, transparent))', border: '1px solid color-mix(in srgb, var(--color-warning) 20%, transparent)' }}>
-                  <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl transition-colors duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-warning) 20%, transparent)' }}></div>
+          <div className="relative overflow-hidden rounded-2xl p-5 group transition-all duration-300 hover:shadow-lg" style={{ background: `linear-gradient(to br, ${colorMix('var(--color-warning)', 10, 'rgba(234,179,8,0.1)')}, ${colorMix('var(--color-warning)', 5, 'rgba(234,179,8,0.05)')})`, border: `1px solid ${colorMix('var(--color-warning)', 20, 'rgba(234,179,8,0.2)')}` }}>
+                  <div className="absolute -right-6 -top-6 w-24 h-24 rounded-full blur-2xl transition-colors duration-500" style={{ backgroundColor: colorMix('var(--color-warning)', 20, 'rgba(234,179,8,0.2)') }}></div>
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-2" style={{ color: 'var(--color-warning)' }}>
                       <Sparkles size={16} className="animate-pulse" />
@@ -332,7 +333,7 @@ export const Dashboard: React.FC = () => {
               </button>
 
               <div className="relative rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden mb-6 sm:mb-10">
-                <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 20%, transparent), color-mix(in srgb, var(--color-accent) 5%, transparent))' }} />
+                <div className="absolute inset-0" style={{ background: `linear-gradient(135deg, ${colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)')}, ${colorMix('var(--color-accent)', 5, 'rgba(201,166,85,0.05)')})` }} />
                 {selectedCollection.coverImage && (
                   <img src={selectedCollection.coverImage} alt={displayTitle} className="absolute inset-0 w-full h-full object-cover opacity-20" />
                 )}
@@ -352,7 +353,7 @@ export const Dashboard: React.FC = () => {
                       <Progress value={progressPct} className="h-2" />
                     </div>
                     {selectedCollection.points > 0 && (
-                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
+                      <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
                         <Star size={16} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
                         {selectedCollection.points} XP ao concluir
                       </div>
@@ -367,7 +368,7 @@ export const Dashboard: React.FC = () => {
               </div>
 
               {colMaterials.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-20 rounded-[2rem] border border-white/5 text-center" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
+                <div className="flex flex-col items-center justify-center py-20 rounded-[2rem] border border-white/5 text-center" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                   <BookOpen size={40} className="mb-3 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
                   <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Esta trilha ainda não tem materiais.</p>
                 </div>
@@ -379,11 +380,11 @@ export const Dashboard: React.FC = () => {
                     const availableLang = langs.find(l => mat.assets[l]?.url) || 'pt-br';
                     const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
                     return (
-                      <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)' }}>
+                      <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: colorMix('var(--color-surface)', 50, 'rgba(30,41,59,0.5)') }}>
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-xs sm:text-sm"
                           style={prog?.status === 'completed'
                             ? { backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }
-                            : { backgroundColor: 'color-mix(in srgb, var(--color-accent) 10%, transparent)', color: 'var(--color-accent)' }
+                            : { backgroundColor: colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)'), color: 'var(--color-accent)' }
                           }>
                           {prog?.status === 'completed' ? <CheckCircle size={18} /> : idx + 1}
                         </div>
@@ -425,7 +426,7 @@ export const Dashboard: React.FC = () => {
         {activeView === 'collections' && (
           <>
             <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
-              <div className="absolute inset-0 opacity-60" style={{ background: 'linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-gradient-mid) 10%, transparent), transparent)' }} />
+              <div className="absolute inset-0 opacity-60" style={{ background: `linear-gradient(to right, ${colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)')}, ${colorMix('var(--color-gradient-mid)', 10, 'rgba(232,212,139,0.1)')}, transparent)` }} />
               <div className="relative z-10 p-5 sm:p-8 md:p-10">
                 <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
                 <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
@@ -434,7 +435,7 @@ export const Dashboard: React.FC = () => {
             {isLoading ? (
               <SkeletonCardGrid count={6} />
             ) : collections.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
+              <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                 <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
                 <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>As trilhas de aprendizagem serão exibidas aqui.</p>
@@ -460,16 +461,16 @@ export const Dashboard: React.FC = () => {
         {activeView === 'materials' && (
           <>
             <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
-              <div className="absolute inset-0 opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, color-mix(in srgb, var(--color-accent) 10%, transparent), color-mix(in srgb, var(--color-gradient-mid) 10%, transparent), transparent)` }} />
-              <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
+              <div className="absolute inset-0 opacity-40 transition-opacity duration-500 group-hover:opacity-80" style={{ background: `linear-gradient(to right, ${colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)')}, ${colorMix('var(--color-gradient-mid)', 10, 'rgba(232,212,139,0.1)')}, transparent)` }} />
+              <div className="absolute -right-20 -bottom-40 w-96 h-96 rounded-full blur-[100px] animate-pulse" style={{ backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)') }} />
               <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 sm:gap-8 backdrop-blur-sm">
                 <div>
                   <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
                   <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
                 </div>
                 <div className="relative w-full xl:w-96 group/search">
-                  <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 20%, transparent)' }} />
-                  <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 60%, transparent)' }}>
+                   <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)') }} />
+                  <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: colorMix('var(--color-surface)', 60, 'rgba(30,41,59,0.6)') }}>
                     <div className="pl-4 sm:pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={20} className="sm:hidden" /><Search size={22} className="hidden sm:block" /></div>
                     <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   </div>
@@ -479,14 +480,14 @@ export const Dashboard: React.FC = () => {
             {isLoading ? (
               <SkeletonCardGrid count={12} />
             ) : filteredMaterials.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-24 backdrop-blur-sm border border-white/5 rounded-[2rem] animate-fade-in text-center px-4" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 20%, transparent)' }}>
+              <div className="flex flex-col items-center justify-center py-24 backdrop-blur-sm border border-white/5 rounded-[2rem] animate-fade-in text-center px-4" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                 <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
                   <Filter size={32} className="opacity-50" />
                 </div>
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhum resultado encontrado</h3>
                 <p className="text-sm max-w-xs" style={{ color: 'var(--color-text-muted)' }}>{t('no.materials')}</p>
                 {(searchTerm || filterType !== 'all' || filterTag) && (
-                  <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 80%, black)', border: '1px solid color-mix(in srgb, var(--color-accent) 25%, transparent)', color: 'var(--color-accent)' }}>
+                  <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95" style={{ backgroundColor: colorMix('var(--color-bg)', 80, 'rgba(15,23,42,0.8)'), border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`, color: 'var(--color-accent)' }}>
                     Limpar filtros
                   </button>
                 )}

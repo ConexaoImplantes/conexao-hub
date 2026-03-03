@@ -2,6 +2,7 @@ import React from 'react';
 import { Material, Language, UserProgress } from '../../types';
 import { FileText, Image as ImageIcon, Video, Eye, Lock, ChevronRight, CheckCircle, PlayCircle, Star, Tag, Headphones, Globe } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { colorMix } from '../../lib/utils';
 
 interface MaterialCardProps {
   material: Material;
@@ -51,8 +52,8 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
     <div
       className="group relative backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
       style={{
-        backgroundColor: 'color-mix(in srgb, var(--color-surface) 40%, transparent)',
-        border: '1px solid color-mix(in srgb, var(--color-border) 20%, transparent)',
+        backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)'),
+        border: `1px solid ${colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)')}`,
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
@@ -60,7 +61,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
       }}
       onMouseLeave={(e) => {
         e.currentTarget.style.boxShadow = '';
-        e.currentTarget.style.borderColor = 'color-mix(in srgb, var(--color-border) 20%, transparent)';
+        e.currentTarget.style.borderColor = colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)');
       }}
     >
       <div className={`absolute inset-0 bg-gradient-to-br ${getGradient()} opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none`} />
@@ -76,7 +77,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
                 {getIcon()}
             </div>
           </div>
-          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border border-white/5 rounded-lg backdrop-blur-sm group-hover:bg-[var(--color-surface)] transition-colors" style={{ backgroundColor: 'color-mix(in srgb, var(--color-surface) 50%, transparent)', color: 'var(--color-text-muted)' }}>
+          <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 border border-white/5 rounded-lg backdrop-blur-sm group-hover:bg-[var(--color-surface)] transition-colors" style={{ backgroundColor: colorMix('var(--color-surface)', 50, 'rgba(30,41,59,0.5)'), color: 'var(--color-text-muted)' }}>
             {getLabel()}
           </span>
         </div>
@@ -92,7 +93,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
                 <CheckCircle size={10} /> {t('progress.completed')}
               </span>
             ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 15%, transparent)', color: 'var(--color-accent)' }}>
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
                 <PlayCircle size={10} /> {t('progress.in.progress')}
               </span>
             )}
@@ -102,7 +103,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         {material.tags.length > 0 && (
           <div className="flex flex-wrap gap-1 mb-2">
             {material.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 8%, transparent)', color: 'var(--color-text-muted)' }}>
+              <span key={tag} className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: colorMix('var(--color-accent)', 8, 'rgba(201,166,85,0.08)'), color: 'var(--color-text-muted)' }}>
                 <Tag size={8} /> {tag}
               </span>
             ))}
@@ -115,7 +116,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           </div>
         )}
 
-        <div className="mt-auto pt-4 transition-colors" style={{ borderTop: '1px solid color-mix(in srgb, var(--color-border) 15%, transparent)' }}>
+        <div className="mt-auto pt-4 transition-colors" style={{ borderTop: `1px solid ${colorMix('var(--color-border)', 15, 'rgba(255,255,255,0.06)')}` }}>
           <div className="flex items-center justify-between mb-3">
              <p className="text-[10px] uppercase tracking-wider font-bold opacity-70" style={{ color: 'var(--color-text-muted)' }}>{t('versions')}</p>
              <div className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" style={{ color: 'var(--color-accent)' }}>
@@ -129,7 +130,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
               return (
                 <button key={lang} onClick={(e) => { e.stopPropagation(); if (hasAsset) onView(material, lang); }} disabled={!hasAsset}
                   className={`relative overflow-hidden px-3 py-1.5 text-xs rounded-lg transition-all duration-300 flex items-center gap-1.5 font-bold group/btn ${hasAsset ? 'border border-transparent hover:border-[var(--color-accent)]/30 hover:shadow-lg' : 'opacity-30 cursor-not-allowed border border-transparent'}`}
-                  style={{ backgroundColor: hasAsset ? 'var(--color-bg)' : 'color-mix(in srgb, var(--color-bg) 30%, transparent)', color: hasAsset ? 'var(--color-text-main)' : 'var(--color-text-muted)' }}>
+                  style={{ backgroundColor: hasAsset ? 'var(--color-bg)' : colorMix('var(--color-bg)', 30, 'rgba(15,23,42,0.3)'), color: hasAsset ? 'var(--color-text-main)' : 'var(--color-text-muted)' }}>
                   {hasAsset && <div className="absolute inset-0 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out z-0" style={{ backgroundColor: 'var(--color-accent)' }}></div>}
                   <span className="relative z-10 flex items-center gap-1 group-hover/btn:text-white">
                       {lang.toUpperCase().split('-')[0]}

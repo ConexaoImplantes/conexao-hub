@@ -4,6 +4,7 @@ import { Material, Language, MaterialAsset } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { X, Save, Upload, Link as LinkIcon } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { colorMix } from '../../lib/utils';
 
 interface AssetManagerModalProps {
   material: Material;

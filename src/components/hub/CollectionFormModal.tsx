@@ -6,6 +6,7 @@ import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search, C
 import { mockDb } from '../../lib/mockDb';
 import { Material } from '../../types';
 import { supabase } from '../../integrations/supabase/client';
+import { colorMix } from '../../lib/utils';
 
 interface CollectionFormModalProps {
   initialData?: Collection | null;

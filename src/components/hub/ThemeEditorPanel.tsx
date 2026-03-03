@@ -4,6 +4,7 @@ import { DEFAULT_DARK, DEFAULT_ENVIRONMENT_THEMES } from '../../lib/themeDefault
 import { RotateCcw, Globe, LogIn, User, Briefcase, Shield } from 'lucide-react';
 import { Slider } from '../ui/slider';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
+import { colorMix } from '../../lib/utils';
 
 /* ─── Color Input ─── */
 const ColorInput = ({ label, value, onChange, hint }: { label: string; value: string; onChange: (v: string) => void; hint: string }) => (

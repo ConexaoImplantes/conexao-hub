@@ -103,38 +103,57 @@ All colors MUST be HSL.
 }
 
 /* Liquid Glass Premium – uses theme variables */
+/* Fallbacks for browsers without color-mix() support (Safari <16.2) */
 .liquid-glass {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-glass-tint) 25%, transparent) 0%,
-    color-mix(in srgb, var(--color-glass-tint) 8%, transparent) 50%,
-    color-mix(in srgb, var(--color-glass-tint) 15%, transparent) 100%
-  );
-  backdrop-filter: blur(var(--env-glass-blur, 20px)) saturate(180%);
-  -webkit-backdrop-filter: blur(var(--env-glass-blur, 20px)) saturate(180%);
-  border: 1px solid color-mix(in srgb, var(--color-glass-tint) 20%, transparent);
-  box-shadow:
-    0 8px 32px var(--color-shadow, rgba(0, 0, 0, 0.3)),
-    inset 0 1px 0 color-mix(in srgb, var(--color-glass-tint) 30%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--color-glass-tint) 10%, transparent);
+  /* Fallback */
+  background: rgba(30, 41, 59, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .liquid-glass {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-glass-tint) 25%, transparent) 0%,
+      color-mix(in srgb, var(--color-glass-tint) 8%, transparent) 50%,
+      color-mix(in srgb, var(--color-glass-tint) 15%, transparent) 100%
+    );
+    backdrop-filter: blur(var(--env-glass-blur, 20px)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--env-glass-blur, 20px)) saturate(180%);
+    border: 1px solid color-mix(in srgb, var(--color-glass-tint) 20%, transparent);
+    box-shadow:
+      0 8px 32px var(--color-shadow, rgba(0, 0, 0, 0.3)),
+      inset 0 1px 0 color-mix(in srgb, var(--color-glass-tint) 30%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--color-glass-tint) 10%, transparent);
+  }
 }
 
 /* Liquid Glass Gold – translucent golden interactive state */
 .liquid-glass-gold {
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--color-gradient-start) 18%, transparent) 0%,
-    color-mix(in srgb, var(--color-gradient-mid) 8%, transparent) 40%,
-    color-mix(in srgb, var(--color-gradient-end) 14%, transparent) 70%,
-    color-mix(in srgb, var(--color-gradient-start) 10%, transparent) 100%
-  );
+  /* Fallback */
+  background: rgba(201, 166, 85, 0.12);
+  border: 1px solid rgba(201, 166, 85, 0.15);
+  box-shadow: 0 4px 20px rgba(201, 166, 85, 0.08);
   backdrop-filter: blur(16px) saturate(160%);
   -webkit-backdrop-filter: blur(16px) saturate(160%);
-  border: 1px solid color-mix(in srgb, var(--color-gradient-start) 22%, transparent);
-  box-shadow:
-    0 4px 20px color-mix(in srgb, var(--color-gradient-start) 8%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--color-gradient-mid) 12%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--color-gradient-end) 6%, transparent);
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .liquid-glass-gold {
+    background: linear-gradient(
+      135deg,
+      color-mix(in srgb, var(--color-gradient-start) 18%, transparent) 0%,
+      color-mix(in srgb, var(--color-gradient-mid) 8%, transparent) 40%,
+      color-mix(in srgb, var(--color-gradient-end) 14%, transparent) 70%,
+      color-mix(in srgb, var(--color-gradient-start) 10%, transparent) 100%
+    );
+    border: 1px solid color-mix(in srgb, var(--color-gradient-start) 22%, transparent);
+    box-shadow:
+      0 4px 20px color-mix(in srgb, var(--color-gradient-start) 8%, transparent),
+      inset 0 1px 0 color-mix(in srgb, var(--color-gradient-mid) 12%, transparent),
+      inset 0 -1px 0 color-mix(in srgb, var(--color-gradient-end) 6%, transparent);
+  }
 }
 
 /* Icon Box – standardized icon container: dark rounded square + gold icon */
@@ -145,11 +164,17 @@ All colors MUST be HSL.
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 0.75rem;
-  background-color: color-mix(in srgb, var(--color-surface) 60%, black);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(201, 166, 85, 0.2);
   color: var(--color-accent);
   flex-shrink: 0;
   transition: all 0.3s ease;
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .icon-box {
+    background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+    border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
 }
 
 .icon-box-sm {
@@ -159,11 +184,17 @@ All colors MUST be HSL.
   width: 2rem;
   height: 2rem;
   border-radius: 0.5rem;
-  background-color: color-mix(in srgb, var(--color-surface) 60%, black);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(201, 166, 85, 0.2);
   color: var(--color-accent);
   flex-shrink: 0;
   transition: all 0.3s ease;
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .icon-box-sm {
+    background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+    border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
 }
 
 .icon-box-lg {
@@ -173,11 +204,17 @@ All colors MUST be HSL.
   width: 3rem;
   height: 3rem;
   border-radius: 0.875rem;
-  background-color: color-mix(in srgb, var(--color-surface) 60%, black);
-  border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
+  background-color: rgba(15, 23, 42, 0.8);
+  border: 1px solid rgba(201, 166, 85, 0.2);
   color: var(--color-accent);
   flex-shrink: 0;
   transition: all 0.3s ease;
+}
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .icon-box-lg {
+    background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+    border-color: color-mix(in srgb, var(--color-accent) 20%, transparent);
+  }
 }
 
 @layer base {
@@ -188,4 +225,28 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+}
+
+/*
+ * Global fallback for browsers that don't support color-mix()
+ * (Safari <16.2, older Chrome/Firefox)
+ * The .no-color-mix class is added to <html> by main.tsx at startup.
+ * These overrides ensure the UI is usable even without color-mix.
+ */
+.no-color-mix [style*="color-mix"] {
+  /* Force visible backgrounds on elements using color-mix in inline styles */
+  --_fallback-applied: 1;
+}
+
+/* Ensure inline color-mix doesn't break rendering on unsupported browsers.
+   Browsers that don't understand color-mix() in inline styles will simply
+   ignore those property values, resulting in transparent/invisible elements.
+   This block provides safe defaults via CSS custom properties. */
+.no-color-mix {
+  --color-surface-alpha: rgba(30, 41, 59, 0.4);
+  --color-accent-alpha: rgba(201, 166, 85, 0.1);
+  --color-accent-alpha-strong: rgba(201, 166, 85, 0.15);
+  --color-border-alpha: rgba(255, 255, 255, 0.08);
+  --color-bg-alpha: rgba(15, 23, 42, 0.5);
+  --color-warning-alpha: rgba(234, 179, 8, 0.1);
 }

@@ -10,6 +10,7 @@ import {
   Collection,
   CollectionItem,
 } from "../types";
+import { colorMix } from "../lib/utils";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useAuth } from "../contexts/AuthContext";
 import {

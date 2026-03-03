@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Copy, Check, Database } from 'lucide-react';
+import { colorMix } from '../../lib/utils';
 
 interface SqlSetupModalProps {
   onClose?: () => void;

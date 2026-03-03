@@ -5,6 +5,7 @@ import { useLanguage } from '../../contexts/LanguageContext';
 import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones, Globe, Upload } from 'lucide-react';
 import { TagInput } from './TagInput';
 import { supabase } from '@/integrations/supabase/client';
+import { colorMix } from '../../lib/utils';
 
 interface TypeCardProps {
   value: MaterialType;

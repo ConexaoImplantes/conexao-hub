@@ -5,6 +5,7 @@ import { useBrand } from '../../contexts/BrandContext';
 import { LogOut, Globe, Star } from 'lucide-react';
 import { getUserLevel } from '../../types';
 import { mockDb, GamificationLevel } from '../../lib/mockDb';
+import { colorMix } from '../../lib/utils';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
@@ -35,16 +36,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
               className="rounded-2xl p-2 pl-3 sm:p-3 sm:pl-5 flex justify-between items-center pointer-events-auto transition-all duration-500 relative overflow-hidden"
               style={{
                 background: levelColor
-                  ? `linear-gradient(135deg, ${levelColor}12 0%, color-mix(in srgb, var(--color-header-bg) 80%, transparent) 50%, ${levelColor}08 100%)`
-                  : `linear-gradient(135deg, color-mix(in srgb, var(--color-glass-tint) 25%, transparent) 0%, color-mix(in srgb, var(--color-header-bg) 80%, transparent) 50%, color-mix(in srgb, var(--color-glass-tint) 15%, transparent) 100%)`,
-                backdropFilter: `blur(var(--env-glass-blur)) saturate(180%)`,
-                WebkitBackdropFilter: `blur(var(--env-glass-blur)) saturate(180%)`,
+                  ? `linear-gradient(135deg, ${levelColor}12 0%, ${colorMix('var(--color-header-bg)', 80, 'rgba(15,23,42,0.8)')} 50%, ${levelColor}08 100%)`
+                  : `linear-gradient(135deg, ${colorMix('var(--color-glass-tint)', 25, 'rgba(30,41,59,0.25)')} 0%, ${colorMix('var(--color-header-bg)', 80, 'rgba(15,23,42,0.8)')} 50%, ${colorMix('var(--color-glass-tint)', 15, 'rgba(30,41,59,0.15)')} 100%)`,
+                backdropFilter: `blur(var(--env-glass-blur, 20px)) saturate(180%)`,
+                WebkitBackdropFilter: `blur(var(--env-glass-blur, 20px)) saturate(180%)`,
                 border: levelColor
                   ? `1px solid ${levelColor}25`
-                  : `1px solid color-mix(in srgb, var(--color-glass-tint) 20%, transparent)`,
+                  : `1px solid ${colorMix('var(--color-glass-tint)', 20, 'rgba(255,255,255,0.1)')}`,
                 boxShadow: levelColor
                   ? `0 0 20px ${levelColor}08, inset 0 0 30px ${levelColor}05`
-                  : `0 8px 32px var(--color-shadow), inset 0 1px 0 color-mix(in srgb, var(--color-glass-tint) 30%, transparent), inset 0 -1px 0 color-mix(in srgb, var(--color-glass-tint) 10%, transparent)`,
+                  : `0 8px 32px var(--color-shadow, rgba(0,0,0,0.3)), inset 0 1px 0 ${colorMix('var(--color-glass-tint)', 30, 'rgba(255,255,255,0.12)')}, inset 0 -1px 0 ${colorMix('var(--color-glass-tint)', 10, 'rgba(255,255,255,0.04)')}`,
               }}
             >
             <div className="flex items-center space-x-4 group cursor-default">
@@ -62,7 +63,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2 rounded-full px-1 py-1 sm:px-1.5 sm:py-1.5 transition-colors group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
+                <div className="flex items-center gap-1 sm:gap-2 rounded-full px-1 py-1 sm:px-1.5 sm:py-1.5 transition-colors group" style={{ backgroundColor: colorMix('var(--color-bg)', 50, 'rgba(15,23,42,0.5)'), border: `1px solid ${colorMix('var(--color-border)', 50, 'rgba(255,255,255,0.1)')}` }}>
                     <div className="p-1 sm:p-1.5 rounded-full shadow-sm transition-colors" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
                         <Globe size={12} className="sm:hidden" />
                         <Globe size={14} className="hidden sm:block" />
@@ -80,8 +81,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                 </div>
 
                 <div className="flex items-center gap-1.5 sm:gap-3 pl-1 sm:pl-2">
-                    <div className="flex items-center gap-2 sm:gap-3 rounded-full p-1 pr-2 sm:pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: 'color-mix(in srgb, var(--color-bg) 50%, transparent)', border: '1px solid color-mix(in srgb, var(--color-border) 50%, transparent)' }}>
-                        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-md transition-all" style={{ background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)', color: 'var(--color-accent-fg)', boxShadow: '0 0 0 2px color-mix(in srgb, var(--color-text-main) 20%, transparent)' }}>
+                    <div className="flex items-center gap-2 sm:gap-3 rounded-full p-1 pr-2 sm:pr-4 transition-all duration-300 cursor-default group" style={{ backgroundColor: colorMix('var(--color-bg)', 50, 'rgba(15,23,42,0.5)'), border: `1px solid ${colorMix('var(--color-border)', 50, 'rgba(255,255,255,0.1)')}` }}>
+                        <div className="w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center text-xs sm:text-sm font-bold shadow-md transition-all" style={{ background: 'linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)', color: 'var(--color-accent-fg)', boxShadow: `0 0 0 2px ${colorMix('var(--color-text-main)', 20, 'rgba(248,250,252,0.2)')}` }}>
                             {user?.name.charAt(0)}
                         </div>
                         <div className="hidden md:block leading-none">
