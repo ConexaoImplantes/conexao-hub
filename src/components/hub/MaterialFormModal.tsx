@@ -107,6 +107,10 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
   const [htmlInputMode, setHtmlInputMode] = useState<'upload' | 'url'>('upload');
   const [uploading, setUploading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [translateInput, setTranslateInput] = useState('');
+  const [translating, setTranslating] = useState(false);
+  const [translations, setTranslations] = useState<Record<string, string> | null>(null);
+  const [copiedLang, setCopiedLang] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialData) {
