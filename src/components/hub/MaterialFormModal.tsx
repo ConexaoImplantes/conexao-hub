@@ -272,7 +272,6 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     });
     toast({ title: 'Títulos aplicados!', description: 'Todos os idiomas foram preenchidos.' });
   };
-  };
 
   return createPortal(
     <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all animate-fade-in" style={{ zIndex: 9999 }}>
