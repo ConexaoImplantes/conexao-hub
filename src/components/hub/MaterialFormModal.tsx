@@ -235,6 +235,45 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  const handleTranslate = async () => {
+    if (!translateInput.trim()) return;
+    setTranslating(true);
+    setTranslations(null);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('translate-title', {
+        body: { text: translateInput.trim() },
+      });
+      if (fnError) throw fnError;
+      if (data?.translations) {
+        setTranslations(data.translations);
+      } else if (data?.error) {
+        toast({ title: 'Erro na tradução', description: data.error, variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro na tradução', description: err?.message || 'Tente novamente', variant: 'destructive' });
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleCopyTranslation = (lang: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedLang(lang);
+    setTimeout(() => setCopiedLang(null), 1500);
+  };
+
+  const handleApplyAllTranslations = () => {
+    if (!translations) return;
+    const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
+    langs.forEach(lang => {
+      if (translations[lang]) {
+        handleTitleChange(lang, translations[lang]);
+      }
+    });
+    toast({ title: 'Títulos aplicados!', description: 'Todos os idiomas foram preenchidos.' });
+  };
+  };
+
   return createPortal(
     <div className="fixed inset-0 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-black/60 backdrop-blur-sm transition-all animate-fade-in" style={{ zIndex: 9999 }}>
       <div className="rounded-t-2xl sm:rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[95vh] sm:max-h-[90vh] overflow-hidden animate-slide-up" style={{ backgroundColor: 'var(--color-surface)' }}>
