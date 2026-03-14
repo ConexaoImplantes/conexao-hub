@@ -2,53 +2,54 @@
 
 > Referência técnica definitiva de todas as cores, efeitos, animações e tokens da plataforma.
 > Extraída de: `themeDefaults.ts`, `index.css`, `tailwind.config.ts`, `types.ts`, `BrandContext.tsx`.
+> **A plataforma opera exclusivamente em Dark Mode.**
 
 ---
 
 ## 1. ColorScheme — 42 Tokens de Cor
 
-Todas as cores são configuráveis em tempo real pelo admin e injetadas via `BrandContext` como CSS custom properties no `:root` e `.dark`.
+Todas as cores são configuráveis em tempo real pelo admin e injetadas via `BrandContext` como CSS custom properties no `:root`.
 
 ### 1.1 Base (4 tokens)
 
-| Token | Variável CSS | Light (default) | Dark (default) | Descrição |
-|---|---|---|---|---|
-| `background` | `--color-bg` | `#f8fafc` | `#0f172a` | Fundo principal da página. Usado no `body` e como base de toda a UI. |
-| `surface` | `--color-surface` | `#ffffff` | `#1e293b` | Superfícies elevadas: cards, modais, painéis, menus dropdown. |
-| `surfaceHover` | `--color-surface-hover` | `#f1f5f9` | `#334155` | Estado hover de superfícies. Linhas de tabela, itens de lista ao passar o mouse. |
-| `card` | `--color-card` | `#ffffff` | `#1e293b` | Fundo específico de cards. Pode diferir de `surface` para criar hierarquia visual. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `background` | `--color-bg` | `#0f172a` | Fundo principal da página. Usado no `body` e como base de toda a UI. |
+| `surface` | `--color-surface` | `#1e293b` | Superfícies elevadas: cards, modais, painéis, menus dropdown. |
+| `surfaceHover` | `--color-surface-hover` | `#334155` | Estado hover de superfícies. Linhas de tabela, itens de lista ao passar o mouse. |
+| `card` | `--color-card` | `#1e293b` | Fundo específico de cards. Pode diferir de `surface` para criar hierarquia visual. |
 
 ### 1.2 Tipografia (3 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `textMain` | `--color-text-main` | `#0f172a` | `#f8fafc` | Texto principal: títulos, parágrafos, nomes. Deve ter alto contraste com `background`. |
-| `textMuted` | `--color-text-muted` | `#64748b` | `#94a3b8` | Texto secundário: labels, descrições, placeholders, metadados, timestamps. |
-| `textInverted` | `--color-text-inverted` | `#ffffff` | `#0f172a` | Texto sobre fundos coloridos (botões primários, badges, tooltips). Cor oposta ao tema. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `textMain` | `--color-text-main` | `#f8fafc` | Texto principal: títulos, parágrafos, nomes. Alto contraste com `background`. |
+| `textMuted` | `--color-text-muted` | `#94a3b8` | Texto secundário: labels, descrições, placeholders, metadados, timestamps. |
+| `textInverted` | `--color-text-inverted` | `#0f172a` | Texto sobre fundos coloridos (botões primários, badges, tooltips). |
 
 ### 1.3 Bordas (2 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `border` | `--color-border` | `#e2e8f0` | `transparent` | Borda principal de cards, inputs, separadores. No dark mode é transparente para estética clean. |
-| `borderSubtle` | `--color-border-subtle` | `#f1f5f9` | `#1e293b` | Borda sutil para divisores internos, separadores de seção, linhas de grade leves. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `border` | `--color-border` | `transparent` | Borda principal de cards, inputs, separadores. Transparente para estética clean. |
+| `borderSubtle` | `--color-border-subtle` | `#1e293b` | Borda sutil para divisores internos, separadores de seção, linhas de grade leves. |
 
 ### 1.4 Marca / Accent (4 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `accent` | `--color-accent` | `#c9a655` | `#c9a655` | Cor de destaque principal (dourado). Ícones ativos, links, indicadores, scrollbar, focus ring. |
-| `accentHover` | `--color-accent-hover` | `#b8953e` | `#d4b366` | Variação hover do accent. Light: escurece. Dark: clareia. |
-| `accentForeground` | `--color-accent-fg` | `#ffffff` | `#0f172a` | Texto sobre fundo accent. Branco no light, escuro no dark para garantir contraste. |
-| `accentMuted` | `--color-accent-muted` | `#c9a65520` | `#c9a65520` | Accent com baixa opacidade (~12%). Backgrounds sutis de badges, highlights, seleções. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `accent` | `--color-accent` | `#c9a655` | Cor de destaque principal (dourado). Ícones ativos, links, indicadores, scrollbar, focus ring. |
+| `accentHover` | `--color-accent-hover` | `#d4b366` | Variação hover do accent (dourado mais claro). |
+| `accentForeground` | `--color-accent-fg` | `#0f172a` | Texto sobre fundo accent. Escuro para garantir contraste. |
+| `accentMuted` | `--color-accent-muted` | `#c9a65520` | Accent com baixa opacidade (~12%). Backgrounds sutis de badges, highlights, seleções. |
 
 ### 1.5 Gradientes (3 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `gradientStart` | `--color-gradient-start` | `#c9a655` | `#c9a655` | Ponto inicial do gradiente metálico. Usado em: logo, botão de login, shimmer text, liquid-glass-gold. |
-| `gradientMid` | `--color-gradient-mid` | `#e8d48b` | `#e8d48b` | Ponto médio do gradiente. Cria o brilho central do efeito metálico dourado. |
-| `gradientEnd` | `--color-gradient-end` | `#a8873a` | `#a8873a` | Ponto final do gradiente. Tom mais escuro que dá profundidade ao efeito metálico. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `gradientStart` | `--color-gradient-start` | `#c9a655` | Ponto inicial do gradiente metálico. Usado em: logo, botão de login, shimmer text, liquid-glass-gold. |
+| `gradientMid` | `--color-gradient-mid` | `#e8d48b` | Ponto médio do gradiente. Cria o brilho central do efeito metálico dourado. |
+| `gradientEnd` | `--color-gradient-end` | `#a8873a` | Ponto final do gradiente. Tom mais escuro que dá profundidade ao efeito metálico. |
 
 **Gradiente-assinatura da marca:**
 ```css
@@ -62,48 +63,48 @@ background: linear-gradient(135deg,
 
 ### 1.6 Feedback (6 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `success` | `--color-success` | `#10b981` | `#22c55e` | Cor de sucesso: status ativo, ações concluídas, confirmações, indicadores online. |
-| `successBg` | `--color-success-bg` | `#10b98115` | `#22c55e15` | Background sutil de sucesso (~8% opacidade). Badges de "ativo", alertas de confirmação. |
-| `warning` | `--color-warning` | `#f59e0b` | `#eab308` | Cor de aviso: pendências, ações que requerem atenção, timers. |
-| `warningBg` | `--color-warning-bg` | `#f59e0b15` | `#eab30815` | Background sutil de warning. Badges de "pendente", alertas de aviso. |
-| `error` | `--color-error` | `#ef4444` | `#ef4444` | Cor de erro: validações falhas, botão de logout, ações destrutivas, status rejeitado. |
-| `errorBg` | `--color-error-bg` | `#ef444415` | `#ef444415` | Background sutil de erro. Badges de "rejeitado", alertas de erro. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `success` | `--color-success` | `#22c55e` | Cor de sucesso: status ativo, ações concluídas, confirmações, indicadores online. |
+| `successBg` | `--color-success-bg` | `#22c55e15` | Background sutil de sucesso (~8% opacidade). Badges de "ativo", alertas de confirmação. |
+| `warning` | `--color-warning` | `#eab308` | Cor de aviso: pendências, ações que requerem atenção, timers. |
+| `warningBg` | `--color-warning-bg` | `#eab30815` | Background sutil de warning. Badges de "pendente", alertas de aviso. |
+| `error` | `--color-error` | `#ef4444` | Cor de erro: validações falhas, botão de logout, ações destrutivas, status rejeitado. |
+| `errorBg` | `--color-error-bg` | `#ef444415` | Background sutil de erro. Badges de "rejeitado", alertas de erro. |
 
 ### 1.7 Componentes (8 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `inputBg` | `--color-input-bg` | `#f8fafc` | `#0f172a` | Fundo de campos de input, textarea, select. Geralmente igual ao `background`. |
-| `inputBorder` | `--color-input-border` | `#e2e8f0` | `#334155` | Borda de campos de formulário em estado normal (repouso). |
-| `inputFocus` | `--color-input-focus` | `#c9a655` | `#c9a655` | Cor do ring/borda ao focar em um input. Geralmente igual ao `accent`. |
-| `buttonPrimaryBg` | `--color-btn-primary-bg` | `#c9a655` | `#c9a655` | Fundo do botão primário (CTA). Usa a cor accent/dourado para destaque máximo. |
-| `buttonPrimaryText` | `--color-btn-primary-text` | `#ffffff` | `#0f172a` | Texto do botão primário. Branco no light, escuro no dark. |
-| `badgeBg` | `--color-badge-bg` | `#f1f5f9` | `#334155` | Fundo de badges, tags, chips. Tom neutro que contrasta levemente com a superfície. |
-| `tooltipBg` | `--color-tooltip-bg` | `#0f172a` | `#f8fafc` | Fundo de tooltips. Invertido em relação ao tema (escuro no light, claro no dark). |
-| `tooltipText` | `--color-tooltip-text` | `#f8fafc` | `#0f172a` | Texto de tooltips. Invertido em relação ao tema. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `inputBg` | `--color-input-bg` | `#0f172a` | Fundo de campos de input, textarea, select. Igual ao `background`. |
+| `inputBorder` | `--color-input-border` | `#334155` | Borda de campos de formulário em estado normal (repouso). |
+| `inputFocus` | `--color-input-focus` | `#c9a655` | Cor do ring/borda ao focar em um input. Igual ao `accent`. |
+| `buttonPrimaryBg` | `--color-btn-primary-bg` | `#c9a655` | Fundo do botão primário (CTA). Usa a cor accent/dourado para destaque máximo. |
+| `buttonPrimaryText` | `--color-btn-primary-text` | `#0f172a` | Texto do botão primário. Escuro sobre dourado. |
+| `badgeBg` | `--color-badge-bg` | `#334155` | Fundo de badges, tags, chips. Tom neutro que contrasta levemente com a superfície. |
+| `tooltipBg` | `--color-tooltip-bg` | `#f8fafc` | Fundo de tooltips. Claro para contraste com o tema escuro. |
+| `tooltipText` | `--color-tooltip-text` | `#0f172a` | Texto de tooltips. Escuro sobre fundo claro. |
 
 ### 1.8 Efeitos Visuais (7 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `overlay` | `--color-overlay` | `#00000060` | `#00000080` | Cor do overlay de modais/drawers. Semi-transparente preto. Mais denso no dark. |
-| `shadow` | `--color-shadow` | `#0000001a` | `#00000040` | Cor base para box-shadows. Mais pronunciada no dark mode. |
-| `glassTint` | `--color-glass-tint` | `#ffffff40` | `#ffffff10` | Tint do efeito glassmorphism. Branco translúcido, mais opaco no light. |
-| `headerBg` | `--color-header-bg` | `#ffffff` | `#1e293b` | Fundo base do header antes do efeito liquid-glass ser aplicado. |
-| `scrollbarThumb` | `--color-scrollbar-thumb` | `#c9a655` | `#c9a655` | Cor do polegar da scrollbar customizada. Dourado em ambos os temas. |
-| `scrollbarTrack` | `--color-scrollbar-track` | `transparent` | `transparent` | Cor da trilha da scrollbar. Transparente para estética minimalista. |
-| `ring` | `--color-ring` | `#c9a65580` | `#c9a65580` | Cor do focus ring (outline) em elementos interativos. Accent com 50% opacidade. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `overlay` | `--color-overlay` | `#00000080` | Cor do overlay de modais/drawers. Semi-transparente preto. |
+| `shadow` | `--color-shadow` | `#00000040` | Cor base para box-shadows. |
+| `glassTint` | `--color-glass-tint` | `#ffffff10` | Tint do efeito glassmorphism. Branco translúcido com baixa opacidade. |
+| `headerBg` | `--color-header-bg` | `#1e293b` | Fundo base do header antes do efeito liquid-glass ser aplicado. |
+| `scrollbarThumb` | `--color-scrollbar-thumb` | `#c9a655` | Cor do polegar da scrollbar customizada. Dourado. |
+| `scrollbarTrack` | `--color-scrollbar-track` | `transparent` | Cor da trilha da scrollbar. Transparente para estética minimalista. |
+| `ring` | `--color-ring` | `#c9a65580` | Cor do focus ring (outline) em elementos interativos. Accent com 50% opacidade. |
 
 ### 1.9 Efeitos de Hover (4 tokens)
 
-| Token | Variável CSS | Light | Dark | Descrição |
-|---|---|---|---|---|
-| `hoverBg` | `--color-hover-bg` | `#334155` | `#334155` | Cor de fundo ao passar o mouse em cards, divs e componentes interativos. |
-| `hoverBorder` | `--color-hover-border` | `#c9a65540` | `#c9a65540` | Cor da borda no estado hover. Accent dourado com ~25% opacidade. |
-| `hoverScale` | — | `1.02` | `1.02` | Fator de escala (transform) no hover. Não é variável CSS, aplicado via JS. |
-| `hoverShadow` | `--color-hover-shadow` | `#c9a65525` | `#c9a65525` | Cor da sombra no hover. Accent dourado com ~15% opacidade. |
+| Token | Variável CSS | Valor Default | Descrição |
+|---|---|---|---|
+| `hoverBg` | `--color-hover-bg` | `#334155` | Cor de fundo ao passar o mouse em cards, divs e componentes interativos. |
+| `hoverBorder` | `--color-hover-border` | `#c9a65540` | Cor da borda no estado hover. Accent dourado com ~25% opacidade. |
+| `hoverScale` | — | `1.02` | Fator de escala (transform) no hover. Não é variável CSS, aplicado via JS. |
+| `hoverShadow` | `--color-hover-shadow` | `#c9a65525` | Cor da sombra no hover. Accent dourado com ~15% opacidade. |
 
 ---
 
@@ -160,34 +161,25 @@ Cada ambiente (Login, Cliente, Gestor, Admin) pode ter configurações visuais i
 
 Glassmorphism premium para cards, headers e superfícies elevadas.
 
-**Light mode:**
 ```css
-background: linear-gradient(135deg,
-  rgba(255, 255, 255, 0.25) 0%,
-  rgba(255, 255, 255, 0.08) 50%,
-  rgba(255, 255, 255, 0.15) 100%
-);
+/* Fallback (todos os navegadores) */
+background: rgba(30, 41, 59, 0.25);
+border: 1px solid rgba(255, 255, 255, 0.1);
+box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 backdrop-filter: blur(20px) saturate(180%);
 -webkit-backdrop-filter: blur(20px) saturate(180%);
-border: 1px solid rgba(255, 255, 255, 0.2);
-box-shadow:
-  0 8px 32px rgba(0, 0, 0, 0.08),
-  inset 0 1px 0 rgba(255, 255, 255, 0.3),
-  inset 0 -1px 0 rgba(255, 255, 255, 0.1);
-```
 
-**Dark mode:**
-```css
+/* Com color-mix (navegadores modernos) */
 background: linear-gradient(135deg,
-  rgba(255, 255, 255, 0.06) 0%,
-  rgba(255, 255, 255, 0.02) 50%,
-  rgba(255, 255, 255, 0.04) 100%
+  color-mix(in srgb, var(--color-glass-tint) 25%, transparent) 0%,
+  color-mix(in srgb, var(--color-glass-tint) 8%, transparent) 50%,
+  color-mix(in srgb, var(--color-glass-tint) 15%, transparent) 100%
 );
-border: 1px solid rgba(255, 255, 255, 0.08);
+border: 1px solid color-mix(in srgb, var(--color-glass-tint) 20%, transparent);
 box-shadow:
-  0 8px 32px rgba(0, 0, 0, 0.3),
-  inset 0 1px 0 rgba(255, 255, 255, 0.08),
-  inset 0 -1px 0 rgba(255, 255, 255, 0.03);
+  0 8px 32px var(--color-shadow, rgba(0, 0, 0, 0.3)),
+  inset 0 1px 0 color-mix(in srgb, var(--color-glass-tint) 30%, transparent),
+  inset 0 -1px 0 color-mix(in srgb, var(--color-glass-tint) 10%, transparent);
 ```
 
 **Uso:** Header principal, cards flutuantes, painéis de conteúdo.
@@ -196,23 +188,27 @@ box-shadow:
 
 Variação dourada do glassmorphism para elementos interativos e destaques. Utiliza os tokens de gradiente (`--color-gradient-start/mid/end`).
 
-**Light mode:**
 ```css
-background: linear-gradient(135deg,
-  color-mix(in srgb, var(--color-gradient-start) 25%, transparent) 0%,
-  color-mix(in srgb, var(--color-gradient-mid) 15%, transparent) 40%,
-  color-mix(in srgb, var(--color-gradient-end) 20%, transparent) 70%,
-  color-mix(in srgb, var(--color-gradient-start) 18%, transparent) 100%
-);
+/* Fallback */
+background: rgba(201, 166, 85, 0.12);
+border: 1px solid rgba(201, 166, 85, 0.15);
+box-shadow: 0 4px 20px rgba(201, 166, 85, 0.08);
 backdrop-filter: blur(16px) saturate(160%);
-border: 1px solid color-mix(in srgb, var(--color-gradient-start) 30%, transparent);
-box-shadow:
-  0 4px 20px color-mix(in srgb, var(--color-gradient-start) 12%, transparent),
-  inset 0 1px 0 color-mix(in srgb, var(--color-gradient-mid) 25%, transparent),
-  inset 0 -1px 0 color-mix(in srgb, var(--color-gradient-end) 10%, transparent);
-```
+-webkit-backdrop-filter: blur(16px) saturate(160%);
 
-**Dark mode:** Opacidades reduzidas (~70% dos valores light).
+/* Com color-mix */
+background: linear-gradient(135deg,
+  color-mix(in srgb, var(--color-gradient-start) 18%, transparent) 0%,
+  color-mix(in srgb, var(--color-gradient-mid) 8%, transparent) 40%,
+  color-mix(in srgb, var(--color-gradient-end) 14%, transparent) 70%,
+  color-mix(in srgb, var(--color-gradient-start) 10%, transparent) 100%
+);
+border: 1px solid color-mix(in srgb, var(--color-gradient-start) 22%, transparent);
+box-shadow:
+  0 4px 20px color-mix(in srgb, var(--color-gradient-start) 8%, transparent),
+  inset 0 1px 0 color-mix(in srgb, var(--color-gradient-mid) 12%, transparent),
+  inset 0 -1px 0 color-mix(in srgb, var(--color-gradient-end) 6%, transparent);
+```
 
 **Uso:** Elementos interativos ativos, destaques de gamificação, cards premium.
 
@@ -226,18 +222,16 @@ Contêiner padronizado para ícones em toda a plataforma.
 | Default | `.icon-box` | 2.5rem (40px) | 0.75rem (12px) |
 | Large | `.icon-box-lg` | 3rem (48px) | 0.875rem (14px) |
 
-**Estilos comuns:**
+**Estilos:**
 ```css
 display: flex;
 align-items: center;
 justify-content: center;
-background-color: color-mix(in srgb, var(--color-bg) 80%, black);
-border: 1px solid color-mix(in srgb, var(--color-accent) 25%, transparent);
+background-color: color-mix(in srgb, var(--color-surface) 60%, black);
+border: 1px solid color-mix(in srgb, var(--color-accent) 20%, transparent);
 color: var(--color-accent);
 transition: all 0.3s ease;
 ```
-
-**Dark mode:** `background-color: color-mix(in srgb, var(--color-surface) 60%, black)`
 
 ### 3.4 Scrollbar Customizada
 
@@ -273,11 +267,11 @@ Definidas em `tailwind.config.ts` como keyframes + classes de animação.
 
 | Nome | Keyframes | Descrição |
 |---|---|---|
-| `blob` | `0%: translate(0,0) scale(1)` → `33%: translate(30px,-50px) scale(1.1)` → `66%: translate(-20px,20px) scale(0.9)` → `100%: translate(0,0) scale(1)` | Movimento orgânico fluido dos blobs de fundo. Simula flutuação amebóide. |
-| `fade-in` | `0%: opacity(0) translateY(10px)` → `100%: opacity(1) translateY(0)` | Entrada suave de elementos com deslocamento vertical sutil. |
-| `slide-up` | `0%: opacity(0) translateY(20px)` → `100%: opacity(1) translateY(0)` | Entrada de baixo para cima com deslocamento mais acentuado que fade-in. |
+| `blob` | `0%: translate(0,0) scale(1)` → `33%: translate(30px,-50px) scale(1.1)` → `66%: translate(-20px,20px) scale(0.9)` → `100%: translate(0,0) scale(1)` | Movimento orgânico fluido dos blobs de fundo. |
+| `fade-in` | `0%: opacity(0) translateY(10px)` → `100%: opacity(1) translateY(0)` | Entrada suave com deslocamento vertical sutil. |
+| `slide-up` | `0%: opacity(0) translateY(20px)` → `100%: opacity(1) translateY(0)` | Entrada de baixo para cima com deslocamento mais acentuado. |
 | `shimmer` | `0%: backgroundPosition(200% 0)` → `100%: backgroundPosition(-200% 0)` | Efeito de brilho que percorre o gradiente. Usado no texto da marca. |
-| `float` | `0%,100%: translateY(0)` → `50%: translateY(-10px)` | Flutuação suave para cima e para baixo. Aplicado ao logo na página de login. |
+| `float` | `0%,100%: translateY(0)` → `50%: translateY(-10px)` | Flutuação suave. Aplicado ao logo na página de login. |
 | `accordion-down` | `from: height(0)` → `to: height(var(--radix-accordion-content-height))` | Expansão de conteúdo de acordeão. |
 | `accordion-up` | `from: height(var(--radix-accordion-content-height))` → `to: height(0)` | Contração de conteúdo de acordeão. |
 
@@ -298,75 +292,50 @@ Definidas em `tailwind.config.ts` como keyframes + classes de animação.
 ```css
 .animation-delay-2000 { animation-delay: 2s; }
 ```
-Usada para escalonar a entrada de múltiplos blobs (o 3º blob usa delay de 2s).
+Usada para escalonar a entrada de múltiplos blobs (o 2º blob usa delay de 2s).
 
 ---
 
 ## 5. Variáveis CSS shadcn/ui (Tokens HSL)
 
 Definidas em `index.css` dentro de `@layer base`. Usadas pelos componentes shadcn/ui.
-
-### 5.1 Light Mode (`:root`)
+A plataforma usa um único conjunto de tokens (dark-only), definido em `:root, .dark`.
 
 | Token | Valor HSL | Uso |
 |---|---|---|
-| `--background` | `0 0% 100%` | Fundo da aplicação |
-| `--foreground` | `222.2 84% 4.9%` | Texto principal |
-| `--card` | `0 0% 100%` | Fundo de cards |
-| `--card-foreground` | `222.2 84% 4.9%` | Texto de cards |
-| `--popover` | `0 0% 100%` | Fundo de popovers |
-| `--popover-foreground` | `222.2 84% 4.9%` | Texto de popovers |
-| `--primary` | `222.2 47.4% 11.2%` | Cor primária (botões, links) |
-| `--primary-foreground` | `210 40% 98%` | Texto sobre primário |
-| `--secondary` | `210 40% 96.1%` | Cor secundária |
-| `--secondary-foreground` | `222.2 47.4% 11.2%` | Texto sobre secundário |
-| `--muted` | `210 40% 96.1%` | Fundos atenuados |
-| `--muted-foreground` | `215.4 16.3% 46.9%` | Texto atenuado |
-| `--accent` | `210 40% 96.1%` | Cor de accent shadcn |
-| `--accent-foreground` | `222.2 47.4% 11.2%` | Texto sobre accent shadcn |
-| `--destructive` | `0 84.2% 60.2%` | Ações destrutivas |
+| `--background` | `222.2 84% 4.9%` | Fundo da aplicação |
+| `--foreground` | `210 40% 98%` | Texto principal |
+| `--card` | `222.2 84% 4.9%` | Fundo de cards |
+| `--card-foreground` | `210 40% 98%` | Texto de cards |
+| `--popover` | `222.2 84% 4.9%` | Fundo de popovers |
+| `--popover-foreground` | `210 40% 98%` | Texto de popovers |
+| `--primary` | `210 40% 98%` | Cor primária (botões, links) |
+| `--primary-foreground` | `222.2 47.4% 11.2%` | Texto sobre primário |
+| `--secondary` | `217.2 32.6% 17.5%` | Cor secundária |
+| `--secondary-foreground` | `210 40% 98%` | Texto sobre secundário |
+| `--muted` | `217.2 32.6% 17.5%` | Fundos atenuados |
+| `--muted-foreground` | `215 20.2% 65.1%` | Texto atenuado |
+| `--accent` | `217.2 32.6% 17.5%` | Cor de accent shadcn |
+| `--accent-foreground` | `210 40% 98%` | Texto sobre accent shadcn |
+| `--destructive` | `0 62.8% 30.6%` | Ações destrutivas |
 | `--destructive-foreground` | `210 40% 98%` | Texto sobre destructive |
-| `--border` | `214.3 31.8% 91.4%` | Bordas de componentes shadcn |
-| `--input` | `214.3 31.8% 91.4%` | Bordas de inputs shadcn |
-| `--ring` | `222.2 84% 4.9%` | Focus ring shadcn |
+| `--border` | `217.2 32.6% 17.5%` | Bordas de componentes shadcn |
+| `--input` | `217.2 32.6% 17.5%` | Bordas de inputs shadcn |
+| `--ring` | `212.7 26.8% 83.9%` | Focus ring shadcn |
 | `--radius` | `0.5rem` | Border-radius base |
 
-### 5.2 Dark Mode (`.dark`)
+### Sidebar
 
 | Token | Valor HSL |
 |---|---|
-| `--background` | `222.2 84% 4.9%` |
-| `--foreground` | `210 40% 98%` |
-| `--card` | `222.2 84% 4.9%` |
-| `--card-foreground` | `210 40% 98%` |
-| `--popover` | `222.2 84% 4.9%` |
-| `--popover-foreground` | `210 40% 98%` |
-| `--primary` | `210 40% 98%` |
-| `--primary-foreground` | `222.2 47.4% 11.2%` |
-| `--secondary` | `217.2 32.6% 17.5%` |
-| `--secondary-foreground` | `210 40% 98%` |
-| `--muted` | `217.2 32.6% 17.5%` |
-| `--muted-foreground` | `215 20.2% 65.1%` |
-| `--accent` | `217.2 32.6% 17.5%` |
-| `--accent-foreground` | `210 40% 98%` |
-| `--destructive` | `0 62.8% 30.6%` |
-| `--destructive-foreground` | `210 40% 98%` |
-| `--border` | `217.2 32.6% 17.5%` |
-| `--input` | `217.2 32.6% 17.5%` |
-| `--ring` | `212.7 26.8% 83.9%` |
-
-### 5.3 Sidebar (Light / Dark)
-
-| Token | Light | Dark |
-|---|---|---|
-| `--sidebar-background` | `0 0% 98%` | `240 5.9% 10%` |
-| `--sidebar-foreground` | `240 5.3% 26.1%` | `240 4.8% 95.9%` |
-| `--sidebar-primary` | `240 5.9% 10%` | `224.3 76.3% 48%` |
-| `--sidebar-primary-foreground` | `0 0% 98%` | `0 0% 100%` |
-| `--sidebar-accent` | `240 4.8% 95.9%` | `240 3.7% 15.9%` |
-| `--sidebar-accent-foreground` | `240 5.9% 10%` | `240 4.8% 95.9%` |
-| `--sidebar-border` | `220 13% 91%` | `240 3.7% 15.9%` |
-| `--sidebar-ring` | `217.2 91.2% 59.8%` | `217.2 91.2% 59.8%` |
+| `--sidebar-background` | `240 5.9% 10%` |
+| `--sidebar-foreground` | `240 4.8% 95.9%` |
+| `--sidebar-primary` | `224.3 76.3% 48%` |
+| `--sidebar-primary-foreground` | `0 0% 100%` |
+| `--sidebar-accent` | `240 3.7% 15.9%` |
+| `--sidebar-accent-foreground` | `240 4.8% 95.9%` |
+| `--sidebar-border` | `240 3.7% 15.9%` |
+| `--sidebar-ring` | `217.2 91.2% 59.8%` |
 
 ---
 
@@ -453,57 +422,87 @@ margin: auto
 
 ---
 
-## 8. Mapeamento de Injeção CSS
+## 8. Compatibilidade Cross-Browser
+
+A plataforma utiliza `color-mix()` para mistura dinâmica de cores. Para navegadores sem suporte (Safari <16.2, navegadores antigos), o sistema implementa:
+
+### 8.1 Fallbacks CSS
+Todos os blocos `color-mix` são envolvidos em `@supports (color: color-mix(...))`. Fora do `@supports`, valores RGBA estáticos são usados como fallback.
+
+### 8.2 Polyfill JS (`main.tsx`)
+Um `MutationObserver` monitora estilos inline com `color-mix` e os substitui por valores RGBA computados em navegadores sem suporte. A classe `.no-color-mix` é adicionada ao `<html>` para ativar fallbacks CSS globais.
+
+### 8.3 Utilitários (`src/lib/utils.ts`)
+- `colorMix(color, pct, fallback)` — retorna `color-mix()` ou fallback RGBA
+- `colorMixBorder(color, pct, fallback)` — idem para bordas
+- `supportsColorMix` — flag booleana de detecção de suporte
+
+### 8.4 Classe `.no-color-mix`
+
+```css
+.no-color-mix {
+  --color-surface-alpha: rgba(30, 41, 59, 0.4);
+  --color-accent-alpha: rgba(201, 166, 85, 0.1);
+  --color-accent-alpha-strong: rgba(201, 166, 85, 0.15);
+  --color-border-alpha: rgba(255, 255, 255, 0.08);
+  --color-bg-alpha: rgba(15, 23, 42, 0.5);
+  --color-warning-alpha: rgba(234, 179, 8, 0.1);
+}
+```
+
+---
+
+## 9. Mapeamento de Injeção CSS
 
 O `BrandContext` injeta duas categorias de variáveis CSS:
 
-### 8.1 ColorScheme → CSS Variables
+### 9.1 ColorScheme → CSS Variables
 
 ```
-ColorScheme.background    → --color-bg
-ColorScheme.surface       → --color-surface
-ColorScheme.surfaceHover  → --color-surface-hover
-ColorScheme.card          → --color-card
-ColorScheme.textMain      → --color-text-main
-ColorScheme.textMuted     → --color-text-muted
-ColorScheme.textInverted  → --color-text-inverted
-ColorScheme.border        → --color-border
-ColorScheme.borderSubtle  → --color-border-subtle
-ColorScheme.accent        → --color-accent
-ColorScheme.accentHover   → --color-accent-hover
-ColorScheme.accentForeground → --color-accent-fg
-ColorScheme.accentMuted   → --color-accent-muted
-ColorScheme.success       → --color-success
-ColorScheme.successBg     → --color-success-bg
-ColorScheme.warning       → --color-warning
-ColorScheme.warningBg     → --color-warning-bg
-ColorScheme.error         → --color-error
-ColorScheme.errorBg       → --color-error-bg
-ColorScheme.inputBg       → --color-input-bg
-ColorScheme.inputBorder   → --color-input-border
-ColorScheme.inputFocus    → --color-input-focus
-ColorScheme.buttonPrimaryBg → --color-btn-primary-bg
+ColorScheme.background        → --color-bg
+ColorScheme.surface           → --color-surface
+ColorScheme.surfaceHover      → --color-surface-hover
+ColorScheme.card              → --color-card
+ColorScheme.textMain          → --color-text-main
+ColorScheme.textMuted         → --color-text-muted
+ColorScheme.textInverted      → --color-text-inverted
+ColorScheme.border            → --color-border
+ColorScheme.borderSubtle      → --color-border-subtle
+ColorScheme.accent            → --color-accent
+ColorScheme.accentHover       → --color-accent-hover
+ColorScheme.accentForeground  → --color-accent-fg
+ColorScheme.accentMuted       → --color-accent-muted
+ColorScheme.success           → --color-success
+ColorScheme.successBg         → --color-success-bg
+ColorScheme.warning           → --color-warning
+ColorScheme.warningBg         → --color-warning-bg
+ColorScheme.error             → --color-error
+ColorScheme.errorBg           → --color-error-bg
+ColorScheme.inputBg           → --color-input-bg
+ColorScheme.inputBorder       → --color-input-border
+ColorScheme.inputFocus        → --color-input-focus
+ColorScheme.buttonPrimaryBg   → --color-btn-primary-bg
 ColorScheme.buttonPrimaryText → --color-btn-primary-text
-ColorScheme.badgeBg       → --color-badge-bg
-ColorScheme.tooltipBg     → --color-tooltip-bg
-ColorScheme.tooltipText   → --color-tooltip-text
-ColorScheme.overlay       → --color-overlay
-ColorScheme.shadow        → --color-shadow
-ColorScheme.glassTint     → --color-glass-tint
-ColorScheme.headerBg      → --color-header-bg
-ColorScheme.scrollbarThumb → --color-scrollbar-thumb
-ColorScheme.scrollbarTrack → --color-scrollbar-track
-ColorScheme.ring          → --color-ring
-ColorScheme.gradientStart → --color-gradient-start
-ColorScheme.gradientMid   → --color-gradient-mid
-ColorScheme.gradientEnd   → --color-gradient-end
-ColorScheme.hoverBg       → --color-hover-bg
-ColorScheme.hoverBorder   → --color-hover-border
-ColorScheme.hoverScale    → --color-hover-scale (valor numérico, sem unidade)
-ColorScheme.hoverShadow   → --color-hover-shadow
+ColorScheme.badgeBg           → --color-badge-bg
+ColorScheme.tooltipBg         → --color-tooltip-bg
+ColorScheme.tooltipText       → --color-tooltip-text
+ColorScheme.overlay           → --color-overlay
+ColorScheme.shadow            → --color-shadow
+ColorScheme.glassTint         → --color-glass-tint
+ColorScheme.headerBg          → --color-header-bg
+ColorScheme.scrollbarThumb    → --color-scrollbar-thumb
+ColorScheme.scrollbarTrack    → --color-scrollbar-track
+ColorScheme.ring              → --color-ring
+ColorScheme.gradientStart     → --color-gradient-start
+ColorScheme.gradientMid       → --color-gradient-mid
+ColorScheme.gradientEnd       → --color-gradient-end
+ColorScheme.hoverBg           → --color-hover-bg
+ColorScheme.hoverBorder       → --color-hover-border
+ColorScheme.hoverScale        → --color-hover-scale (valor numérico, sem unidade)
+ColorScheme.hoverShadow       → --color-hover-shadow
 ```
 
-### 8.2 EnvironmentEffects → CSS Variables
+### 9.2 EnvironmentEffects → CSS Variables
 
 ```
 EnvironmentEffects.pageBg             → --env-page-bg
@@ -523,13 +522,15 @@ EnvironmentEffects.glassBorderOpacity → --env-glass-border-opacity
 
 ---
 
-## 9. Arquivos-Fonte
+## 10. Arquivos-Fonte
 
 | Arquivo | Conteúdo |
 |---|---|
 | `src/types.ts` | Interfaces `ColorScheme`, `EnvironmentEffects`, `EnvironmentKey`, `EnvironmentThemes`, `ThemeModeConfig` |
-| `src/lib/themeDefaults.ts` | Valores padrão `DEFAULT_LIGHT`, `DEFAULT_DARK`, `DEFAULT_ENVIRONMENT_THEMES`, funções `mergeScheme` e `mergeEnvironmentEffects` |
+| `src/lib/themeDefaults.ts` | Valores padrão `DEFAULT_DARK`, `DEFAULT_ENVIRONMENT_THEMES`, funções `mergeScheme` e `mergeEnvironmentEffects` |
 | `src/contexts/BrandContext.tsx` | Injeção dinâmica de CSS variables, funções `buildCssVars` e `buildEnvCssVars` |
-| `src/index.css` | Tokens HSL shadcn/ui, efeitos CSS (liquid-glass, icon-box, scrollbar) |
+| `src/index.css` | Tokens HSL shadcn/ui, efeitos CSS (liquid-glass, icon-box, scrollbar), fallbacks cross-browser |
 | `tailwind.config.ts` | Keyframes, animações, cores semânticas mapeadas para HSL, breakpoints, border-radius |
 | `src/components/hub/GlobalEffects.tsx` | Renderização dos blobs animados e grain usando variáveis CSS de ambiente |
+| `src/lib/utils.ts` | Utilitários `colorMix`, `colorMixBorder`, detecção `supportsColorMix` |
+| `src/main.tsx` | Polyfill `MutationObserver` para `color-mix` em navegadores sem suporte |
