@@ -1,6 +1,6 @@
 # 🔐 Credenciais de Acesso — Ambiente Demo
 
-> Contas reais cadastradas no banco de dados para testes e demonstrações.
+> Contas simuladas (mock) para testes e demonstrações. Nenhum dado é persistido no banco.
 
 ---
 
