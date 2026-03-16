@@ -1,27 +1,28 @@
-# 🔐 Credenciais de Acesso — Ambiente Demo
+# 🔐 Credenciais de Acesso — Ambiente Demo (Mock)
 
-> Contas simuladas (mock) para testes e demonstrações. Nenhum dado é persistido no banco.
-
----
-
-## Padrão de Credenciais
-
-| Campo | Formato |
-|---|---|
-| **Email** | `cargo@hubconexao.com` |
-| **Senha** | `Cargo@2026!` (primeira letra maiúscula) |
+> Contas simuladas para testes e demonstrações. **Nenhum dado é persistido no banco de dados.**
 
 ---
 
-## Contas Disponíveis
+## Como acessar
 
-| Perfil | Email | Senha |
-|---|---|---|
-| 🔴 **Super Admin** | `admin@hubconexao.com` | `Admin@2026!` |
-| 🟡 **Gestor** | `gestor@hubconexao.com` | `Gestor@2026!` |
-| 🟢 **Cliente** | `cliente@hubconexao.com` | `Cliente@2026!` |
-| 🔵 **Distribuidor** | `distribuidor@hubconexao.com` | `Distribuidor@2026!` |
-| 🟣 **Consultor** | `consultor@hubconexao.com` | `Consultor@2026!` |
+1. Na tela de login, localize a seção **"Ambiente de Teste"**.
+2. Clique no botão do perfil desejado (ex: "Entrar como Cliente").
+3. Você será logado automaticamente com dados fictícios.
+
+> ⚠️ Não é necessário digitar email ou senha — basta clicar no botão do perfil.
+
+---
+
+## Perfis Disponíveis
+
+| Perfil | Nome exibido | Email (referência) | Role |
+|---|---|---|---|
+| 🔴 **Super Admin** | Super Admin (Mock) | `admin@demo.com` | `super_admin` |
+| 🟡 **Gestor** | Gestor Demo | `manager@demo.com` | `manager` |
+| 🟢 **Cliente** | Cliente Exemplo | `client@demo.com` | `client` |
+| 🔵 **Distribuidor** | Distribuidor Demo | `distributor@demo.com` | `distributor` |
+| 🟣 **Consultor** | Consultor Demo | `consultant@demo.com` | `consultant` |
 
 ---
 
@@ -33,4 +34,4 @@ https://conexao-hub.lovable.app
 
 ---
 
-> ℹ️ **Nota:** Estas são contas mock (simuladas). Nenhuma alteração feita com esses perfis é persistida no banco de dados.
+> ℹ️ **Nota:** O ambiente mock usa dados locais simulados. Nenhuma alteração feita nesse modo afeta o banco de dados real da plataforma.
