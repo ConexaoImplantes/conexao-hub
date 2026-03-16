@@ -33,4 +33,4 @@ https://conexao-hub.lovable.app
 
 ---
 
-> ⚠️ **Atenção:** Estas são contas reais no banco de dados (não mock). Alterações feitas com esses perfis afetam os dados da plataforma.
+> ℹ️ **Nota:** Estas são contas mock (simuladas). Nenhuma alteração feita com esses perfis é persistida no banco de dados.
