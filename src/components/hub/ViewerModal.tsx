@@ -137,7 +137,35 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
             );
           }
           if (material.type === 'audio') {
-            const audioSrc = embedConfig.provider === 'Google Drive' && embedConfig.nativeUrl ? embedConfig.nativeUrl : asset.url;
+            if (embedConfig.provider === 'Google Drive') {
+              return (
+                <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-8 gap-8">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-purple-500/20 blur-3xl rounded-full"></div>
+                    <div className="relative w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm">
+                      <Headphones size={64} className="text-purple-400" />
+                    </div>
+                  </div>
+                  <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
+                  <iframe
+                    src={embedConfig.embedUrl}
+                    className="w-full max-w-lg h-20 rounded-lg"
+                    title="Audio Player"
+                    allow="autoplay; encrypted-media"
+                    sandbox="allow-scripts allow-same-origin allow-popups"
+                    style={{ border: 'none' }}
+                  />
+                  <a
+                    href={embedConfig.originalUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-white/60 hover:text-white/90 transition-colors"
+                  >
+                    <ExternalLink size={14} /> Abrir no Google Drive
+                  </a>
+                </div>
+              );
+            }
             return (
               <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-8 gap-8">
                 <div className="relative">
@@ -154,7 +182,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                   autoPlay
                   preload="metadata"
                 >
-                  <source src={audioSrc} />
+                  <source src={asset.url} />
                   <p className="text-white text-center">Seu navegador não suporta o player de áudio.</p>
                 </audio>
               </div>
