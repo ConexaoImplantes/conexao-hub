@@ -155,14 +155,6 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                     sandbox="allow-scripts allow-same-origin allow-popups"
                     style={{ border: 'none' }}
                   />
-                  <a
-                    href={embedConfig.originalUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-white/60 hover:text-white/90 transition-colors"
-                  >
-                    <ExternalLink size={14} /> Abrir no Google Drive
-                  </a>
                 </div>
               );
             }
