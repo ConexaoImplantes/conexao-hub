@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Collection, Language, Role } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search, ChevronUp, ChevronDown, Loader2, Sparkles } from 'lucide-react';
+import { X, Save, Users, Check, Star, Image as ImageIcon, AlertCircle, Search, ChevronUp, ChevronDown, Loader2, Sparkles, Languages, Copy, CheckCircle2 } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 import { mockDb } from '../../lib/mockDb';
 import { Material } from '../../types';
 import { supabase } from '../../integrations/supabase/client';
@@ -28,7 +29,10 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
-
+  const [translateInput, setTranslateInput] = useState('');
+  const [translating, setTranslating] = useState(false);
+  const [translations, setTranslations] = useState<Record<string, string> | null>(null);
+  const [copiedLang, setCopiedLang] = useState<string | null>(null);
   const [allMaterials, setAllMaterials] = useState<Material[]>([]);
   const [selectedMaterialIds, setSelectedMaterialIds] = useState<string[]>([]);
   const [matSearch, setMatSearch] = useState('');
@@ -82,6 +86,44 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
     const mat = allMaterials.find((m) => m.id === id);
     return sum + (mat?.points || 0);
   }, 0);
+
+  const handleTranslate = async () => {
+    if (!translateInput.trim()) return;
+    setTranslating(true);
+    setTranslations(null);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('translate-title', {
+        body: { text: translateInput.trim() },
+      });
+      if (fnError) throw fnError;
+      if (data?.translations) {
+        setTranslations(data.translations);
+      } else if (data?.error) {
+        toast({ title: 'Erro na tradução', description: data.error, variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro na tradução', description: err?.message || 'Tente novamente', variant: 'destructive' });
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleCopyTranslation = (lang: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedLang(lang);
+    setTimeout(() => setCopiedLang(null), 1500);
+  };
+
+  const handleApplyAllTranslations = () => {
+    if (!translations) return;
+    const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
+    langs.forEach(lang => {
+      if (translations[lang]) {
+        setTitles(prev => ({ ...prev, [lang]: translations[lang] }));
+      }
+    });
+    toast({ title: 'Títulos aplicados!', description: 'Todos os campos de título foram preenchidos.' });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -297,6 +339,66 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
                     value={descriptions[activeTab] || ''} onChange={(e) => setDescriptions((prev) => ({ ...prev, [activeTab]: e.target.value }))} />
                 </label>
               </div>
+            </div>
+
+            {/* AI Translation Helper */}
+            <div className="rounded-xl p-4" style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 5%, transparent)', border: '1px solid color-mix(in srgb, var(--color-accent) 15%, transparent)' }}>
+              <label className="text-[11px] font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider" style={{ color: 'var(--color-accent)' }}>
+                <Languages size={12} /> Tradutor de Títulos (IA)
+              </label>
+              <div className="flex gap-2 mb-2">
+                <input
+                  type="text"
+                  placeholder="Digite o nome da trilha em qualquer idioma..."
+                  className="flex-1 p-2.5 rounded-lg outline-none text-sm focus:ring-2"
+                  style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-main)' }}
+                  value={translateInput}
+                  onChange={e => setTranslateInput(e.target.value)}
+                  onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); handleTranslate(); } }}
+                />
+                <button
+                  type="button"
+                  onClick={handleTranslate}
+                  disabled={translating || !translateInput.trim()}
+                  className="px-4 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-1.5 transition-all disabled:opacity-40 hover:opacity-90"
+                  style={{ backgroundColor: 'var(--color-accent)', color: 'white' }}
+                >
+                  {translating ? <Loader2 size={14} className="animate-spin" /> : <Languages size={14} />}
+                  {translating ? 'Traduzindo...' : 'Traduzir'}
+                </button>
+              </div>
+
+              {translations && (
+                <div className="space-y-1.5 animate-fade-in">
+                  {(['pt-br', 'en-us', 'es-es'] as Language[]).map(lang => {
+                    const flag = lang === 'pt-br' ? '🇧🇷' : lang === 'en-us' ? '🇺🇸' : '🇪🇸';
+                    const text = translations[lang] || '';
+                    return (
+                      <div key={lang} className="flex items-center gap-2 p-2 rounded-lg" style={{ backgroundColor: 'var(--color-surface)' }}>
+                        <span className="text-sm">{flag}</span>
+                        <span className="flex-1 text-sm truncate" style={{ color: 'var(--color-text-main)' }}>{text}</span>
+                        <button
+                          type="button"
+                          onClick={() => handleCopyTranslation(lang, text)}
+                          className="p-1.5 rounded-md transition-colors hover:opacity-70"
+                          style={{ color: copiedLang === lang ? 'var(--color-success)' : 'var(--color-text-muted)' }}
+                          title="Copiar"
+                        >
+                          {copiedLang === lang ? <CheckCircle2 size={14} /> : <Copy size={14} />}
+                        </button>
+                      </div>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    onClick={handleApplyAllTranslations}
+                    className="w-full mt-1 py-2 rounded-lg text-xs font-semibold transition-all hover:opacity-90 flex items-center justify-center gap-1.5"
+                    style={{ backgroundColor: 'color-mix(in srgb, var(--color-success) 15%, transparent)', color: 'var(--color-success)' }}
+                  >
+                    <CheckCircle2 size={12} /> Aplicar todos nos campos de título
+                  </button>
+                </div>
+              )}
             </div>
 
             {/* Divider */}
