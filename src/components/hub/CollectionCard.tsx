@@ -31,10 +31,11 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   return (
     <div
       onClick={() => onClick(collection)}
-      className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+      className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 h-full flex flex-col"
       style={{
         backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)'),
         border: `1px solid ${colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)')}`,
+        minHeight: '320px',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
