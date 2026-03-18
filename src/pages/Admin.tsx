@@ -68,7 +68,9 @@ import {
   Upload,
   FolderOpen,
   Headphones,
-  Globe } from
+  Globe,
+  Play,
+  Power } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
@@ -430,6 +432,14 @@ export const Admin: React.FC = () => {
     const availableLang = langs.find((l) => material.assets[l]?.url);
     if (availableLang) setViewingMaterial({ mat: material, lang: availableLang });else
     toast.info(t("no.materials"));
+  };
+
+  const handleViewLang = (material: Material, lang: Language) => {
+    if (material.assets[lang]?.url) {
+      setViewingMaterial({ mat: material, lang });
+    } else {
+      toast.info(`Nenhum asset disponível em ${lang === 'pt-br' ? 'Português' : lang === 'en-us' ? 'Inglês' : 'Espanhol'}`);
+    }
   };
 
   const filteredMaterials = useMemo(() => {
@@ -804,9 +814,18 @@ export const Admin: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-1 shrink-0">
-                        <button onClick={() => handleView(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-text-muted)" }}><Eye size={16} /></button>
-                        <button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
-                        <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                        {(["pt-br", "en-us", "es-es"] as Language[]).map((lang) => {
+                          const hasAsset = !!mat.assets[lang]?.url;
+                          const flag = lang === "pt-br" ? "🇧🇷" : lang === "en-us" ? "🇺🇸" : "🇪🇸";
+                          return (
+                            <button key={lang} onClick={() => handleViewLang(mat, lang)} className="p-1 rounded-lg" style={{ opacity: hasAsset ? 1 : 0.3 }}>
+                              <span className="text-xs">{flag}</span>
+                            </button>
+                          );
+                        })}
+                        <button onClick={() => handleToggleActive(mat)} className="p-1 rounded-lg" style={{ color: mat.active ? "#10b981" : "#ef4444" }}><Power size={14} /></button>
+                        <button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={14} /></button>
+                        <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg" style={{ color: "#ef4444" }}><Trash2 size={14} /></button>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -907,32 +926,48 @@ export const Admin: React.FC = () => {
                         </td>
                         <td className="p-4 text-right">
                           <div className="flex justify-end gap-1">
+                            {/* Language view buttons */}
+                            {(["pt-br", "en-us", "es-es"] as Language[]).map((lang) => {
+                              const hasAsset = !!mat.assets[lang]?.url;
+                              const flag = lang === "pt-br" ? "🇧🇷" : lang === "en-us" ? "🇺🇸" : "🇪🇸";
+                              return (
+                                <button
+                                  key={lang}
+                                  onClick={() => handleViewLang(mat, lang)}
+                                  className="p-1.5 rounded-lg transition-opacity"
+                                  style={{ opacity: hasAsset ? 1 : 0.3 }}
+                                  title={`Visualizar em ${lang === 'pt-br' ? 'Português' : lang === 'en-us' ? 'Inglês' : 'Espanhol'}`}
+                                >
+                                  <span className="text-sm">{flag}</span>
+                                </button>
+                              );
+                            })}
+                            {/* Toggle active */}
                             <button
-                            onClick={() => handleView(mat)}
-                            className="p-2 rounded-lg"
-                            style={{ color: "var(--color-text-muted)" }}>
-
-                              <Eye size={18} />
+                              onClick={() => handleToggleActive(mat)}
+                              className="p-1.5 rounded-lg transition-colors"
+                              title={mat.active ? "Desativar material" : "Ativar material"}
+                              style={{ color: mat.active ? "#10b981" : "#ef4444" }}
+                            >
+                              <Power size={16} />
                             </button>
+                            {/* Edit */}
                             <button
-                            onClick={() => handleToggleActive(mat)}
-                            className="p-2 rounded-lg"
-                            style={{ color: mat.active ? "var(--color-text-muted)" : "var(--color-text-muted)" }}>
-
-                              {mat.active ? <Eye size={18} /> : <EyeOff size={18} />}
+                              onClick={() => handleOpenEdit(mat)}
+                              className="p-1.5 rounded-lg"
+                              style={{ color: "var(--color-accent)" }}
+                              title="Editar material"
+                            >
+                              <Edit size={16} />
                             </button>
+                            {/* Delete */}
                             <button
-                            onClick={() => handleOpenEdit(mat)}
-                            className="p-2 rounded-lg"
-                            style={{ color: "var(--color-accent)" }}>
-
-                              <Edit size={18} />
-                            </button>
-                            <button
-                            onClick={() => handleDeleteMaterial(mat.id)}
-                            className="p-2 rounded-lg text-red-500">
-
-                              <Trash2 size={18} />
+                              onClick={() => handleDeleteMaterial(mat.id)}
+                              className="p-1.5 rounded-lg"
+                              style={{ color: "#ef4444" }}
+                              title="Excluir material"
+                            >
+                              <Trash2 size={16} />
                             </button>
                           </div>
                         </td>
