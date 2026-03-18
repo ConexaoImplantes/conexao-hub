@@ -666,6 +666,16 @@ export const Admin: React.FC = () => {
               </select>
             </div>
             <button
+              type="button"
+              onClick={() => setMaterialSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+              className="p-2 rounded-lg transition-all hover:scale-105 flex items-center gap-1.5 text-xs font-bold whitespace-nowrap"
+              style={{ backgroundColor: "var(--color-bg)", color: "var(--color-accent)" }}
+              title={materialSortOrder === "asc" ? "A → Z" : "Z → A"}
+            >
+              {materialSortOrder === "asc" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {materialSortOrder === "asc" ? "A→Z" : "Z→A"}
+            </button>
+            <button
             onClick={handleOpenCreate}
             className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
             style={{ color: "var(--color-accent)" }}>
