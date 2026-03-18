@@ -67,6 +67,7 @@ export const ManagerDashboard: React.FC = () => {
   // Filters
   const [materialSearch, setMaterialSearch] = useState("");
   const [materialTypeFilter, setMaterialTypeFilter] = useState<MaterialType | "all">("all");
+  const [materialSortOrder, setMaterialSortOrder] = useState<"asc" | "desc">("asc");
   const [userSearch, setUserSearch] = useState("");
   const [userRoleFilter, setUserRoleFilter] = useState<Role | "all">("all");
 
