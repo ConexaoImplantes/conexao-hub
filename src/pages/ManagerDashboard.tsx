@@ -134,9 +134,9 @@ export const ManagerDashboard: React.FC = () => {
       .sort((a, b) => {
         const tA = (a.title[language] || a.title["pt-br"] || "").toLowerCase();
         const tB = (b.title[language] || b.title["pt-br"] || "").toLowerCase();
-        return tA.localeCompare(tB);
+        return materialSortOrder === "asc" ? tA.localeCompare(tB) : tB.localeCompare(tA);
       });
-  }, [materials, materialSearch, materialTypeFilter, language]);
+  }, [materials, materialSearch, materialTypeFilter, materialSortOrder, language]);
 
   const filteredUsers = useMemo(() => {
     return users
