@@ -118,7 +118,6 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           <div className="flex items-center gap-1 text-[10px] font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
             <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} /> {material.points} XP
           </div>
-          </div>
         )}
         </div>
 
