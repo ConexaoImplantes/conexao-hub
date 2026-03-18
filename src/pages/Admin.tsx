@@ -206,6 +206,7 @@ export const Admin: React.FC = () => {
   const [materialSearch, setMaterialSearch] = useState("");
   const [materialTypeFilter, setMaterialTypeFilter] = useState<MaterialType | "all">("all");
   const [materialStatusFilter, setMaterialStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [materialSortOrder, setMaterialSortOrder] = useState<"asc" | "desc">("asc");
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [userComm, setUserComm] = useState<UserProfile | null>(null);
   const [userEditing, setUserEditing] = useState<UserProfile | null>(null);
