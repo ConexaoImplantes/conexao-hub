@@ -235,7 +235,7 @@ const EnvironmentEffectsEditor = ({
               value={effects.grainBlendMode}
               onChange={(e) => update('grainBlendMode', e.target.value)}
               className="w-full p-2 rounded-lg text-sm outline-none"
-              style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-text-main)', border: '1px solid var(--color-input-border)' }}
+              style={{ backgroundColor: 'var(--color-input-bg)', color: 'var(--color-text-main)' }}
             >
               {BLEND_MODES.map(m => <option key={m} value={m}>{m}</option>)}
             </select>
