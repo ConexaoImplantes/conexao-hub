@@ -32,6 +32,7 @@ export const Dashboard: React.FC = () => {
   const [viewingMaterial, setViewingMaterial] = useState<{ mat: Material, lang: Language, collectionId?: string } | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [filterType, setFilterType] = useState<MaterialType | 'all'>('all');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filterTag, setFilterTag] = useState<string>('');
   const [activeView, setActiveView] = useState<'materials' | 'collections' | 'collection-detail'>('materials');
   const [selectedCollection, setSelectedCollection] = useState<Collection | null>(null);
