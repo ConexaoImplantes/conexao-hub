@@ -434,6 +434,14 @@ export const Admin: React.FC = () => {
     toast.info(t("no.materials"));
   };
 
+  const handleViewLang = (material: Material, lang: Language) => {
+    if (material.assets[lang]?.url) {
+      setViewingMaterial({ mat: material, lang });
+    } else {
+      toast.info(`Nenhum asset disponível em ${lang === 'pt-br' ? 'Português' : lang === 'en-us' ? 'Inglês' : 'Espanhol'}`);
+    }
+  };
+
   const filteredMaterials = useMemo(() => {
     return materials.
     filter((mat) => {
