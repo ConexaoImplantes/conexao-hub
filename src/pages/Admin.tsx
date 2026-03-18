@@ -628,7 +628,27 @@ export const Admin: React.FC = () => {
       {activeTab === "materials" &&
       <div className="animate-fade-in">
           {/* Material Category Count Cards */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-7 gap-3 mb-6">
+            {/* Total Materials */}
+            <div className="p-4 rounded-xl flex items-center gap-3 shadow-sm" style={{ backgroundColor: "var(--color-surface)" }}>
+              <div className="p-2 rounded-lg" style={{ backgroundColor: "#6366f120" }}>
+                <Layers size={20} style={{ color: "#6366f1" }} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{materials.length}</p>
+                <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>Total Materiais</p>
+              </div>
+            </div>
+            {/* Total Trails */}
+            <div className="p-4 rounded-xl flex items-center gap-3 shadow-sm" style={{ backgroundColor: "var(--color-surface)" }}>
+              <div className="p-2 rounded-lg" style={{ backgroundColor: "#ec489920" }}>
+                <BookOpen size={20} style={{ color: "#ec4899" }} />
+              </div>
+              <div>
+                <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{collections.length}</p>
+                <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>Total Trilhas</p>
+              </div>
+            </div>
             {([
               { type: "pdf" as MaterialType, icon: FileText, label: t("material.type.pdf"), color: "#ef4444" },
               { type: "image" as MaterialType, icon: ImageIcon, label: t("material.type.image"), color: "#3b82f6" },
