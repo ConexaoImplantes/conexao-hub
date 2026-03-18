@@ -655,8 +655,8 @@ export const Admin: React.FC = () => {
                 <option value="html">{t("material.type.html")}</option>
               </select>
               <select
-              className="flex-1 md:w-40 p-2 rounded-lg bg-black/20 text-sm outline-none"
-              style={{ color: "var(--color-text-main)" }}
+              className="flex-1 md:w-40 p-2 rounded-lg text-sm outline-none"
+              style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
               value={materialStatusFilter}
               onChange={(e) => setMaterialStatusFilter(e.target.value as any)}>
 
