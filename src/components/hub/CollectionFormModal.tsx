@@ -87,6 +87,44 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
     return sum + (mat?.points || 0);
   }, 0);
 
+  const handleTranslate = async () => {
+    if (!translateInput.trim()) return;
+    setTranslating(true);
+    setTranslations(null);
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('translate-title', {
+        body: { text: translateInput.trim() },
+      });
+      if (fnError) throw fnError;
+      if (data?.translations) {
+        setTranslations(data.translations);
+      } else if (data?.error) {
+        toast({ title: 'Erro na tradução', description: data.error, variant: 'destructive' });
+      }
+    } catch (err: any) {
+      toast({ title: 'Erro na tradução', description: err?.message || 'Tente novamente', variant: 'destructive' });
+    } finally {
+      setTranslating(false);
+    }
+  };
+
+  const handleCopyTranslation = (lang: string, text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedLang(lang);
+    setTimeout(() => setCopiedLang(null), 1500);
+  };
+
+  const handleApplyAllTranslations = () => {
+    if (!translations) return;
+    const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
+    langs.forEach(lang => {
+      if (translations[lang]) {
+        setTitles(prev => ({ ...prev, [lang]: translations[lang] }));
+      }
+    });
+    toast({ title: 'Títulos aplicados!', description: 'Todos os campos de título foram preenchidos.' });
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
