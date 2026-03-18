@@ -829,9 +829,12 @@ export const Admin: React.FC = () => {
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1">
-                      {mat.allowedRoles.map((r) => (
-                        <span key={r} className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>{t(`role.${r}`)}</span>
-                      ))}
+                      {mat.allowedRoles.map((r) => {
+                        const roleColor = r === 'consultant' ? '#6366f1' : r === 'distributor' ? '#f59e0b' : r === 'client' ? '#10b981' : '#8b5cf6';
+                        return (
+                          <span key={r} className="text-[10px] px-1.5 py-0.5 rounded font-bold" style={{ backgroundColor: `${roleColor}20`, color: roleColor }}>{t(`role.${r}`)}</span>
+                        );
+                      })}
                       {Object.keys(mat.assets).map((lang) => (
                         <span key={lang} className="text-[10px] px-1.5 py-0.5 rounded uppercase font-semibold" style={{ backgroundColor: "color-mix(in srgb, var(--color-accent) 10%, transparent)", color: "var(--color-accent)" }}>{lang.split("-")[0]}</span>
                       ))}
