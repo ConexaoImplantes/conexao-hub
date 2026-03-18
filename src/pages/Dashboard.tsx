@@ -480,6 +480,16 @@ export const Dashboard: React.FC = () => {
                     <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={() => setSortOrder(prev => prev === 'asc' ? 'desc' : 'asc')}
+                  className="p-2.5 sm:p-3 rounded-xl transition-all hover:scale-105 flex items-center gap-1.5 text-xs font-bold whitespace-nowrap backdrop-blur-xl border border-white/10"
+                  style={{ backgroundColor: colorMix('var(--color-surface)', 60, 'rgba(30,41,59,0.6)'), color: 'var(--color-accent)' }}
+                  title={sortOrder === 'asc' ? 'A → Z' : 'Z → A'}
+                >
+                  {sortOrder === 'asc' ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                  {sortOrder === 'asc' ? 'A→Z' : 'Z→A'}
+                </button>
               </div>
             </div>
             {isLoading ? (

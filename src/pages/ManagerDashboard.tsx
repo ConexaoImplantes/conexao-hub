@@ -34,6 +34,8 @@ import {
   Headphones,
   Globe,
   ChevronRight,
+  ChevronUp,
+  ChevronDown,
 } from "lucide-react";
 import {
   AreaChart,
