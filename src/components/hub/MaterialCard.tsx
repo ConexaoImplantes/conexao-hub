@@ -50,10 +50,11 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
 
   return (
     <div
-      className="group relative backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+      className="group relative backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 h-full flex flex-col"
       style={{
         backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)'),
         border: `1px solid ${colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)')}`,
+        minHeight: '320px',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
@@ -69,7 +70,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
         <div className="absolute top-0 -inset-full h-full w-1/2 z-5 block transform -skew-x-12 bg-gradient-to-r from-transparent to-white opacity-10 animate-shimmer" style={{ left: '-150%' }} />
       </div>
 
-      <div className="p-6 relative z-10 flex flex-col h-full">
+      <div className="p-6 relative z-10 flex flex-col flex-1">
         <div className="flex justify-between items-start mb-5">
           <div className="relative">
             <div className="absolute inset-0 bg-white/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
@@ -82,9 +83,12 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           </span>
         </div>
 
-        <h3 className="text-lg font-bold mb-3 line-clamp-2 leading-tight transition-all duration-300 min-h-[3rem]" style={{ color: 'var(--color-text-main)' }} title={displayTitle}>
+        <h3 className="text-lg font-bold mb-3 line-clamp-2 leading-tight transition-all duration-300 h-[3.25rem]" style={{ color: 'var(--color-text-main)' }} title={displayTitle}>
           {displayTitle}
         </h3>
+
+        {/* Fixed-height metadata zone */}
+        <div className="min-h-[3.5rem] mb-1">
 
         {progress && (
           <div className="mb-2">
@@ -115,6 +119,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
             <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} /> {material.points} XP
           </div>
         )}
+        </div>
 
         <div className="mt-auto pt-4 transition-colors" style={{ borderTop: `1px solid ${colorMix('var(--color-border)', 15, 'rgba(255,255,255,0.06)')}` }}>
           <div className="flex items-center justify-between mb-3">

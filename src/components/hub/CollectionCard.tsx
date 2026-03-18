@@ -31,10 +31,11 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
   return (
     <div
       onClick={() => onClick(collection)}
-      className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2"
+      className="group relative cursor-pointer rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 h-full flex flex-col"
       style={{
         backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)'),
         border: `1px solid ${colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)')}`,
+        minHeight: '320px',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
@@ -69,8 +70,8 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
         </div>
       </div>
 
-      <div className="p-4 flex flex-col gap-3">
-        {displayDesc && <p className="text-sm line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p>}
+      <div className="p-4 flex flex-col flex-1 gap-3">
+        {displayDesc ? <p className="text-sm line-clamp-2 h-[2.5rem]" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p> : <div className="h-[2.5rem]" />}
         {totalItems > 0 && (
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
@@ -80,7 +81,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
             <Progress value={progressPct} className="h-1.5" />
           </div>
         )}
-        <div className="flex items-center justify-between mt-1">
+        <div className="flex items-center justify-between mt-auto pt-1">
           <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
             {totalItems} {totalItems !== 1 ? t('progress.materials') : t('progress.material')}
           </span>
