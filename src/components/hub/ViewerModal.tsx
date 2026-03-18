@@ -139,25 +139,27 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
           if (material.type === 'audio') {
             if (embedConfig.provider === 'Google Drive') {
               return (
-                <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-8 gap-8">
+                <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-6 sm:p-8 gap-6">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-purple-500/20 blur-3xl rounded-full"></div>
-                    <div className="relative w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm">
-                      <Headphones size={64} className="text-purple-400" />
+                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
+                    <div className="relative w-28 h-28 rounded-full bg-card/80 border border-border flex items-center justify-center backdrop-blur-sm shadow-lg">
+                      <Headphones size={56} className="text-primary" />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
-                  <div className="w-full max-w-lg relative overflow-hidden rounded-lg" style={{ height: '80px' }}>
-                    <iframe
-                      src={embedConfig.embedUrl}
-                      className="w-full rounded-lg"
-                      style={{ border: 'none', height: '80px', clipPath: 'inset(0 50px 0 0)' }}
-                      title="Audio Player"
-                      allow="autoplay; encrypted-media"
-                      sandbox="allow-scripts allow-same-origin allow-popups"
-                    />
-                    {/* Overlay to hide Drive's external link icon */}
-                    <div className="absolute top-0 right-0 w-[90px] h-full rounded-r-lg" style={{ backgroundColor: '#1a1a1a' }} />
+                  <h3 className="text-xl font-bold text-foreground text-center">{displayTitle}</h3>
+
+                  <div className="w-full max-w-xl rounded-2xl border border-border/60 bg-card/80 p-3 backdrop-blur-md shadow-2xl">
+                    <div className="relative h-[78px] overflow-hidden rounded-xl bg-background/70">
+                      <iframe
+                        src={embedConfig.embedUrl}
+                        className="h-[78px] w-[calc(100%+128px)] -ml-8 block"
+                        style={{ border: 'none' }}
+                        title="Audio Player"
+                        allow="autoplay; encrypted-media"
+                        sandbox="allow-scripts allow-same-origin allow-popups"
+                      />
+                      <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background via-background/95 to-transparent" />
+                    </div>
                   </div>
                 </div>
               );
