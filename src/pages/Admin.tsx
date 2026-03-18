@@ -66,7 +66,9 @@ import {
   Target,
   Award,
   Upload,
-  FolderOpen } from
+  FolderOpen,
+  Headphones,
+  Globe } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
