@@ -141,24 +141,31 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
               return (
                 <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-6 sm:p-8 gap-6">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-primary/20 blur-3xl rounded-full" />
-                    <div className="relative w-28 h-28 rounded-full bg-card/80 border border-border flex items-center justify-center backdrop-blur-sm shadow-lg">
-                      <Headphones size={56} className="text-primary" />
+                    <div className="absolute inset-0 blur-3xl rounded-full" style={{ background: 'var(--color-gradient-start)', opacity: 0.15 }} />
+                    <div className="relative w-28 h-28 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+                      <Headphones size={56} style={{ color: 'var(--color-gradient-start)' }} />
                     </div>
                   </div>
-                  <h3 className="text-xl font-bold text-foreground text-center">{displayTitle}</h3>
+                  <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
 
-                  <div className="w-full max-w-xl rounded-2xl border border-border/60 bg-card/80 p-3 backdrop-blur-md shadow-2xl">
-                    <div className="relative h-[78px] overflow-hidden rounded-xl bg-background/70">
+                  {/* Custom container that clips the Drive iframe to hide external link icon */}
+                  <div
+                    className="w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
+                  >
+                    <div className="relative overflow-hidden" style={{ height: '80px' }}>
                       <iframe
                         src={embedConfig.embedUrl}
-                        className="h-[78px] w-[calc(100%+128px)] -ml-8 block"
-                        style={{ border: 'none' }}
+                        className="absolute inset-0"
+                        style={{ border: 'none', height: '80px', width: 'calc(100% + 160px)', left: '-40px' }}
                         title="Audio Player"
                         allow="autoplay; encrypted-media"
                         sandbox="allow-scripts allow-same-origin allow-popups"
                       />
-                      <div className="pointer-events-none absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background via-background/95 to-transparent" />
+                      {/* Right mask - blends seamlessly with container bg */}
+                      <div className="absolute inset-y-0 right-0 w-28" style={{ background: 'linear-gradient(to left, #0a0a0a 60%, transparent)' }} />
+                      {/* Left mask - hides shifted iframe edge */}
+                      <div className="absolute inset-y-0 left-0 w-10" style={{ background: 'linear-gradient(to right, #0a0a0a 40%, transparent)' }} />
                     </div>
                   </div>
                 </div>
