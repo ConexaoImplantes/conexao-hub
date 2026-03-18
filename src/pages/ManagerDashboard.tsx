@@ -227,6 +227,33 @@ export const ManagerDashboard: React.FC = () => {
       {/* ===== MATERIALS TAB ===== */}
       {activeTab === "materials" && (
         <div className="animate-fade-in">
+          {/* Material Category Count Cards */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 mb-6">
+            {([
+              { type: "pdf" as MaterialType, icon: FileText, label: t("material.type.pdf"), color: "#ef4444" },
+              { type: "image" as MaterialType, icon: ImageIcon, label: t("material.type.image"), color: "#3b82f6" },
+              { type: "video" as MaterialType, icon: Video, label: t("material.type.video"), color: "#8b5cf6" },
+              { type: "audio" as MaterialType, icon: Headphones, label: t("material.type.audio"), color: "#f59e0b" },
+              { type: "html" as MaterialType, icon: Globe, label: t("material.type.html"), color: "#10b981" },
+            ]).map(({ type, icon: Icon, label, color }) => {
+              const count = materials.filter(m => m.type === type).length;
+              return (
+                <div
+                  key={type}
+                  className="p-4 rounded-xl flex items-center gap-3 shadow-sm"
+                  style={{ backgroundColor: "var(--color-surface)" }}
+                >
+                  <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20` }}>
+                    <Icon size={20} style={{ color }} />
+                  </div>
+                  <div>
+                    <p className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>{count}</p>
+                    <p className="text-xs" style={{ color: "var(--color-text-muted)" }}>{label}</p>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
           <div className="p-4 rounded-xl shadow-sm flex flex-col md:flex-row gap-4 items-center mb-6" style={{ backgroundColor: "var(--color-surface)" }}>
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-2.5" size={18} style={{ color: "var(--color-text-muted)" }} />
