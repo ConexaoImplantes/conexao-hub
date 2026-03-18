@@ -68,7 +68,9 @@ import {
   Upload,
   FolderOpen,
   Headphones,
-  Globe } from
+  Globe,
+  Play,
+  Power } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
