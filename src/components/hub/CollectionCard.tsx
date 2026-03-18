@@ -81,7 +81,7 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
             <Progress value={progressPct} className="h-1.5" />
           </div>
         )}
-        <div className="flex items-center justify-between mt-1">
+        <div className="flex items-center justify-between mt-auto pt-1">
           <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
             {totalItems} {totalItems !== 1 ? t('progress.materials') : t('progress.material')}
           </span>
