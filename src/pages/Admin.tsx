@@ -448,9 +448,9 @@ export const Admin: React.FC = () => {
     sort((a, b) => {
       const titleA = (a.title[language] || a.title["pt-br"] || "").toLowerCase();
       const titleB = (b.title[language] || b.title["pt-br"] || "").toLowerCase();
-      return titleA.localeCompare(titleB);
+      return materialSortOrder === "asc" ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
     });
-  }, [materials, materialSearch, materialTypeFilter, materialStatusFilter, language]);
+  }, [materials, materialSearch, materialTypeFilter, materialStatusFilter, materialSortOrder, language]);
 
   const handleUserStatus = async (userId: string, status: UserStatus, rejectionReason?: string) => {
     try {
