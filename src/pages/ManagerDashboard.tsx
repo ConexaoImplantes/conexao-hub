@@ -278,6 +278,53 @@ export const ManagerDashboard: React.FC = () => {
               );
             })}
           </div>
+
+          {/* Distribution by Role Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            {([
+              { role: "consultant" as Role, label: "Materiais para Consultores", icon: Users, color: "#6366f1" },
+              { role: "distributor" as Role, label: "Materiais para Distribuidores", icon: Users, color: "#f59e0b" },
+              { role: "client" as Role, label: "Materiais para Clientes", icon: Users, color: "#10b981" },
+            ] as const).map(({ role, label, icon: RoleIcon, color }) => {
+              const roleMaterials = materials.filter(m => m.allowedRoles?.includes(role));
+              const roleCollections = collections.filter(c => c.allowedRoles?.includes(role));
+              const typeBreakdown = [
+                { type: "pdf" as MaterialType, icon: FileText, lbl: "PDFs", clr: "#ef4444" },
+                { type: "image" as MaterialType, icon: ImageIcon, lbl: "Imagens", clr: "#3b82f6" },
+                { type: "video" as MaterialType, icon: Video, lbl: "Vídeos", clr: "#8b5cf6" },
+                { type: "audio" as MaterialType, icon: Headphones, lbl: "Áudios", clr: "#f59e0b" },
+                { type: "html" as MaterialType, icon: Globe, lbl: "Pág. Interativas", clr: "#10b981" },
+              ];
+              return (
+                <div key={role} className="p-5 rounded-xl shadow-sm" style={{ backgroundColor: "var(--color-surface)" }}>
+                  <div className="flex items-center gap-2 mb-4">
+                    <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20` }}>
+                      <RoleIcon size={18} style={{ color }} />
+                    </div>
+                    <h4 className="text-sm font-semibold" style={{ color: "var(--color-text-main)" }}>{label}</h4>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    {typeBreakdown.map(({ type, icon: TIcon, lbl, clr }) => {
+                      const count = roleMaterials.filter(m => m.type === type).length;
+                      return (
+                        <div key={type} className="flex items-center gap-2">
+                          <TIcon size={14} style={{ color: clr }} />
+                          <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>{lbl}</span>
+                          <span className="text-sm font-bold ml-auto" style={{ color: "var(--color-text-main)" }}>{count}</span>
+                        </div>
+                      );
+                    })}
+                    <div className="flex items-center gap-2">
+                      <BookOpen size={14} style={{ color: "#ec4899" }} />
+                      <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>Trilhas</span>
+                      <span className="text-sm font-bold ml-auto" style={{ color: "var(--color-text-main)" }}>{roleCollections.length}</span>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+
           <div className="p-4 rounded-xl shadow-sm flex flex-col md:flex-row gap-4 items-center mb-6" style={{ backgroundColor: "var(--color-surface)" }}>
             <div className="relative flex-1 w-full">
               <Search className="absolute left-3 top-2.5" size={18} style={{ color: "var(--color-text-muted)" }} />
