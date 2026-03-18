@@ -297,27 +297,27 @@ export const ManagerDashboard: React.FC = () => {
               ];
               return (
                 <div key={role} className="p-5 rounded-xl shadow-sm" style={{ backgroundColor: "var(--color-surface)" }}>
-                  <div className="flex items-center gap-2 mb-4">
+                  <div className="flex items-center gap-2 mb-5">
                     <div className="p-2 rounded-lg" style={{ backgroundColor: `${color}20` }}>
                       <RoleIcon size={18} style={{ color }} />
                     </div>
                     <h4 className="text-sm font-semibold" style={{ color: "var(--color-text-main)" }}>{label}</h4>
                   </div>
-                  <div className="grid grid-cols-3 gap-3">
+                  <div className="grid grid-cols-2 gap-x-6 gap-y-3">
                     {typeBreakdown.map(({ type, icon: TIcon, lbl, clr }) => {
                       const count = roleMaterials.filter(m => m.type === type).length;
                       return (
-                        <div key={type} className="flex items-center gap-2">
-                          <TIcon size={14} style={{ color: clr }} />
-                          <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>{lbl}</span>
-                          <span className="text-sm font-bold ml-auto" style={{ color: "var(--color-text-main)" }}>{count}</span>
+                        <div key={type} className="flex items-center gap-2 min-w-0">
+                          <TIcon size={14} className="shrink-0" style={{ color: clr }} />
+                          <span className="text-xs truncate" style={{ color: "var(--color-text-muted)" }}>{lbl}</span>
+                          <span className="text-sm font-bold ml-auto shrink-0" style={{ color: "var(--color-text-main)" }}>{count}</span>
                         </div>
                       );
                     })}
-                    <div className="flex items-center gap-2">
-                      <BookOpen size={14} style={{ color: "#ec4899" }} />
-                      <span className="text-xs" style={{ color: "var(--color-text-muted)" }}>Trilhas</span>
-                      <span className="text-sm font-bold ml-auto" style={{ color: "var(--color-text-main)" }}>{roleCollections.length}</span>
+                    <div className="flex items-center gap-2 min-w-0">
+                      <BookOpen size={14} className="shrink-0" style={{ color: "#ec4899" }} />
+                      <span className="text-xs truncate" style={{ color: "var(--color-text-muted)" }}>Trilhas</span>
+                      <span className="text-sm font-bold ml-auto shrink-0" style={{ color: "var(--color-text-main)" }}>{roleCollections.length}</span>
                     </div>
                   </div>
                 </div>
