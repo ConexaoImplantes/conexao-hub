@@ -147,14 +147,18 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                     </div>
                   </div>
                   <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
-                  <iframe
-                    src={embedConfig.embedUrl}
-                    className="w-full max-w-lg h-20 rounded-lg"
-                    title="Audio Player"
-                    allow="autoplay; encrypted-media"
-                    sandbox="allow-scripts allow-same-origin allow-popups"
-                    style={{ border: 'none' }}
-                  />
+                  <div className="w-full max-w-lg relative overflow-hidden rounded-lg" style={{ height: '80px' }}>
+                    <iframe
+                      src={embedConfig.embedUrl}
+                      className="w-full rounded-lg"
+                      style={{ border: 'none', height: '80px', clipPath: 'inset(0 50px 0 0)' }}
+                      title="Audio Player"
+                      allow="autoplay; encrypted-media"
+                      sandbox="allow-scripts allow-same-origin allow-popups"
+                    />
+                    {/* Overlay to hide Drive's external link icon */}
+                    <div className="absolute top-0 right-0 w-[50px] h-full" style={{ backgroundColor: '#1a1a1a' }} />
+                  </div>
                 </div>
               );
             }
