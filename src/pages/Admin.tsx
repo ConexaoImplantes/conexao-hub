@@ -884,17 +884,20 @@ export const Admin: React.FC = () => {
                           </span>
                         </td>
                         <td className="p-4">
-                          <div className="flex -space-x-1">
-                            {mat.allowedRoles.map((r) =>
-                          <div
-                            key={r}
-                            className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] uppercase font-bold shadow-sm"
-                            title={t(`role.${r}`)}
-                            style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>
-
-                                {r[0]}
-                              </div>
-                          )}
+                          <div className="flex gap-1">
+                            {mat.allowedRoles.map((r) => {
+                              const roleColor = r === 'consultant' ? '#6366f1' : r === 'distributor' ? '#f59e0b' : r === 'client' ? '#10b981' : '#8b5cf6';
+                              return (
+                                <div
+                                  key={r}
+                                  className="w-6 h-6 rounded-full flex items-center justify-center text-[10px] uppercase font-bold shadow-sm"
+                                  title={t(`role.${r}`)}
+                                  style={{ backgroundColor: `${roleColor}20`, color: roleColor }}
+                                >
+                                  {r[0]}
+                                </div>
+                              );
+                            })}
                           </div>
                         </td>
                         <td className="p-4">
