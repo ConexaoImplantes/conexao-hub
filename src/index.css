@@ -226,8 +226,13 @@ All colors MUST be HSL.
     @apply bg-background text-foreground;
   }
 
-  /* Force dark background on native <option> elements */
-  select,
+  /* Force dark background on native <select> and <option> elements — no borders */
+  select {
+    background-color: var(--color-surface, #1e293b);
+    color: var(--color-text-main, #f8fafc);
+    border: none !important;
+    outline: none;
+  }
   select option {
     background-color: var(--color-surface, #1e293b);
     color: var(--color-text-main, #f8fafc);
