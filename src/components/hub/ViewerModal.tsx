@@ -42,16 +42,16 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     if (material?.type === 'html') {
       const url = material.assets[language]?.url;
       if (url) {
-        fetch(url)
-          .then(res => res.text())
-          .then(text => setHtmlContent(text))
-          .catch(() => setHtmlContent(null));
+        fetch(url).
+        then((res) => res.text()).
+        then((text) => setHtmlContent(text)).
+        catch(() => setHtmlContent(null));
       }
     }
   }, [material?.type, material?.assets, language]);
 
   const asset = material?.assets[language] ?? null;
-  const displayTitle = material ? (material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled') : '';
+  const displayTitle = material ? material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled' : '';
   const embedConfig = useMemo(() => getEmbedConfig(asset?.url || ''), [asset?.url]);
   const resolvedUrl = useMemo(() => getResolvedUrl(asset?.url || '', material?.type || 'pdf'), [asset?.url, material?.type]);
 
@@ -116,65 +116,54 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
           if (material.type === 'html') {
             return (
               <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
-                {htmlContent ? (
-                  <iframe
-                    srcDoc={htmlContent}
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                    className="w-full h-full rounded-lg bg-white shadow-2xl"
-                    title="Interactive Page"
-                    style={{ border: 'none' }}
-                  />
-                ) : (
-                  <iframe
-                    src={asset.url}
-                    sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
-                    className="w-full h-full rounded-lg bg-white shadow-2xl"
-                    title="Interactive Page"
-                    style={{ border: 'none' }}
-                  />
-                )}
-              </div>
-            );
+                {htmlContent ?
+                <iframe
+                  srcDoc={htmlContent}
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                  className="w-full h-full rounded-lg bg-white shadow-2xl"
+                  title="Interactive Page"
+                  style={{ border: 'none' }} /> :
+
+
+                <iframe
+                  src={asset.url}
+                  sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+                  className="w-full h-full rounded-lg bg-white shadow-2xl"
+                  title="Interactive Page"
+                  style={{ border: 'none' }} />
+
+                }
+              </div>);
+
           }
           if (material.type === 'audio') {
             if (embedConfig.provider === 'Google Drive') {
               return (
-                <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-6 sm:p-8 gap-6">
+                <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-8 gap-8">
                   <div className="relative">
-                    <div className="absolute inset-0 blur-3xl rounded-full" style={{ background: 'var(--color-gradient-start)', opacity: 0.15 }} />
-                    <div className="relative w-28 h-28 rounded-full flex items-center justify-center backdrop-blur-sm shadow-lg" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-                      <Headphones size={56} style={{ color: 'var(--color-gradient-start)' }} />
+                    <div className="absolute inset-0 bg-purple-500/20 blur-3xl rounded-full"></div>
+                    <div className="relative w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm">
+                      <Headphones size={64} className="text-purple-400" />
                     </div>
                   </div>
                   <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
+                  <iframe
+                    src={embedConfig.embedUrl}
+                    className="w-full max-w-lg h-20 rounded-lg"
+                    title="Audio Player"
+                    allow="autoplay; encrypted-media"
+                    sandbox="allow-scripts allow-same-origin allow-popups"
+                    style={{ border: 'none' }} />
+                  
+                </div>);
 
-                  {/* Custom container that clips the Drive iframe to hide external link icon */}
-                  <div
-                    className="w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl"
-                    style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
-                  >
-                    <div className="relative overflow-hidden" style={{ height: '80px' }}>
-                      <iframe
-                        src={embedConfig.embedUrl}
-                        className="absolute top-0"
-                        style={{ border: 'none', height: '80px', width: 'calc(100% + 80px)', left: '0px' }}
-                        title="Audio Player"
-                        allow="autoplay; encrypted-media"
-                        sandbox="allow-scripts allow-same-origin allow-popups"
-                      />
-                      {/* Right mask - covers only the external link icon area */}
-                      <div className="absolute inset-y-0 right-0 w-16 pointer-events-auto" style={{ background: '#0a0a0a' }} />
-                    </div>
-                  </div>
-                </div>
-              );
             }
             return (
               <div className="w-full h-full flex flex-col items-center justify-center max-w-2xl mx-auto p-8 gap-8">
                 <div className="relative">
                   <div className="absolute inset-0 bg-purple-500/20 blur-3xl rounded-full"></div>
                   <div className="relative w-32 h-32 rounded-full bg-white/5 border border-white/10 flex items-center justify-center backdrop-blur-sm">
-                    <Headphones size={64} className="text-purple-400" />
+                    
                   </div>
                 </div>
                 <h3 className="text-xl font-bold text-white text-center">{displayTitle}</h3>
@@ -183,13 +172,13 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                   controlsList="nodownload"
                   className="w-full max-w-lg"
                   autoPlay
-                  preload="metadata"
-                >
+                  preload="metadata">
+                  
                   <source src={asset.url} />
                   <p className="text-white text-center">Seu navegador não suporta o player de áudio.</p>
                 </audio>
-              </div>
-            );
+              </div>);
+
           }
           if (material.type === 'image') {
             return (
