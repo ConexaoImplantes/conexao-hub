@@ -83,9 +83,12 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           </span>
         </div>
 
-        <h3 className="text-lg font-bold mb-3 line-clamp-2 leading-tight transition-all duration-300 min-h-[3rem]" style={{ color: 'var(--color-text-main)' }} title={displayTitle}>
+        <h3 className="text-lg font-bold mb-3 line-clamp-2 leading-tight transition-all duration-300 h-[3.25rem]" style={{ color: 'var(--color-text-main)' }} title={displayTitle}>
           {displayTitle}
         </h3>
+
+        {/* Fixed-height metadata zone */}
+        <div className="min-h-[3.5rem] mb-1">
 
         {progress && (
           <div className="mb-2">
