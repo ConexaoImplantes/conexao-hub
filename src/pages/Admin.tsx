@@ -1388,8 +1388,8 @@ export const Admin: React.FC = () => {
             </div>
             <div className="flex w-full md:w-auto gap-3">
               <select
-              className="flex-1 md:w-40 p-2 rounded-lg bg-black/20 text-sm outline-none"
-              style={{ color: "var(--color-text-main)" }}
+              className="flex-1 md:w-40 p-2 rounded-lg text-sm outline-none"
+              style={{ backgroundColor: "var(--color-surface)", color: "var(--color-text-main)" }}
               value={userRoleFilter}
               onChange={(e) => setUserRoleFilter(e.target.value as any)}>
 
