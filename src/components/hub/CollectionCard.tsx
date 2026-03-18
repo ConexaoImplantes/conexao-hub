@@ -70,8 +70,8 @@ export const CollectionCard: React.FC<CollectionCardProps> = ({
         </div>
       </div>
 
-      <div className="p-4 flex flex-col gap-3">
-        {displayDesc && <p className="text-sm line-clamp-2" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p>}
+      <div className="p-4 flex flex-col flex-1 gap-3">
+        {displayDesc ? <p className="text-sm line-clamp-2 h-[2.5rem]" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p> : <div className="h-[2.5rem]" />}
         {totalItems > 0 && (
           <div className="space-y-1.5">
             <div className="flex justify-between text-xs font-medium" style={{ color: 'var(--color-text-muted)' }}>
