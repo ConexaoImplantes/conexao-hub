@@ -12,7 +12,7 @@ import { usePagination } from '../hooks/usePagination';
 import {
   Search, Grid, FileText, Image as ImageIcon, Video, Filter, ChevronRight, ChevronLeft,
   Layers, Sparkles, BookOpen, Tag, Star, ArrowLeft, Trophy, CheckCircle, PlayCircle, Lock,
-  Headphones, Globe
+  Headphones, Globe, ChevronUp, ChevronDown
 } from 'lucide-react';
 import { Progress } from '../components/ui/progress';
 import { TrailCompletionCelebration } from '../components/hub/TrailCompletionCelebration';
