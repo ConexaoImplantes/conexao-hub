@@ -206,6 +206,7 @@ export const Admin: React.FC = () => {
   const [materialSearch, setMaterialSearch] = useState("");
   const [materialTypeFilter, setMaterialTypeFilter] = useState<MaterialType | "all">("all");
   const [materialStatusFilter, setMaterialStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [materialSortOrder, setMaterialSortOrder] = useState<"asc" | "desc">("asc");
   const [users, setUsers] = useState<UserProfile[]>([]);
   const [userComm, setUserComm] = useState<UserProfile | null>(null);
   const [userEditing, setUserEditing] = useState<UserProfile | null>(null);
@@ -447,9 +448,9 @@ export const Admin: React.FC = () => {
     sort((a, b) => {
       const titleA = (a.title[language] || a.title["pt-br"] || "").toLowerCase();
       const titleB = (b.title[language] || b.title["pt-br"] || "").toLowerCase();
-      return titleA.localeCompare(titleB);
+      return materialSortOrder === "asc" ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
     });
-  }, [materials, materialSearch, materialTypeFilter, materialStatusFilter, language]);
+  }, [materials, materialSearch, materialTypeFilter, materialStatusFilter, materialSortOrder, language]);
 
   const handleUserStatus = async (userId: string, status: UserStatus, rejectionReason?: string) => {
     try {
@@ -664,6 +665,16 @@ export const Admin: React.FC = () => {
                 <option value="inactive">{t("inactive")}</option>
               </select>
             </div>
+            <button
+              type="button"
+              onClick={() => setMaterialSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+              className="p-2 rounded-lg transition-all hover:scale-105 flex items-center gap-1.5 text-xs font-bold whitespace-nowrap"
+              style={{ backgroundColor: "var(--color-bg)", color: "var(--color-accent)" }}
+              title={materialSortOrder === "asc" ? "A → Z" : "Z → A"}
+            >
+              {materialSortOrder === "asc" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {materialSortOrder === "asc" ? "A→Z" : "Z→A"}
+            </button>
             <button
             onClick={handleOpenCreate}
             className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
