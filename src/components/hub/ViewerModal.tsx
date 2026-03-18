@@ -157,7 +157,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                       sandbox="allow-scripts allow-same-origin allow-popups"
                     />
                     {/* Overlay to hide Drive's external link icon */}
-                    <div className="absolute top-0 right-0 w-[50px] h-full" style={{ backgroundColor: '#1a1a1a' }} />
+                    <div className="absolute top-0 right-0 w-[90px] h-full rounded-r-lg" style={{ backgroundColor: '#1a1a1a' }} />
                   </div>
                 </div>
               );
