@@ -814,9 +814,18 @@ export const Admin: React.FC = () => {
                         </div>
                       </div>
                       <div className="flex gap-1 shrink-0">
-                        <button onClick={() => handleView(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-text-muted)" }}><Eye size={16} /></button>
-                        <button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
-                        <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                        {(["pt-br", "en-us", "es-es"] as Language[]).map((lang) => {
+                          const hasAsset = !!mat.assets[lang]?.url;
+                          const flag = lang === "pt-br" ? "🇧🇷" : lang === "en-us" ? "🇺🇸" : "🇪🇸";
+                          return (
+                            <button key={lang} onClick={() => handleViewLang(mat, lang)} className="p-1 rounded-lg" style={{ opacity: hasAsset ? 1 : 0.3 }}>
+                              <span className="text-xs">{flag}</span>
+                            </button>
+                          );
+                        })}
+                        <button onClick={() => handleToggleActive(mat)} className="p-1 rounded-lg" style={{ color: mat.active ? "#10b981" : "#ef4444" }}><Power size={14} /></button>
+                        <button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={14} /></button>
+                        <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg" style={{ color: "#ef4444" }}><Trash2 size={14} /></button>
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1">
