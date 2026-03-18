@@ -100,8 +100,12 @@ export const Dashboard: React.FC = () => {
       const matchesType = filterType === 'all' || mat.type === filterType;
       const matchesTag = !filterTag || mat.tags.includes(filterTag);
       return matchesSearch && matchesType && matchesTag;
+    }).sort((a, b) => {
+      const titleA = (a.title[language] || a.title['pt-br'] || '').toLowerCase();
+      const titleB = (b.title[language] || b.title['pt-br'] || '').toLowerCase();
+      return sortOrder === 'asc' ? titleA.localeCompare(titleB) : titleB.localeCompare(titleA);
     });
-  }, [materials, searchTerm, filterType, filterTag, language, user]);
+  }, [materials, searchTerm, filterType, filterTag, sortOrder, language, user]);
 
   const allTags = useMemo(() => {
     const tagSet = new Set<string>();

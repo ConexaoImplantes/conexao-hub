@@ -250,7 +250,17 @@ export const ManagerDashboard: React.FC = () => {
               <option value="audio">{t("material.type.audio")}</option>
               <option value="html">{t("material.type.html")}</option>
             </select>
-          </div>
+           </div>
+            <button
+              type="button"
+              onClick={() => setMaterialSortOrder(prev => prev === "asc" ? "desc" : "asc")}
+              className="p-2 rounded-lg transition-all hover:scale-105 flex items-center gap-1.5 text-xs font-bold whitespace-nowrap"
+              style={{ backgroundColor: "var(--color-bg)", color: "var(--color-accent)" }}
+              title={materialSortOrder === "asc" ? "A → Z" : "Z → A"}
+            >
+              {materialSortOrder === "asc" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              {materialSortOrder === "asc" ? "A→Z" : "Z→A"}
+            </button>
 
           {loading ? (
             <SkeletonTable />
