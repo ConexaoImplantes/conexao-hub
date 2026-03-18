@@ -307,7 +307,7 @@ export const Admin: React.FC = () => {
     }
   };
   useEffect(() => {
-    if (activeTab === "materials") loadMaterials();
+    if (activeTab === "materials") { loadMaterials(); loadCollections(); }
     if (activeTab === "users") loadUsers();
     if (activeTab === "analytics") loadAnalytics();
     if (activeTab === "collections") loadCollections();

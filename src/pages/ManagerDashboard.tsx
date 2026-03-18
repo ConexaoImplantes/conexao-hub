@@ -86,8 +86,12 @@ export const ManagerDashboard: React.FC = () => {
     setLoading(true);
     try {
       if (activeTab === "materials") {
-        const mats = await mockDb.getMaterials("manager");
+        const [mats, cols] = await Promise.all([
+          mockDb.getMaterials("manager"),
+          mockDb.getCollections("manager"),
+        ]);
         setMaterials(mats);
+        setCollections(cols);
       } else if (activeTab === "users") {
         const u = await mockDb.getUsers();
         setUsers(u);
