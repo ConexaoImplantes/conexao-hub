@@ -225,6 +225,13 @@ All colors MUST be HSL.
   body {
     @apply bg-background text-foreground;
   }
+
+  /* Force dark background on native <option> elements */
+  select,
+  select option {
+    background-color: var(--color-surface, #1e293b);
+    color: var(--color-text-main, #f8fafc);
+  }
 }
 
 /*
