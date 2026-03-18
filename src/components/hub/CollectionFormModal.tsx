@@ -29,7 +29,10 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const [isGeneratingCover, setIsGeneratingCover] = useState(false);
-
+  const [translateInput, setTranslateInput] = useState('');
+  const [translating, setTranslating] = useState(false);
+  const [translations, setTranslations] = useState<Record<string, string> | null>(null);
+  const [copiedLang, setCopiedLang] = useState<string | null>(null);
   const [allMaterials, setAllMaterials] = useState<Material[]>([]);
   const [selectedMaterialIds, setSelectedMaterialIds] = useState<string[]>([]);
   const [matSearch, setMatSearch] = useState('');
