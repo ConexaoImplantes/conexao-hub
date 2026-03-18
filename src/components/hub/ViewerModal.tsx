@@ -150,22 +150,20 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
                   {/* Custom container that clips the Drive iframe to hide external link icon */}
                   <div
-                    className="w-full max-w-md overflow-hidden rounded-2xl shadow-2xl"
+                    className="w-full max-w-lg overflow-hidden rounded-2xl shadow-2xl"
                     style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)' }}
                   >
                     <div className="relative overflow-hidden" style={{ height: '80px' }}>
                       <iframe
                         src={embedConfig.embedUrl}
-                        className="absolute inset-0"
-                        style={{ border: 'none', height: '80px', width: 'calc(100% + 160px)', left: '-40px' }}
+                        className="absolute top-0"
+                        style={{ border: 'none', height: '80px', width: 'calc(100% + 80px)', left: '0px' }}
                         title="Audio Player"
                         allow="autoplay; encrypted-media"
                         sandbox="allow-scripts allow-same-origin allow-popups"
                       />
-                      {/* Right mask - blends seamlessly with container bg */}
-                      <div className="absolute inset-y-0 right-0 w-28" style={{ background: 'linear-gradient(to left, #0a0a0a 60%, transparent)' }} />
-                      {/* Left mask - hides shifted iframe edge */}
-                      <div className="absolute inset-y-0 left-0 w-10" style={{ background: 'linear-gradient(to right, #0a0a0a 40%, transparent)' }} />
+                      {/* Right mask - covers only the external link icon area */}
+                      <div className="absolute inset-y-0 right-0 w-16 pointer-events-auto" style={{ background: '#0a0a0a' }} />
                     </div>
                   </div>
                 </div>
