@@ -35,7 +35,7 @@ const getResolvedUrl = (url: string, type: MaterialType): string => {
 };
 
 export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, onClose }) => {
-  const [forceNativeDrive, setForceNativeDrive] = useState(false);
+  const [_forceNativeDrive] = useState(false); // kept for hook order stability
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
 
   useEffect(() => {
