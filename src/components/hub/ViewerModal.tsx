@@ -190,45 +190,60 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
           if (material.type === 'pdf') {
             return (
               <div className="w-full h-full max-w-6xl mx-auto pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
-                        <iframe src={`${resolvedUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} className="w-full h-full rounded-lg bg-white shadow-2xl" title="PDF Viewer" />
-                    </div>);
-
+                <iframe src={`${resolvedUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} className="w-full h-full rounded-lg bg-white shadow-2xl" title="PDF Viewer" />
+              </div>);
           }
-          if (embedConfig.provider === 'YouTube') {
-            return (
-              <div className="w-full h-full flex items-center justify-center max-w-screen-2xl mx-auto p-0 md:p-8 aspect-video">
-                        <iframe src={embedConfig.embedUrl} className="w-full h-full rounded-lg shadow-2xl bg-black" title="YouTube Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen frameBorder="0" />
-                    </div>);
-
-          }
-          if (embedConfig.provider === 'Google Drive' && !forceNativeDrive) {
-            return (
-              <div className="w-full h-full flex flex-col items-center justify-center relative">
-                        <div className="absolute text-sm text-center px-4 animate-pulse" style={{ color: 'var(--color-text-muted)' }}>
-                            Carregando player do Google...<br />
-                            <span className="text-xs opacity-70">Se ficar preto, clique em "Modo Nativo" ou "Abrir Externamente".</span>
-                        </div>
-                        <iframe key={embedConfig.embedUrl} src={embedConfig.embedUrl} className="w-full h-full border-none bg-transparent relative z-10" title="Google Drive Player" allow="autoplay; encrypted-media; fullscreen; picture-in-picture" sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-popups" referrerPolicy="no-referrer" allowFullScreen />
-                   </div>);
-
-          }
-          const videoSrc = embedConfig.provider === 'Google Drive' && forceNativeDrive ? embedConfig.nativeUrl : asset.url;
-          return (
-            <div className="w-full h-full flex items-center justify-center max-w-7xl mx-auto p-0 md:p-8 relative group">
-                    {forceNativeDrive &&
-              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-white/20 pointer-events-none z-0">
-                            <PlayCircle size={100} />
-                        </div>
-              }
-                    <video key={videoSrc} controls controlsList="nodownload noremoteplayback" disablePictureInPicture className="w-full max-h-full aspect-video shadow-2xl rounded-lg bg-black outline-none relative z-10" autoPlay playsInline preload="metadata">
-                        <source src={videoSrc} />
-                        {asset.subtitleUrl && <track kind="subtitles" src={asset.subtitleUrl} label={language} default />}
-                        <div className="text-white text-center p-10">
-                            <p>Seu navegador não conseguiu carregar este vídeo.</p>
-                            <p className="text-sm mt-2">Tente o botão "Abrir Externamente".</p>
-                        </div>
-                    </video>
+          // --- VIDEO HANDLING ---
+          if (material.type === 'video' || embedConfig.provider === 'YouTube' || embedConfig.provider === 'Google Drive') {
+            // YouTube: always use YouTube embed
+            if (embedConfig.provider === 'YouTube') {
+              return (
+                <div className="w-full h-full flex items-center justify-center max-w-screen-2xl mx-auto p-0 md:p-8 aspect-video">
+                  <iframe src={embedConfig.embedUrl} className="w-full h-full rounded-lg shadow-2xl bg-black" title="YouTube Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen frameBorder="0" />
                 </div>);
+            }
+            // Google Drive: ALWAYS use iframe preview (never <video> tag — Drive URLs trigger download)
+            if (embedConfig.provider === 'Google Drive') {
+              return (
+                <div className="w-full h-full flex flex-col items-center justify-center relative pt-16 sm:pt-20">
+                  <div className="absolute text-sm text-center px-4 animate-pulse z-0" style={{ color: 'rgba(255,255,255,0.4)' }}>
+                    Carregando vídeo...
+                  </div>
+                  <iframe
+                    key={embedConfig.embedUrl}
+                    src={embedConfig.embedUrl}
+                    className="w-full h-full border-none bg-transparent relative z-10"
+                    title="Google Drive Video Player"
+                    allow="autoplay; encrypted-media; fullscreen; picture-in-picture"
+                    sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-popups"
+                    referrerPolicy="no-referrer"
+                    allowFullScreen
+                  />
+                </div>);
+            }
+            // Direct URL: use native <video> tag
+            return (
+              <div className="w-full h-full flex items-center justify-center max-w-7xl mx-auto p-0 md:p-8 pt-16 sm:pt-20">
+                <video
+                  key={asset.url}
+                  controls
+                  controlsList="nodownload noremoteplayback"
+                  disablePictureInPicture
+                  className="w-full max-h-full aspect-video shadow-2xl rounded-lg bg-black outline-none"
+                  autoPlay
+                  playsInline
+                  preload="metadata"
+                >
+                  <source src={asset.url} />
+                  {asset.subtitleUrl && <track kind="subtitles" src={asset.subtitleUrl} label={language} default />}
+                </video>
+              </div>);
+          }
+          // Fallback for any unknown type
+          return (
+            <div className="w-full h-full flex items-center justify-center p-8">
+              <p className="text-white text-center">Tipo de material não suportado.</p>
+            </div>);
 
         })()}
       </div>
