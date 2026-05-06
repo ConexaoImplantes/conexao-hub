@@ -80,7 +80,7 @@ Definidos em `index.css` (única paleta carregada):
 
 ### 2.6 Sistema de Temas Dinâmico
 
-As cores são **configuráveis em tempo real** pelo administrador via banco de dados (`system_config`). O `BrandContext` injeta CSS custom properties no `:root` e `.dark` do documento, permitindo white-labeling completo sem alterar código.
+As cores são **configuráveis em tempo real** pelo administrador via banco de dados (`system_config.theme_dark` + `environment_themes` para overrides por ambiente: auth, client, manager, admin). O `BrandContext` injeta CSS custom properties no `:root` do documento, permitindo white-labeling completo sem alterar código.
 
 ---
 
