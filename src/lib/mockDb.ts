@@ -296,24 +296,44 @@ export const mockDb = {
   getAccessLogs: async (): Promise<AccessLog[]> => {
     const { data: logs, error } = await supabase
       .from('access_logs')
-      .select(`id, material_id, user_id, language, timestamp, materials ( title ), profiles ( name, role )`)
-      .order('timestamp', { ascending: false });
+      .select('id, material_id, user_id, language, timestamp')
+      .order('timestamp', { ascending: false })
+      .limit(5000);
 
     if (error) {
         if (error.code === '42P01') throw error;
         throw error;
     }
 
-    return (logs || []).map((log: any) => ({
+    const rows = logs || [];
+    const materialIds = Array.from(new Set(rows.map((r: any) => r.material_id).filter(Boolean)));
+    const userIds = Array.from(new Set(rows.map((r: any) => r.user_id).filter(Boolean)));
+
+    const [matsRes, profsRes, rolesRes] = await Promise.all([
+      materialIds.length ? supabase.from('materials').select('id, title').in('id', materialIds) : Promise.resolve({ data: [] as any[] }),
+      userIds.length ? supabase.from('profiles').select('id, name').in('id', userIds) : Promise.resolve({ data: [] as any[] }),
+      userIds.length ? supabase.from('user_roles').select('user_id, role').in('user_id', userIds) : Promise.resolve({ data: [] as any[] }),
+    ]);
+
+    const matMap = new Map<string, any>((matsRes.data || []).map((m: any) => [m.id, m]));
+    const profMap = new Map<string, any>((profsRes.data || []).map((p: any) => [p.id, p]));
+    const roleMap = new Map<string, any>((rolesRes.data || []).map((r: any) => [r.user_id, r.role]));
+
+    return rows.map((log: any) => {
+      const mat = matMap.get(log.material_id);
+      const prof = profMap.get(log.user_id);
+      const title = mat?.title || {};
+      return {
         id: log.id,
         materialId: log.material_id,
-        materialTitle: log.materials?.title?.['pt-br'] || 'Item Excluído',
+        materialTitle: title['pt-br'] || title['en-us'] || title['es-es'] || 'Item Excluído',
         userId: log.user_id,
-        userName: log.profiles?.name || 'Desconhecido',
-        userRole: log.profiles?.role || 'client',
+        userName: prof?.name || 'Desconhecido',
+        userRole: roleMap.get(log.user_id) || 'client',
         language: log.language,
-        timestamp: log.timestamp
-    }));
+        timestamp: log.timestamp,
+      };
+    });
   },
 
 
