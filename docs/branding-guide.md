@@ -131,30 +131,15 @@ As cores são **configuráveis em tempo real** pelo administrador via banco de d
 
 ### 4.1 Liquid Glass (Glassmorphism)
 
-Classe CSS: `.liquid-glass`
+Classe CSS: `.liquid-glass` — usado em headers, cards flutuantes.
 
-**Light mode:**
-```css
-background: linear-gradient(135deg,
-  rgba(255,255,255,0.25) 0%,
-  rgba(255,255,255,0.08) 50%,
-  rgba(255,255,255,0.15) 100%
-);
-backdrop-filter: blur(20px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.2);
-box-shadow:
-  0 8px 32px rgba(0,0,0,0.08),
-  inset 0 1px 0 rgba(255,255,255,0.3),
-  inset 0 -1px 0 rgba(255,255,255,0.1);
-```
-
-**Dark mode:**
 ```css
 background: linear-gradient(135deg,
   rgba(255,255,255,0.06) 0%,
   rgba(255,255,255,0.02) 50%,
   rgba(255,255,255,0.04) 100%
 );
+backdrop-filter: blur(20px) saturate(180%);
 border: 1px solid rgba(255,255,255,0.08);
 box-shadow:
   0 8px 32px rgba(0,0,0,0.3),
@@ -166,27 +151,8 @@ box-shadow:
 
 ### 4.2 Liquid Glass Gold
 
-Classe CSS: `.liquid-glass-gold`
+Classe CSS: `.liquid-glass-gold` — variação dourada do glassmorphism para elementos ativos/interativos.
 
-Variação dourada do glassmorphism para elementos ativos/interativos:
-
-**Light mode:**
-```css
-background: linear-gradient(135deg,
-  rgba(201,166,85,0.25) 0%,
-  rgba(232,212,139,0.15) 40%,
-  rgba(168,135,58,0.20) 70%,
-  rgba(201,166,85,0.18) 100%
-);
-backdrop-filter: blur(16px) saturate(160%);
-border: 1px solid rgba(201,166,85,0.30);
-box-shadow:
-  0 4px 20px rgba(201,166,85,0.12),
-  inset 0 1px 0 rgba(232,212,139,0.25),
-  inset 0 -1px 0 rgba(168,135,58,0.10);
-```
-
-**Dark mode:**
 ```css
 background: linear-gradient(135deg,
   rgba(201,166,85,0.18) 0%,
@@ -194,7 +160,12 @@ background: linear-gradient(135deg,
   rgba(168,135,58,0.14) 70%,
   rgba(201,166,85,0.10) 100%
 );
+backdrop-filter: blur(16px) saturate(160%);
 border: 1px solid rgba(201,166,85,0.22);
+box-shadow:
+  0 4px 20px rgba(201,166,85,0.12),
+  inset 0 1px 0 rgba(232,212,139,0.20),
+  inset 0 -1px 0 rgba(168,135,58,0.10);
 ```
 
 **Onde é usado**: Elementos interativos ativos, destaques de gamificação
