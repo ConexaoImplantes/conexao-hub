@@ -343,16 +343,9 @@ Configure integrações externas:
 
 O editor de temas é a seção mais completa das configurações. Ele permite personalizar **todas as cores e efeitos visuais** da plataforma.
 
-#### Modo de tema
+> ℹ️ A plataforma opera em **dark mode permanente**. Não há mais seletor de modo claro/escuro/sistema — todas as edições afetam apenas o tema escuro.
 
-No topo, escolha o modo padrão da plataforma:
-| Opção | Ícone | Descrição |
-|---|---|---|
-| **Claro** | ☀️ | Tema claro como padrão |
-| **Escuro** | 🌙 | Tema escuro como padrão |
-| **Sistema** | 🖥️ | Segue a preferência do sistema operacional |
-
-#### Editor de cores (38+ tokens)
+#### Editor de cores (42 tokens)
 
 O editor exibe **todas as variáveis de cor** do sistema, organizadas em categorias:
 
@@ -372,10 +365,6 @@ O editor exibe **todas as variáveis de cor** do sistema, organizadas em categor
 2. Clique no **seletor de cor** (quadrado colorido) ao lado do nome.
 3. Escolha a nova cor usando o color picker.
 4. O preview atualiza em tempo real.
-
-**Light e Dark mode:**
-- O editor mostra as cores para **ambos os modos** (claro e escuro).
-- Cada modo tem seus próprios valores.
 
 #### Efeitos por ambiente
 

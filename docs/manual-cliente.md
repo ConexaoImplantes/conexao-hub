@@ -36,10 +36,6 @@ O header está presente em todas as páginas e contém:
 - Botão para alternar entre **Português (PT)**, **Inglês (EN)** e **Espanhol (ES)**.
 - A interface inteira muda de idioma, incluindo títulos de materiais (quando disponíveis no idioma selecionado).
 
-### Tema claro/escuro
-- Botão com ícone de **sol** ☀️ (modo claro) ou **lua** 🌙 (modo escuro).
-- O tema é aplicado instantaneamente e salvo nas suas preferências.
-
 ### Nível e XP
 - Exibe seu nível atual e total de pontos XP.
 - Exemplo: _"Nível 3 — 450 XP"_
