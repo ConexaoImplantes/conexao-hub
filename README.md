@@ -1,73 +1,86 @@
-# Welcome to your Lovable project
+# Hub Conexão — Conexão Digital Implant
 
-## Project info
+Plataforma de compartilhamento de conhecimento e materiais (PDFs, vídeos, áudios, páginas interativas) com sistema de trilhas, gamificação por XP, multi-idioma (PT-BR / EN-US / ES-ES) e painéis administrativo e gestor.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+> **URL pública**: https://conexao-hub.lovable.app
+> **Projeto Lovable**: https://lovable.dev/projects/28c2c01a-f31c-4af5-a9a2-e18efc1592ac
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## Stack
 
-**Use Lovable**
+- **Frontend**: React 18 + Vite 5 + TypeScript + Tailwind CSS 3 + shadcn/ui
+- **Backend**: Lovable Cloud (Postgres gerenciado + Auth + Storage + Edge Functions)
+- **Roteamento**: React Router (SPA)
+- **Estado**: Context API (`AuthContext`, `BrandContext`, `LanguageContext`, `ShortcutContext`)
+- **AI**: Lovable AI Gateway (Gemini) — geração de capas de trilhas e tradução automática
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## Recursos principais
 
-**Use your preferred IDE**
+- 🔐 Autenticação por convite (cada link já carrega o `role` pré-definido)
+- 👥 5 perfis: `super_admin`, `manager`, `consultant`, `distributor`, `client`
+- 📄 Materiais com tradução por idioma (`material_assets`) e categorias/tags
+- 📖 Trilhas (collections) com progresso isolado por trilha e XP bônus de conclusão
+- ⭐ Gamificação configurável (patentes / `gamification_levels`)
+- 📊 Métricas em tempo real: `access_logs` registra toda visualização de material
+- 🎨 Tema customizável via `system_config` (42 tokens, dark mode permanente)
+- 🌐 i18n custom (PT-BR / EN-US / ES-ES)
+- ⌨️ Atalhos de teclado (`Ctrl+F`, `Esc`, `?`)
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+---
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Documentação
 
-Follow these steps:
+| Arquivo | Para quem |
+|---|---|
+| [`docs/database-schema.md`](docs/database-schema.md) | Desenvolvedores — schema do banco, RLS, edge functions |
+| [`docs/branding-guide.md`](docs/branding-guide.md) | Designers e devs — identidade visual, tokens, efeitos |
+| [`docs/design-system-dark.md`](docs/design-system-dark.md) | Tokens consolidados (dark mode) |
+| [`docs/manual-admin.md`](docs/manual-admin.md) | Administradores — painel completo |
+| [`docs/manual-gestor.md`](docs/manual-gestor.md) | Gestores — painel read-only |
+| [`docs/manual-cliente.md`](docs/manual-cliente.md) | Clientes/Distribuidores/Consultores |
+| [`docs/manual-cadastro.md`](docs/manual-cadastro.md) | Fluxo de cadastro por convite |
+| [`docs/demo-credentials.md`](docs/demo-credentials.md) | Contas mock de demonstração |
+| [`docs/deploy-vps.md`](docs/deploy-vps.md) | Deploy alternativo em VPS própria |
+
+---
+
+## Desenvolvimento local
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Variáveis de ambiente (`.env`, gerenciadas automaticamente pelo Lovable Cloud):
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+```
+VITE_SUPABASE_URL=...
+VITE_SUPABASE_PUBLISHABLE_KEY=...
+VITE_SUPABASE_PROJECT_ID=...
+```
 
-**Use GitHub Codespaces**
+---
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Edge Functions
 
-## What technologies are used for this project?
+Em `supabase/functions/`:
 
-This project is built with:
+- **`delete-user`** — único caminho de hard delete (sincroniza `auth.users` + `profiles` + `user_roles`)
+- **`generate-trail-cover`** — gera capa Navy/Gold de trilhas via Gemini
+- **`translate-title`** — traduz títulos de materiais (PT↔EN↔ES)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+Deploy automático ao salvar.
 
-## How can I deploy this project?
+---
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+## Convenções críticas
 
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- **Roles** vivem **somente** em `user_roles`. Nunca em `profiles` (privilege escalation).
+- **Dark mode permanente** — não usar `dark:` prefix nem classes light (`bg-white`, etc.).
+- **Cores** sempre via tokens CSS (`var(--color-*)`). Nunca hardcode.
+- **Notificações** — apenas `sonner` toasts. Nunca `alert()`.
+- **Mobile** — tabelas viram card-lists; modais viram bottom sheets.
+- **`access_logs`** — toda abertura de material via `ViewerModal` registra um log (cobre todos os tipos).

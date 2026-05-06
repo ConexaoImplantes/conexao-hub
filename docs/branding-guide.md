@@ -46,25 +46,13 @@ background: linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a65
 - Ícone do logo (fallback)
 - Texto animado do nome da marca na página de login
 
-### 2.3 Tema Light (Modo Claro)
+### 2.3 Tema Dark (único — modo permanente)
+
+A plataforma opera em **dark mode permanente**. Não há suporte a tema claro.
 
 | Token CSS | HEX | Uso |
 |---|---|---|
-| `--color-bg` | `#f8fafc` | Fundo da página |
-| `--color-surface` | `#ffffff` | Cards, modais, superfícies |
-| `--color-text-main` | `#0f172a` | Texto principal |
-| `--color-text-muted` | `#64748b` | Texto secundário, labels |
-| `--color-border` | `#e2e8f0` | Bordas de cards e inputs |
-| `--color-accent` | `#c9a655` | Destaques, ícones ativos |
-| `--color-success` | `#10b981` | Confirmações, status ativo |
-| `--color-warning` | `#f59e0b` | Alertas, pendências |
-| `--color-error` | `#ef4444` | Erros, botão de logout |
-
-### 2.4 Tema Dark (Modo Escuro — Padrão)
-
-| Token CSS | HEX | Uso |
-|---|---|---|
-| `--color-bg` | `#0f172a` | Fundo da página |
+| `--color-bg` | `#0f172a` | Fundo da página (azul marinho profundo) |
 | `--color-surface` | `#1e293b` | Cards, modais, superfícies |
 | `--color-text-main` | `#f8fafc` | Texto principal |
 | `--color-text-muted` | `#94a3b8` | Texto secundário, labels |
@@ -74,24 +62,10 @@ background: linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a65
 | `--color-warning` | `#eab308` | Alertas |
 | `--color-error` | `#ef4444` | Erros |
 
-### 2.5 Cores Adicionais (shadcn/ui tokens — HSL)
+### 2.4 Tokens shadcn/ui (HSL — apenas dark)
 
-Definidas em `index.css` para os componentes shadcn:
+Definidos em `index.css` (única paleta carregada):
 
-**Light mode:**
-| Token | HSL |
-|---|---|
-| `--background` | `0 0% 100%` |
-| `--foreground` | `222.2 84% 4.9%` |
-| `--primary` | `222.2 47.4% 11.2%` |
-| `--secondary` | `210 40% 96.1%` |
-| `--muted` | `210 40% 96.1%` |
-| `--muted-foreground` | `215.4 16.3% 46.9%` |
-| `--destructive` | `0 84.2% 60.2%` |
-| `--border` | `214.3 31.8% 91.4%` |
-| `--radius` | `0.5rem` |
-
-**Dark mode:**
 | Token | HSL |
 |---|---|
 | `--background` | `222.2 84% 4.9%` |
@@ -102,10 +76,11 @@ Definidas em `index.css` para os componentes shadcn:
 | `--muted-foreground` | `215 20.2% 65.1%` |
 | `--destructive` | `0 62.8% 30.6%` |
 | `--border` | `217.2 32.6% 17.5%` |
+| `--radius` | `0.5rem` |
 
 ### 2.6 Sistema de Temas Dinâmico
 
-As cores são **configuráveis em tempo real** pelo administrador via banco de dados (`system_config`). O `BrandContext` injeta CSS custom properties no `:root` e `.dark` do documento, permitindo white-labeling completo sem alterar código.
+As cores são **configuráveis em tempo real** pelo administrador via banco de dados (`system_config.theme_dark` + `environment_themes` para overrides por ambiente: auth, client, manager, admin). O `BrandContext` injeta CSS custom properties no `:root` do documento, permitindo white-labeling completo sem alterar código.
 
 ---
 
@@ -156,30 +131,15 @@ As cores são **configuráveis em tempo real** pelo administrador via banco de d
 
 ### 4.1 Liquid Glass (Glassmorphism)
 
-Classe CSS: `.liquid-glass`
+Classe CSS: `.liquid-glass` — usado em headers, cards flutuantes.
 
-**Light mode:**
-```css
-background: linear-gradient(135deg,
-  rgba(255,255,255,0.25) 0%,
-  rgba(255,255,255,0.08) 50%,
-  rgba(255,255,255,0.15) 100%
-);
-backdrop-filter: blur(20px) saturate(180%);
-border: 1px solid rgba(255,255,255,0.2);
-box-shadow:
-  0 8px 32px rgba(0,0,0,0.08),
-  inset 0 1px 0 rgba(255,255,255,0.3),
-  inset 0 -1px 0 rgba(255,255,255,0.1);
-```
-
-**Dark mode:**
 ```css
 background: linear-gradient(135deg,
   rgba(255,255,255,0.06) 0%,
   rgba(255,255,255,0.02) 50%,
   rgba(255,255,255,0.04) 100%
 );
+backdrop-filter: blur(20px) saturate(180%);
 border: 1px solid rgba(255,255,255,0.08);
 box-shadow:
   0 8px 32px rgba(0,0,0,0.3),
@@ -191,27 +151,8 @@ box-shadow:
 
 ### 4.2 Liquid Glass Gold
 
-Classe CSS: `.liquid-glass-gold`
+Classe CSS: `.liquid-glass-gold` — variação dourada do glassmorphism para elementos ativos/interativos.
 
-Variação dourada do glassmorphism para elementos ativos/interativos:
-
-**Light mode:**
-```css
-background: linear-gradient(135deg,
-  rgba(201,166,85,0.25) 0%,
-  rgba(232,212,139,0.15) 40%,
-  rgba(168,135,58,0.20) 70%,
-  rgba(201,166,85,0.18) 100%
-);
-backdrop-filter: blur(16px) saturate(160%);
-border: 1px solid rgba(201,166,85,0.30);
-box-shadow:
-  0 4px 20px rgba(201,166,85,0.12),
-  inset 0 1px 0 rgba(232,212,139,0.25),
-  inset 0 -1px 0 rgba(168,135,58,0.10);
-```
-
-**Dark mode:**
 ```css
 background: linear-gradient(135deg,
   rgba(201,166,85,0.18) 0%,
@@ -219,7 +160,12 @@ background: linear-gradient(135deg,
   rgba(168,135,58,0.14) 70%,
   rgba(201,166,85,0.10) 100%
 );
+backdrop-filter: blur(16px) saturate(160%);
 border: 1px solid rgba(201,166,85,0.22);
+box-shadow:
+  0 4px 20px rgba(201,166,85,0.12),
+  inset 0 1px 0 rgba(232,212,139,0.20),
+  inset 0 -1px 0 rgba(168,135,58,0.10);
 ```
 
 **Onde é usado**: Elementos interativos ativos, destaques de gamificação
@@ -264,8 +210,7 @@ opacity: 20%;
 |---|---|---|---|
 | `colors` | 300ms | ease | Hover em botões, links |
 | `all` | 300ms | ease | Icon boxes, cards |
-| `transform` | 500ms | ease | Rotação do ícone de tema |
-| `colors` | 500ms | ease | Transição de tema light/dark |
+| `transform` | 500ms | ease | Rotação de ícones e hover
 
 ---
 
@@ -357,8 +302,7 @@ border-radius: 999px;
 
 | Ícone | Import | Contexto |
 |---|---|---|
-| `Moon` | `lucide-react` | Toggle tema (mostrado no light) |
-| `Sun` | `lucide-react` | Toggle tema (mostrado no dark) |
+| `Sparkles` | `lucide-react` | Destaques premium / gamificação |
 | `LogOut` | `lucide-react` | Botão de logout |
 | `Globe` | `lucide-react` | Seletor de idioma |
 | `Star` | `lucide-react` | XP/nível do usuário |
@@ -484,26 +428,27 @@ margin: auto;
 
 ---
 
-## 10. Modo Escuro (Padrão)
+## 10. Dark Mode (Único — Permanente)
 
 ### 10.1 Implementação
 
-- **Padrão**: Dark mode (`theme: 'dark'`)
-- **Toggle**: Ícone Lua/Sol no header com rotação 180° no hover
-- **Classe CSS**: `.dark` aplicada ao `<html>`
-- **Transição**: 500ms para troca suave entre temas
-- **Persistência**: Estado gerenciado pelo `ThemeContext`
+- **Modo único**: Dark — não há toggle nem suporte a tema claro.
+- **Classe CSS**: `.dark` aplicada permanentemente ao `<html>`.
+- **Sem `dark:` prefix**: como só existe um modo, classes Tailwind escrevem direto a versão escura.
+- **Configuração**: cores ajustáveis pelo admin via `system_config.theme_dark` (42 tokens).
 
-### 10.2 Diferenças Visuais
+### 10.2 Paleta consolidada
 
-| Elemento | Light | Dark |
-|---|---|---|
-| Fundo | `#f8fafc` (quase branco) | `#0f172a` (azul marinho) |
-| Superfícies | `#ffffff` (branco) | `#1e293b` (slate escuro) |
-| Bordas | `#e2e8f0` (cinza claro) | `transparent` |
-| Texto | `#0f172a` (escuro) | `#f8fafc` (claro) |
-| Glass effect | Mais opaco (25% branco) | Mais sutil (6% branco) |
-| Scrollbar | Dourado sobre transparente | Dourado sobre transparente |
+| Elemento | Valor |
+|---|---|
+| Fundo | `#0f172a` (azul marinho) |
+| Superfícies | `#1e293b` (slate escuro) |
+| Bordas | `transparent` |
+| Texto principal | `#f8fafc` |
+| Texto secundário | `#94a3b8` |
+| Accent | `#c9a655` (dourado) |
+| Glass effect | 6% branco com blur 20px |
+| Scrollbar | Dourado sobre transparente |
 
 ---
 
