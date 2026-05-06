@@ -210,8 +210,7 @@ opacity: 20%;
 |---|---|---|---|
 | `colors` | 300ms | ease | Hover em botões, links |
 | `all` | 300ms | ease | Icon boxes, cards |
-| `transform` | 500ms | ease | Rotação do ícone de tema |
-| `colors` | 500ms | ease | Transição de tema light/dark |
+| `transform` | 500ms | ease | Rotação de ícones e hover
 
 ---
 
@@ -303,8 +302,7 @@ border-radius: 999px;
 
 | Ícone | Import | Contexto |
 |---|---|---|
-| `Moon` | `lucide-react` | Toggle tema (mostrado no light) |
-| `Sun` | `lucide-react` | Toggle tema (mostrado no dark) |
+| `Sparkles` | `lucide-react` | Destaques premium / gamificação |
 | `LogOut` | `lucide-react` | Botão de logout |
 | `Globe` | `lucide-react` | Seletor de idioma |
 | `Star` | `lucide-react` | XP/nível do usuário |
@@ -430,26 +428,27 @@ margin: auto;
 
 ---
 
-## 10. Modo Escuro (Padrão)
+## 10. Dark Mode (Único — Permanente)
 
 ### 10.1 Implementação
 
-- **Padrão**: Dark mode (`theme: 'dark'`)
-- **Toggle**: Ícone Lua/Sol no header com rotação 180° no hover
-- **Classe CSS**: `.dark` aplicada ao `<html>`
-- **Transição**: 500ms para troca suave entre temas
-- **Persistência**: Estado gerenciado pelo `ThemeContext`
+- **Modo único**: Dark — não há toggle nem suporte a tema claro.
+- **Classe CSS**: `.dark` aplicada permanentemente ao `<html>`.
+- **Sem `dark:` prefix**: como só existe um modo, classes Tailwind escrevem direto a versão escura.
+- **Configuração**: cores ajustáveis pelo admin via `system_config.theme_dark` (42 tokens).
 
-### 10.2 Diferenças Visuais
+### 10.2 Paleta consolidada
 
-| Elemento | Light | Dark |
-|---|---|---|
-| Fundo | `#f8fafc` (quase branco) | `#0f172a` (azul marinho) |
-| Superfícies | `#ffffff` (branco) | `#1e293b` (slate escuro) |
-| Bordas | `#e2e8f0` (cinza claro) | `transparent` |
-| Texto | `#0f172a` (escuro) | `#f8fafc` (claro) |
-| Glass effect | Mais opaco (25% branco) | Mais sutil (6% branco) |
-| Scrollbar | Dourado sobre transparente | Dourado sobre transparente |
+| Elemento | Valor |
+|---|---|
+| Fundo | `#0f172a` (azul marinho) |
+| Superfícies | `#1e293b` (slate escuro) |
+| Bordas | `transparent` |
+| Texto principal | `#f8fafc` |
+| Texto secundário | `#94a3b8` |
+| Accent | `#c9a655` (dourado) |
+| Glass effect | 6% branco com blur 20px |
+| Scrollbar | Dourado sobre transparente |
 
 ---
 
