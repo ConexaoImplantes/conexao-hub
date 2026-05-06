@@ -46,25 +46,13 @@ background: linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a65
 - Ícone do logo (fallback)
 - Texto animado do nome da marca na página de login
 
-### 2.3 Tema Light (Modo Claro)
+### 2.3 Tema Dark (único — modo permanente)
+
+A plataforma opera em **dark mode permanente**. Não há suporte a tema claro.
 
 | Token CSS | HEX | Uso |
 |---|---|---|
-| `--color-bg` | `#f8fafc` | Fundo da página |
-| `--color-surface` | `#ffffff` | Cards, modais, superfícies |
-| `--color-text-main` | `#0f172a` | Texto principal |
-| `--color-text-muted` | `#64748b` | Texto secundário, labels |
-| `--color-border` | `#e2e8f0` | Bordas de cards e inputs |
-| `--color-accent` | `#c9a655` | Destaques, ícones ativos |
-| `--color-success` | `#10b981` | Confirmações, status ativo |
-| `--color-warning` | `#f59e0b` | Alertas, pendências |
-| `--color-error` | `#ef4444` | Erros, botão de logout |
-
-### 2.4 Tema Dark (Modo Escuro — Padrão)
-
-| Token CSS | HEX | Uso |
-|---|---|---|
-| `--color-bg` | `#0f172a` | Fundo da página |
+| `--color-bg` | `#0f172a` | Fundo da página (azul marinho profundo) |
 | `--color-surface` | `#1e293b` | Cards, modais, superfícies |
 | `--color-text-main` | `#f8fafc` | Texto principal |
 | `--color-text-muted` | `#94a3b8` | Texto secundário, labels |
@@ -74,24 +62,10 @@ background: linear-gradient(135deg, #c9a655 0%, #e8d48b 40%, #a8873a 70%, #c9a65
 | `--color-warning` | `#eab308` | Alertas |
 | `--color-error` | `#ef4444` | Erros |
 
-### 2.5 Cores Adicionais (shadcn/ui tokens — HSL)
+### 2.4 Tokens shadcn/ui (HSL — apenas dark)
 
-Definidas em `index.css` para os componentes shadcn:
+Definidos em `index.css` (única paleta carregada):
 
-**Light mode:**
-| Token | HSL |
-|---|---|
-| `--background` | `0 0% 100%` |
-| `--foreground` | `222.2 84% 4.9%` |
-| `--primary` | `222.2 47.4% 11.2%` |
-| `--secondary` | `210 40% 96.1%` |
-| `--muted` | `210 40% 96.1%` |
-| `--muted-foreground` | `215.4 16.3% 46.9%` |
-| `--destructive` | `0 84.2% 60.2%` |
-| `--border` | `214.3 31.8% 91.4%` |
-| `--radius` | `0.5rem` |
-
-**Dark mode:**
 | Token | HSL |
 |---|---|
 | `--background` | `222.2 84% 4.9%` |
@@ -102,6 +76,7 @@ Definidas em `index.css` para os componentes shadcn:
 | `--muted-foreground` | `215 20.2% 65.1%` |
 | `--destructive` | `0 62.8% 30.6%` |
 | `--border` | `217.2 32.6% 17.5%` |
+| `--radius` | `0.5rem` |
 
 ### 2.6 Sistema de Temas Dinâmico
 
