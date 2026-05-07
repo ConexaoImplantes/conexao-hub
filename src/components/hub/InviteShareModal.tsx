@@ -54,7 +54,7 @@ export const InviteShareModal: React.FC<Props> = ({ inviteUrl, onClose, onConfir
     const recipientPhoneV = data.recipientPhone!;
     const greeting = getGreeting();
     const message = `${greeting} ${recipientNameV}\n\nAqui é o ${senderNameV}\n\nSegue abaixo o link para gerar sua credencial de acesso ao Hub-Conexão.\n\nLink: ${inviteUrl}\n\nQualquer dúvida,\nestou à disposição`;
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${recipientPhoneV}&text=${encodeURIComponent(message)}`;
+    const whatsappUrl = `https://wa.me/${recipientPhoneV}?text=${encodeURIComponent(message)}`;
 
     setLoading(true);
     try {
