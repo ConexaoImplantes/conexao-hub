@@ -2449,6 +2449,14 @@ export const Admin: React.FC = () => {
         />
       )}
 
+      {shareModalToken && (
+        <InviteShareModal
+          inviteUrl={shareModalToken.fullUrl}
+          onClose={() => setShareModalToken(null)}
+          onConfirm={(data) => handleSharePrepare(shareModalToken.id, data)}
+        />
+      )}
+
     </div>);
 
 };
