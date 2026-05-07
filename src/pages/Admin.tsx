@@ -78,6 +78,7 @@ import { ViewerModal } from "../components/hub/ViewerModal";
 import { UserCommunicationModal } from "../components/hub/UserCommunicationModal";
 import { UserEditModal } from "../components/hub/UserEditModal";
 import { ConfirmModal } from "../components/hub/ConfirmModal";
+import { InviteShareModal } from "../components/hub/InviteShareModal";
 import { RejectUserModal } from "../components/hub/RejectUserModal";
 import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
@@ -359,6 +360,33 @@ export const Admin: React.FC = () => {
       toast.error('Erro: ' + e.message);
     }
   };
+
+  const [shareModalToken, setShareModalToken] = useState<any | null>(null);
+  const handleSharePrepare = async (
+    tokenId: string,
+    payload: { senderName: string; recipientName: string; recipientPhone: string; message: string }
+  ) => {
+    await mockDb.prepareInviteShare(tokenId, payload);
+    await loadInviteTokens();
+    toast.success('Link gerado!');
+  };
+  const handleSendWhatsapp = async (tk: any) => {
+    const url =
+      tk.whatsappUrl ||
+      (() => {
+        // Rebuild from saved fields
+        const phone = (tk.recipientPhone || '').replace(/\D/g, '');
+        return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(tk.recipientMessage || '')}`;
+      })();
+    window.open(url, '_blank', 'noopener,noreferrer');
+    try {
+      await mockDb.markInviteShared(tk.id);
+      await loadInviteTokens();
+    } catch (e: any) {
+      toast.error('Erro ao registrar envio: ' + e.message);
+    }
+  };
+
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
     const [logs, mats, cols, colProgress] = await Promise.all([
@@ -2075,6 +2103,11 @@ export const Admin: React.FC = () => {
                           const statusColor = isUsed ? "text-blue-600 bg-blue-500/10" : isExpired ? "text-red-600 bg-red-500/10" : "text-green-600 bg-green-500/10";
                           const publishedUrl = 'https://conexao-hub.lovable.app';
                           const fullUrl = `${publishedUrl}/?token=${tk.token}`;
+                          const sharePrepared = !!tk.sharePreparedAt;
+                          const shared = !!tk.sharedAt;
+                          const canShare = !isUsed && !isExpired;
+                          const fmtDateTime = (iso: string) => new Date(iso).toLocaleString("pt-BR");
+                          const fmtDate = (iso: string) => new Date(iso).toLocaleDateString("pt-BR");
                           return (
                             <div key={tk.id} className="p-4 rounded-xl flex flex-col sm:flex-row items-start sm:items-center gap-3" style={{ backgroundColor: "var(--color-bg)" }}>
                               <div className="flex-1 min-w-0 space-y-1">
@@ -2085,20 +2118,50 @@ export const Admin: React.FC = () => {
                                   <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${statusColor}`}>
                                     {statusLabel}
                                   </span>
+                                  {canShare && sharePrepared && (
+                                    <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded-full ${shared ? "text-green-600 bg-green-500/10" : "text-yellow-600 bg-yellow-500/10"}`}>
+                                      {shared ? "Enviado" : "Pendente"}
+                                    </span>
+                                  )}
                                 </div>
                                 <p className="text-[11px] font-mono truncate" style={{ color: "var(--color-text-muted)" }}>{fullUrl}</p>
                                 <p className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>
-                                  Criado: {new Date(tk.createdAt).toLocaleDateString("pt-BR")} · Expira: {new Date(tk.expiresAt).toLocaleDateString("pt-BR")}
+                                  Criado: {fmtDate(tk.createdAt)} · Expira: {fmtDate(tk.expiresAt)}
                                 </p>
+                                {shared && tk.recipientName && (
+                                  <p className="text-[11px]" style={{ color: "var(--color-text-muted)" }}>
+                                    Link compartilhado com <strong style={{ color: "var(--color-text-main)" }}>{tk.recipientName}</strong> em {fmtDateTime(tk.sharedAt)}. Link expira em {fmtDate(tk.expiresAt)}.
+                                  </p>
+                                )}
                               </div>
                               <div className="flex gap-2 shrink-0">
-                                {!isUsed && !isExpired && (
+                                {canShare && (
                                   <button
                                     onClick={() => handleCopyLink(fullUrl, tk.id)}
-                                    className={`p-2 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all ${copiedLink === tk.id ? "bg-green-500 text-white" : "liquid-glass-gold"}`}
-                                    style={copiedLink !== tk.id ? { color: "var(--color-accent)" } : {}}
+                                    className={`p-2 rounded-lg flex items-center gap-1.5 text-xs font-bold transition-all ${copiedLink === tk.id ? "bg-green-500 text-white" : ""}`}
+                                    style={copiedLink !== tk.id ? { color: "var(--color-text-muted)", backgroundColor: "var(--color-surface)" } : {}}
+                                    title="Copiar link"
                                   >
-                                    {copiedLink === tk.id ? <><CheckCircle size={13} /> Copiado!</> : <><Copy size={13} /> Copiar</>}
+                                    {copiedLink === tk.id ? <CheckCircle size={14} /> : <Copy size={14} />}
+                                  </button>
+                                )}
+                                {canShare && !sharePrepared && (
+                                  <button
+                                    onClick={() => setShareModalToken({ ...tk, fullUrl })}
+                                    className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold"
+                                    style={{ color: "var(--color-accent)" }}
+                                  >
+                                    <LinkIcon size={13} /> Gerar Link
+                                  </button>
+                                )}
+                                {canShare && sharePrepared && !shared && (
+                                  <button
+                                    onClick={() => handleSendWhatsapp(tk)}
+                                    className="px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold text-white"
+                                    style={{ backgroundColor: "#22c55e" }}
+                                    title="Enviar via WhatsApp"
+                                  >
+                                    <MessageCircle size={14} /> WhatsApp
                                   </button>
                                 )}
                                 <button
@@ -2383,6 +2446,14 @@ export const Admin: React.FC = () => {
           userName={rejectingUser.name}
           onClose={() => setRejectingUser(null)}
           onConfirm={handleConfirmReject}
+        />
+      )}
+
+      {shareModalToken && (
+        <InviteShareModal
+          inviteUrl={shareModalToken.fullUrl}
+          onClose={() => setShareModalToken(null)}
+          onConfirm={(data) => handleSharePrepare(shareModalToken.id, data)}
         />
       )}
 

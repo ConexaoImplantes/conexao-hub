@@ -543,7 +543,38 @@ export const mockDb = {
       usedAt: t.used_at,
       expiresAt: t.expires_at,
       createdAt: t.created_at,
+      senderName: t.sender_name,
+      recipientName: t.recipient_name,
+      recipientPhone: t.recipient_phone,
+      recipientMessage: t.recipient_message,
+      sharePreparedAt: t.share_prepared_at,
+      sharedAt: t.shared_at,
     }));
+  },
+
+  prepareInviteShare: async (
+    tokenId: string,
+    payload: { senderName: string; recipientName: string; recipientPhone: string; message: string }
+  ) => {
+    const { error } = await supabase
+      .from('invite_tokens')
+      .update({
+        sender_name: payload.senderName,
+        recipient_name: payload.recipientName,
+        recipient_phone: payload.recipientPhone,
+        recipient_message: payload.message,
+        share_prepared_at: new Date().toISOString(),
+      } as any)
+      .eq('id', tokenId);
+    if (error) throw error;
+  },
+
+  markInviteShared: async (tokenId: string) => {
+    const { error } = await supabase
+      .from('invite_tokens')
+      .update({ shared_at: new Date().toISOString() } as any)
+      .eq('id', tokenId);
+    if (error) throw error;
   },
 
   createInviteToken: async (role: string, expiresInDays: number = 7) => {

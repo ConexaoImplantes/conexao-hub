@@ -194,7 +194,13 @@ export type Database = {
           created_at: string
           expires_at: string
           id: string
+          recipient_message: string | null
+          recipient_name: string | null
+          recipient_phone: string | null
           role: Database["public"]["Enums"]["app_role"]
+          sender_name: string | null
+          share_prepared_at: string | null
+          shared_at: string | null
           status: string
           token: string
           used_at: string | null
@@ -204,7 +210,13 @@ export type Database = {
           created_at?: string
           expires_at?: string
           id?: string
+          recipient_message?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
           role: Database["public"]["Enums"]["app_role"]
+          sender_name?: string | null
+          share_prepared_at?: string | null
+          shared_at?: string | null
           status?: string
           token?: string
           used_at?: string | null
@@ -214,7 +226,13 @@ export type Database = {
           created_at?: string
           expires_at?: string
           id?: string
+          recipient_message?: string | null
+          recipient_name?: string | null
+          recipient_phone?: string | null
           role?: Database["public"]["Enums"]["app_role"]
+          sender_name?: string | null
+          share_prepared_at?: string | null
+          shared_at?: string | null
           status?: string
           token?: string
           used_at?: string | null
