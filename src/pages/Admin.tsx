@@ -359,7 +359,32 @@ export const Admin: React.FC = () => {
       toast.error('Erro: ' + e.message);
     }
   };
-  const loadAnalytics = async () => {
+
+  const [shareModalToken, setShareModalToken] = useState<any | null>(null);
+  const handleSharePrepare = async (
+    tokenId: string,
+    payload: { senderName: string; recipientName: string; recipientPhone: string; message: string }
+  ) => {
+    await mockDb.prepareInviteShare(tokenId, payload);
+    await loadInviteTokens();
+    toast.success('Link gerado!');
+  };
+  const handleSendWhatsapp = async (tk: any) => {
+    const url =
+      tk.whatsappUrl ||
+      (() => {
+        // Rebuild from saved fields
+        const phone = (tk.recipientPhone || '').replace(/\D/g, '');
+        return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(tk.recipientMessage || '')}`;
+      })();
+    window.open(url, '_blank', 'noopener,noreferrer');
+    try {
+      await mockDb.markInviteShared(tk.id);
+      await loadInviteTokens();
+    } catch (e: any) {
+      toast.error('Erro ao registrar envio: ' + e.message);
+    }
+  };
     setAnalyticsLoading(true);
     const [logs, mats, cols, colProgress] = await Promise.all([
     mockDb.getAccessLogs(),
