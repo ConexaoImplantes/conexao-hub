@@ -78,6 +78,7 @@ import { ViewerModal } from "../components/hub/ViewerModal";
 import { UserCommunicationModal } from "../components/hub/UserCommunicationModal";
 import { UserEditModal } from "../components/hub/UserEditModal";
 import { ConfirmModal } from "../components/hub/ConfirmModal";
+import { InviteShareModal } from "../components/hub/InviteShareModal";
 import { RejectUserModal } from "../components/hub/RejectUserModal";
 import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
