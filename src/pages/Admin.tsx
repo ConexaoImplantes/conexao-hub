@@ -376,7 +376,7 @@ export const Admin: React.FC = () => {
       (() => {
         // Rebuild from saved fields
         const phone = (tk.recipientPhone || '').replace(/\D/g, '');
-        return `https://api.whatsapp.com/send?phone=${phone}&text=${encodeURIComponent(tk.recipientMessage || '')}`;
+        return `https://wa.me/${phone}?text=${encodeURIComponent(tk.recipientMessage || '')}`;
       })();
     window.open(url, '_blank', 'noopener,noreferrer');
     try {
