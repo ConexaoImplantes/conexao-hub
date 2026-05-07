@@ -385,6 +385,8 @@ export const Admin: React.FC = () => {
       toast.error('Erro ao registrar envio: ' + e.message);
     }
   };
+
+  const loadAnalytics = async () => {
     setAnalyticsLoading(true);
     const [logs, mats, cols, colProgress] = await Promise.all([
     mockDb.getAccessLogs(),
