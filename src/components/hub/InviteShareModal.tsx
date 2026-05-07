@@ -49,13 +49,16 @@ export const InviteShareModal: React.FC<Props> = ({ inviteUrl, onClose, onConfir
       return;
     }
     const data = parsed.data;
+    const senderNameV = data.senderName!;
+    const recipientNameV = data.recipientName!;
+    const recipientPhoneV = data.recipientPhone!;
     const greeting = getGreeting();
-    const message = `${greeting} ${data.recipientName}\n\nAqui é o ${data.senderName}\n\nSegue abaixo o link para gerar sua credencial de acesso ao Hub-Conexão.\n\nLink: ${inviteUrl}\n\nQualquer dúvida,\nestou à disposição`;
-    const whatsappUrl = `https://api.whatsapp.com/send?phone=${data.recipientPhone}&text=${encodeURIComponent(message)}`;
+    const message = `${greeting} ${recipientNameV}\n\nAqui é o ${senderNameV}\n\nSegue abaixo o link para gerar sua credencial de acesso ao Hub-Conexão.\n\nLink: ${inviteUrl}\n\nQualquer dúvida,\nestou à disposição`;
+    const whatsappUrl = `https://api.whatsapp.com/send?phone=${recipientPhoneV}&text=${encodeURIComponent(message)}`;
 
     setLoading(true);
     try {
-      await onConfirm({ ...data, message, whatsappUrl });
+      await onConfirm({ senderName: senderNameV, recipientName: recipientNameV, recipientPhone: recipientPhoneV, message, whatsappUrl });
       onClose();
     } catch (err: any) {
       toast.error(err?.message || 'Erro ao salvar');
