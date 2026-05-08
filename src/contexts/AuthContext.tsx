@@ -42,6 +42,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         setIsLoading(false);
     }, 3000);
 
+    const handleSession = async (session: Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']) => {
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      } else {
+        setUser(prev => (prev && prev.id.startsWith('mock-') ? prev : null));
+        setIsLoading(false);
+      }
+    };
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      void handleSession(session);
+    });
+
     const initAuth = async () => {
         try {
           await checkDbConnection();
@@ -58,11 +71,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             throw error;
           }
 
-          if (session?.user) {
-              await fetchProfile(session.user.id);
-          } else {
-              setIsLoading(false);
-          }
+          await handleSession(session);
         } catch (error: any) {
           console.error('Erro ao inicializar autenticação:', error);
           if (isFetchFailure(error)) {
@@ -76,17 +85,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
 
     initAuth();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session?.user) {
-        void fetchProfile(session.user.id);
-      } else {
-        if (!user || !user.id.startsWith('mock-')) {
-            setUser(null);
-        }
-        setIsLoading(false);
-      }
-    });
 
     return () => subscription.unsubscribe();
   }, []);
