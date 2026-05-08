@@ -23,6 +23,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isDbMissing, setIsDbMissing] = useState(false);
 
+  const clearBrokenSession = async () => {
+    try {
+      await supabase.auth.signOut({ scope: 'local' });
+    } catch (error) {
+      console.warn('Falha ao limpar sessão local inválida:', error);
+    }
+  };
+
+  const isFetchFailure = (error: any) =>
+    error?.message?.includes('Failed to fetch') ||
+    error?.name === 'AuthRetryableFetchError' ||
+    error?.status === 0;
+
   useEffect(() => {
     const safetyTimeout = setTimeout(() => {
         console.warn("Auth timeout reached - forcing UI unlock");
@@ -30,14 +43,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }, 3000);
 
     const initAuth = async () => {
-        await checkDbConnection();
+        try {
+          await checkDbConnection();
 
-        const { data: { session } } = await supabase.auth.getSession();
+          const { data: { session }, error } = await supabase.auth.getSession();
 
-        if (session?.user) {
-            await fetchProfile(session.user.id);
-        } else {
-            setIsLoading(false);
+          if (error) {
+            if (isFetchFailure(error)) {
+              await clearBrokenSession();
+              setUser(null);
+              setIsLoading(false);
+              return;
+            }
+            throw error;
+          }
+
+          if (session?.user) {
+              await fetchProfile(session.user.id);
+          } else {
+              setIsLoading(false);
+          }
+        } catch (error: any) {
+          console.error('Erro ao inicializar autenticação:', error);
+          if (isFetchFailure(error)) {
+            await clearBrokenSession();
+            setUser(null);
+          }
+          setIsLoading(false);
         }
 
         clearTimeout(safetyTimeout);
@@ -47,7 +79,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        fetchProfile(session.user.id);
+        void fetchProfile(session.user.id);
       } else {
         if (!user || !user.id.startsWith('mock-')) {
             setUser(null);
@@ -60,7 +92,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, []);
 
   const checkDbConnection = async () => {
-    const { error } = await supabase.from('system_config').select('id').limit(1);
+    const { error } = await supabase.from('system_config_public').select('id').limit(1);
     if (error && error.code === '42P01') {
         setIsDbMissing(true);
         setIsLoading(false);
@@ -88,6 +120,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error.code === '42P01') {
           setIsDbMissing(true);
           setIsLoading(false);
+      } else if (isFetchFailure(error)) {
+          await clearBrokenSession();
+          setUser(null);
       }
     } finally {
       setIsLoading(false);
