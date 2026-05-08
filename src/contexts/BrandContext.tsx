@@ -85,23 +85,39 @@ function buildEnvCssVars(effects: EnvironmentEffects): string {
 }
 
 export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [config, setConfig] = useState<SystemConfig | null>(null);
+  const [config, setConfig] = useState<SystemConfig>(defaults);
   const [isLoading, setIsLoading] = useState(true);
   const [activeEnvironment, setActiveEnvironment] = useState<EnvironmentKey>('global');
 
   useEffect(() => {
+    let isMounted = true;
+    const timeoutId = window.setTimeout(() => {
+      if (!isMounted) return;
+      console.warn('BrandContext timeout - usando configuração padrão');
+      setIsLoading(false);
+    }, 2500);
+
     mockDb.getSystemConfig()
-      .then(data => setConfig(data))
+      .then(data => {
+        if (!isMounted) return;
+        setConfig(data);
+      })
       .catch(err => {
         console.error("BrandContext Init Error:", err);
-        setConfig(defaults);
+        if (isMounted) setConfig(defaults);
       })
-      .finally(() => setIsLoading(false));
+      .finally(() => {
+        window.clearTimeout(timeoutId);
+        if (isMounted) setIsLoading(false);
+      });
+
+    return () => {
+      isMounted = false;
+      window.clearTimeout(timeoutId);
+    };
   }, []);
 
   useEffect(() => {
-    if (!config) return;
-
     let styleTag = document.getElementById('theme-styles');
     if (!styleTag) {
       styleTag = document.createElement('style');
@@ -135,12 +151,7 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   return (
     <BrandContext.Provider value={{ config: config || defaults, updateConfig, isLoading, activeEnvironment, setActiveEnvironment }}>
-      {!isLoading && config ? children : (
-        <div className="h-screen w-full flex flex-col gap-4 items-center justify-center font-medium animate-pulse" style={{ backgroundColor: '#0f172a', color: '#94a3b8' }}>
-          <div className="w-12 h-12 rounded-full border-4 border-t-[#c9a655] animate-spin" style={{ borderColor: '#1e293b', borderTopColor: '#c9a655' }}></div>
-          <span>Carregando Sistema...</span>
-        </div>
-      )}
+      {children}
     </BrandContext.Provider>
   );
 };
