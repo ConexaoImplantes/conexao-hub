@@ -83,7 +83,7 @@ export const mockDb = {
   },
 
   getSystemConfig: async (): Promise<SystemConfig> => {
-    const { data, error } = await supabase.from('system_config').select('*').eq('id', 1).single();
+    const { data, error } = await supabase.from('system_config_public').select('*').eq('id', 1).single();
 
     const defaults: SystemConfig = {
         appName: 'Hub Conexão',
@@ -98,7 +98,6 @@ export const mockDb = {
     return {
       appName: data.app_name,
       logoUrl: data.logo_url,
-      webhookUrl: data.webhook_url,
       themeDark: mergeScheme(data.theme_dark as unknown as Partial<ColorScheme>, DEFAULT_DARK),
       themeMode: (data as any).theme_mode ? { ...DEFAULT_THEME_MODE, ...(data as any).theme_mode } : DEFAULT_THEME_MODE,
       environmentThemes: (data as any).environment_themes && Object.keys((data as any).environment_themes).length > 0
