@@ -90,31 +90,13 @@ export const BrandProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [activeEnvironment, setActiveEnvironment] = useState<EnvironmentKey>('global');
 
   useEffect(() => {
-    let isMounted = true;
-    const timeoutId = window.setTimeout(() => {
-      if (!isMounted) return;
-      console.warn('BrandContext timeout - usando configuração padrão');
-      setIsLoading(false);
-    }, 2500);
-
     mockDb.getSystemConfig()
-      .then(data => {
-        if (!isMounted) return;
-        setConfig(data);
-      })
+      .then(data => setConfig(data))
       .catch(err => {
         console.error("BrandContext Init Error:", err);
-        if (isMounted) setConfig(defaults);
+        setConfig(defaults);
       })
-      .finally(() => {
-        window.clearTimeout(timeoutId);
-        if (isMounted) setIsLoading(false);
-      });
-
-    return () => {
-      isMounted = false;
-      window.clearTimeout(timeoutId);
-    };
+      .finally(() => setIsLoading(false));
   }, []);
 
   useEffect(() => {
