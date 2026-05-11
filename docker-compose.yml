@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+
+  ## --------------------------- CONEXÃO HUB --------------------------- ##
+
+  app:
+    # No modo Portainer/Swarm, usamos a imagem pré-construída no Docker Hub.
+    # Build da imagem (faça localmente e dê push):
+    #   docker build \
+    #     --build-arg VITE_SUPABASE_URL=$VITE_SUPABASE_URL \
+    #     --build-arg VITE_SUPABASE_PUBLISHABLE_KEY=$VITE_SUPABASE_PUBLISHABLE_KEY \
+    #     --build-arg VITE_SUPABASE_PROJECT_ID=$VITE_SUPABASE_PROJECT_ID \
+    #     -t hevertonperes/conexao-hub:latest .
+    #   docker push hevertonperes/conexao-hub:latest
+    image: hevertonperes/conexao-hub:latest
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1024M
+
+    networks:
+      - network_conexao
+
+    environment:
+      - NODE_ENV=production
+      - TZ=America/Sao_Paulo
+      # Observação: Vite inlineia VITE_* no BUILD. Estas variáveis em runtime
+      # são informativas (não chegam ao bundle já compilado).
+      - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
+      - VITE_SUPABASE_PUBLISHABLE_KEY=${VITE_SUPABASE_PUBLISHABLE_KEY}
+      - VITE_SUPABASE_PROJECT_ID=${VITE_SUPABASE_PROJECT_ID}
+
+    ## 🌐 Configurações Traefik (Segurança e Redirecionamento)
+    labels:
+      - "traefik.enable=true"
+      # Roteador Seguro (HTTPS)
+      - "traefik.http.routers.conexao_hub.rule=Host(`hub.vpsconexao.org`)"
+      - "traefik.http.routers.conexao_hub.entrypoints=websecure"
+      - "traefik.http.routers.conexao_hub.tls.certresolver=letsencryptresolver"
+      # Redirecionamento Automático (HTTP -> HTTPS)
+      - "traefik.http.routers.conexao_hub_http.rule=Host(`hub.vpsconexao.org`)"
+      - "traefik.http.routers.conexao_hub_http.entrypoints=web"
+      - "traefik.http.routers.conexao_hub_http.middlewares=conexao_redirect"
+      - "traefik.http.routers.conexao_hub_http.middlewares=conexao_redirect"
+      - "traefik.http.middlewares.conexao_redirect.redirectscheme.scheme=https"
+      # Porta interna do container (Nginx)
+      - "traefik.http.services.conexao_hub.loadbalancer.server.port=80"
+
+  ## --------------------------- INFRA --------------------------- ##
+
+networks:
+  network_conexao:
+    external: true
+    name: network_conexao
