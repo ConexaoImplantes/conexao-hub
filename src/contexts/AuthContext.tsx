@@ -77,9 +77,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (error.code === '42P01') {
           setIsDbMissing(true);
           setIsLoading(false);
-      } else if (isFetchFailure(error)) {
-          await clearBrokenSession();
-          setUser(null);
       }
     } finally {
       setIsLoading(false);
