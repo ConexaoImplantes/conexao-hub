@@ -23,65 +23,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
   const [isDbMissing, setIsDbMissing] = useState(false);
 
-  const clearBrokenSession = async () => {
-    try {
-      await supabase.auth.signOut({ scope: 'local' });
-    } catch (error) {
-      console.warn('Falha ao limpar sessão local inválida:', error);
-    }
-  };
-
-  const isFetchFailure = (error: any) =>
-    error?.message?.includes('Failed to fetch') ||
-    error?.name === 'AuthRetryableFetchError' ||
-    error?.status === 0;
-
   useEffect(() => {
-    const safetyTimeout = setTimeout(() => {
-        console.warn("Auth timeout reached - forcing UI unlock");
-        setIsLoading(false);
-    }, 3000);
-
-    const handleSession = async (session: Awaited<ReturnType<typeof supabase.auth.getSession>>['data']['session']) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       if (session?.user) {
         await fetchProfile(session.user.id);
       } else {
         setUser(prev => (prev && prev.id.startsWith('mock-') ? prev : null));
         setIsLoading(false);
       }
-    };
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      void handleSession(session);
     });
 
     const initAuth = async () => {
-        try {
-          await checkDbConnection();
-
-          const { data: { session }, error } = await supabase.auth.getSession();
-
-          if (error) {
-            if (isFetchFailure(error)) {
-              await clearBrokenSession();
-              setUser(null);
-              setIsLoading(false);
-              return;
-            }
-            throw error;
-          }
-
-          await handleSession(session);
-        } catch (error: any) {
-          console.error('Erro ao inicializar autenticação:', error);
-          if (isFetchFailure(error)) {
-            await clearBrokenSession();
-            setUser(null);
-          }
-          setIsLoading(false);
-        }
-
-        clearTimeout(safetyTimeout);
+      await checkDbConnection();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        await fetchProfile(session.user.id);
+      } else {
+        setIsLoading(false);
+      }
     };
 
     initAuth();
