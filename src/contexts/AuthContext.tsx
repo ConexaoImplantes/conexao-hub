@@ -33,19 +33,33 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       }
     });
 
+    const safetyTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
     const initAuth = async () => {
-      await checkDbConnection();
-      const { data: { session } } = await supabase.auth.getSession();
-      if (session?.user) {
-        await fetchProfile(session.user.id);
-      } else {
+      try {
+        await checkDbConnection();
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session?.user) {
+          await fetchProfile(session.user.id);
+        } else {
+          setIsLoading(false);
+        }
+      } catch (e) {
+        console.error("AuthContext initAuth error:", e);
         setIsLoading(false);
+      } finally {
+        clearTimeout(safetyTimeout);
       }
     };
 
     initAuth();
 
-    return () => subscription.unsubscribe();
+    return () => {
+      clearTimeout(safetyTimeout);
+      subscription.unsubscribe();
+    };
   }, []);
 
   const checkDbConnection = async () => {
