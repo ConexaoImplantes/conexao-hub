@@ -47,7 +47,6 @@ services:
       - "traefik.http.routers.conexao_hub_http.rule=Host(`hub.vpsconexao.org`)"
       - "traefik.http.routers.conexao_hub_http.entrypoints=web"
       - "traefik.http.routers.conexao_hub_http.middlewares=conexao_redirect"
-      - "traefik.http.routers.conexao_hub_http.middlewares=conexao_redirect"
       - "traefik.http.middlewares.conexao_redirect.redirectscheme.scheme=https"
       # Porta interna do container (Nginx)
       - "traefik.http.services.conexao_hub.loadbalancer.server.port=80"
