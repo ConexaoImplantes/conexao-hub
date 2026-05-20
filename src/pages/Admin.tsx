@@ -99,6 +99,7 @@ import {
 "recharts";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 import { toast } from "sonner";
 
 
@@ -351,6 +352,66 @@ export const Admin: React.FC = () => {
       toast.error('Erro ao gerar convite: ' + e.message);
     }
     setInviteGenerating(false);
+  };
+  const formatInvitePhone = (raw?: string) => {
+    if (!raw) return "—";
+    let d = String(raw).replace(/\D/g, "");
+    if (d.length > 11 && d.startsWith("55")) d = d.slice(2);
+    if (d.length === 11) return `(${d.slice(0, 2)}) ${d.slice(2, 7)}-${d.slice(7)}`;
+    if (d.length === 10) return `(${d.slice(0, 2)}) ${d.slice(2, 6)}-${d.slice(6)}`;
+    return raw;
+  };
+  const inviteRoleLabel = (r: string) => {
+    const map: Record<string, string> = {
+      client: "Cliente",
+      distributor: "Distribuidor",
+      consultant: "Consultor",
+      manager: "Gestor",
+      super_admin: "Super Admin",
+    };
+    return map[r] || r;
+  };
+  const downloadInvitesPdf = () => {
+    if (!inviteTokens.length) {
+      toast.error("Nenhum convite para exportar");
+      return;
+    }
+    const doc = new jsPDF({ orientation: "landscape" });
+    const now = new Date().toLocaleString("pt-BR");
+    doc.setFontSize(14);
+    doc.text("Convites Gerados", 14, 14);
+    doc.setFontSize(9);
+    doc.setTextColor(120);
+    doc.text(`Exportado em ${now} • Total: ${inviteTokens.length}`, 14, 20);
+
+    const fmt = (iso?: string) => (iso ? new Date(iso).toLocaleString("pt-BR") : "—");
+    const fmtDate = (iso?: string) => (iso ? new Date(iso).toLocaleDateString("pt-BR") : "—");
+
+    const rows = inviteTokens.map((tk) => {
+      const isUsed = !!tk.usedAt;
+      const isExpired = new Date(tk.expiresAt) < new Date();
+      const status = isUsed ? "Usado" : isExpired ? "Expirado" : tk.sharedAt ? "Enviado" : "Gerado";
+      return [
+        tk.recipientName || "—",
+        formatInvitePhone(tk.recipientPhone),
+        inviteRoleLabel(tk.role),
+        status,
+        fmt(tk.sharedAt),
+        fmtDate(tk.expiresAt),
+      ];
+    });
+
+    autoTable(doc, {
+      startY: 26,
+      head: [["Nome", "Celular", "Credencial", "Status", "Compartilhado em", "Expira em"]],
+      body: rows,
+      styles: { fontSize: 9, cellPadding: 3 },
+      headStyles: { fillColor: [10, 30, 61], textColor: 255 },
+      alternateRowStyles: { fillColor: [248, 248, 250] },
+    });
+
+    doc.save(`convites-${new Date().toISOString().slice(0, 10)}.pdf`);
+    toast.success("PDF gerado com sucesso");
   };
   const deleteInviteToken = async (id: string) => {
     try {
@@ -2081,6 +2142,15 @@ export const Admin: React.FC = () => {
                       style={{ color: "var(--color-accent)" }}
                     >
                       <Plus size={16} /> {inviteGenerating ? "Gerando..." : "Gerar Convite"}
+                    </button>
+                    <button
+                      onClick={downloadInvitesPdf}
+                      disabled={!inviteTokens.length}
+                      className="liquid-glass px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
+                      style={{ color: "var(--color-text-main)", border: "1px solid var(--color-border)" }}
+                      title="Baixar PDF com todos os convites"
+                    >
+                      <Download size={16} /> Baixar PDF
                     </button>
                   </div>
 
