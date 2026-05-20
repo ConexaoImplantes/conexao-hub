@@ -2143,6 +2143,15 @@ export const Admin: React.FC = () => {
                     >
                       <Plus size={16} /> {inviteGenerating ? "Gerando..." : "Gerar Convite"}
                     </button>
+                    <button
+                      onClick={downloadInvitesPdf}
+                      disabled={!inviteTokens.length}
+                      className="liquid-glass px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
+                      style={{ color: "var(--color-text-main)", border: "1px solid var(--color-border)" }}
+                      title="Baixar PDF com todos os convites"
+                    >
+                      <Download size={16} /> Baixar PDF
+                    </button>
                   </div>
 
                   {/* Tokens List */}
