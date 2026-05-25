@@ -594,16 +594,11 @@ export const mockDb = {
   },
 
   validateInviteToken: async (token: string) => {
-    const { data, error } = await supabase
-      .from('invite_tokens')
-      .select('*')
-      .eq('token', token)
-      .eq('status', 'active')
-      .is('used_at', null)
-      .gt('expires_at', new Date().toISOString())
-      .single();
-    if (error || !data) return null;
-    return { id: data.id, token: data.token, role: data.role, expiresAt: data.expires_at };
+    const { data, error } = await (supabase as any)
+      .rpc('validate_invite_token', { _token: token });
+    if (error || !data || data.length === 0) return null;
+    const row = data[0];
+    return { id: row.id, token, role: row.role, expiresAt: row.expires_at };
   },
 
   markInviteTokenUsed: async (tokenId: string, userId: string) => {
