@@ -410,6 +410,27 @@ export const Dashboard: React.FC = () => {
                             )}
                           </div>
                         </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {langs.map(l => {
+                            const has = !!mat.assets[l]?.url;
+                            return (
+                              <button
+                                key={l}
+                                onClick={() => has && handleViewMaterial(mat, l)}
+                                disabled={!has}
+                                title={l.toUpperCase()}
+                                className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${has ? 'hover:opacity-80 active:scale-95' : 'opacity-30 cursor-not-allowed'}`}
+                                style={{
+                                  backgroundColor: has ? colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)') : 'transparent',
+                                  color: has ? 'var(--color-accent)' : 'var(--color-text-muted)',
+                                  border: `1px solid ${has ? colorMix('var(--color-accent)', 30, 'rgba(201,166,85,0.3)') : 'transparent'}`,
+                                }}
+                              >
+                                {l.split('-')[0]}
+                              </button>
+                            );
+                          })}
+                        </div>
                         <button
                           onClick={() => handleViewMaterial(mat, availableLang)}
                           className="liquid-glass-gold flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap shrink-0"
