@@ -520,6 +520,14 @@ export type Database = {
         }
         Returns: boolean
       }
+      validate_invite_token: {
+        Args: { _token: string }
+        Returns: {
+          expires_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+        }[]
+      }
     }
     Enums: {
       app_language: "pt-br" | "en-us" | "es-es"
