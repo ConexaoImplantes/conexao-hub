@@ -1,134 +1,62 @@
-## Migração do Lovable Cloud para Supabase externa
 
-Gerar um pacote completo de SQL + scripts auxiliares para recriar o backend atual em um projeto Supabase novo (externo), preservando schema, dados, RLS, triggers, storage, edge functions e UUIDs.
+## Objetivo
 
-### Entregáveis em `/mnt/documents/migration/`
+Eliminar **toda** noção de "tema light" / "modo light" / "alternância de tema" da plataforma. O app passa a operar exclusivamente em dark mode, com o design system mostrado na imagem (navy `#0f172a` + dourado `#c9a655` + favicon globo "C" atual) como único padrão — sem coluna legada, sem campo `themeMode`, sem `preferences.theme`.
 
-1. `**01_schema.sql**` — schema consolidado e idempotente:
-  - Extensão `pgcrypto`
-  - Enums: `app_role`, `app_status`, `app_language`, `material_type`, `translation_status`, `progress_status`
-  - 12 tabelas públicas + view `system_config_public`
-  - Funções `SECURITY DEFINER`: `has_role`, `get_user_role`, `handle_new_user`, `update_updated_at_column`, `validate_invite_token_expiry`
-  - Triggers: `on_auth_user_created` em `auth.users`; `update_updated_at_*` em todas as tabelas com `updated_at`; `validate_invite_token_expiry` em `invite_tokens`
-  - RLS habilitado + todas as políticas PERMISSIVE atuais
-  - Índices em `material_id`, `user_id`, `collection_id` e `access_logs.timestamp`
-2. `**02_storage.sql**` — buckets `branding`, `materials`, `trail-covers` (públicos) com policies de upload/leitura.
-3. `**03_seed_config.sql**` — `system_config` (id=1) com `app_name`, `logo_url`, `theme_dark`, `theme_mode`, `environment_themes` exatos do projeto atual + `gamification_levels` (5) + `invite_tokens` ainda ativos (44).
-4. `**04_seed_content.sql**` — conteúdo independente de `auth.users`:
-  - `materials` (50)
-  - `material_assets` (126)
-  - `collections` (7)
-  - `collection_items` (19)
-5. `**05_seed_users.sql**` — `profiles` (38) + `user_roles` (38). ⚠️ Roda **só após** recriar `auth.users` com os mesmos UUIDs.
-6. `**06_seed_progress.sql**` — `user_progress` (328) + `access_logs` (877) + `collection_progress` (0).
-7. `**07_auth_users.***` — migração dos usuários do `auth`:
-  - **Opção A (padrão):** `import_auth_users.ts` via `supabase.auth.admin.createUser`, preservando UUIDs. Senhas atuais não são exportáveis — usuários recebem link de reset.
-  - **Opção B:** comando `pg_dump` + `pg_restore` da tabela `auth.users` preservando `encrypted_password` (login mantido). Requer `SUPABASE_DB_URL` dos dois projetos.
-8. `**README.md**` — ordem de execução, pré-requisitos e checklist.
+## Mudanças no banco (migration)
 
-### Ordem de execução no novo Supabase
+Tabela `public.system_config`:
+- Remover a coluna `theme_light`.
+- Remover a coluna `theme_mode`.
+- Ajustar a coluna `preferences` em `public.profiles`: alterar o default para `'{"language":"pt-br"}'::jsonb` e fazer um `UPDATE` em todas as linhas existentes removendo a chave `theme` do JSON (`preferences = preferences - 'theme'`).
+- Atualizar a função `public.handle_new_user()` para inserir `preferences` sem a chave `theme`.
 
-```text
-1. Criar projeto Supabase novo
-2. SQL Editor → 01_schema.sql
-3. SQL Editor → 02_storage.sql
-4. SQL Editor → 03_seed_config.sql
-5. SQL Editor → 04_seed_content.sql
-6. Recriar auth.users (Opção A ou B)
-7. SQL Editor → 05_seed_users.sql
-8. SQL Editor → 06_seed_progress.sql
-9. Re-upload dos arquivos dos buckets (script opcional)
-10. Re-deploy das 3 Edge Functions (delete-user, generate-trail-cover, translate-title) com secrets
-11. Atualizar VITE_SUPABASE_URL / VITE_SUPABASE_PUBLISHABLE_KEY no frontend
-```
+Views:
+- Recriar `public.system_config_public` removendo `theme_light` e `theme_mode` do `SELECT` (mantém `security_invoker = true`).
 
-### Pontos técnicos
+## Mudanças no frontend
 
-- **UUIDs preservados** em todos os INSERTs para manter integridade referencial (profiles ↔ user_roles ↔ progress ↔ logs).
-- **JSONB** (`title`, `description`, `theme_dark`, `environment_themes`, `preferences`) exportados como JSON literais válidos.
-- **Sem FKs declarados** no schema atual — replicado igual para evitar quebras de ordem de insert.
-- **Storage objects** (binários) não vão no SQL; precisam ser re-uploadados via script separado se confirmado.
-- **Edge Functions** já versionadas em `supabase/functions/` — basta `supabase functions deploy` no novo projeto + recriar secrets (`LOVABLE_API_KEY`, etc.).
+`src/types.ts`
+- Remover a interface `ThemeModeConfig`.
+- Remover o campo `themeMode` de `SystemConfig`.
+- Remover/limpar `preferences.theme` em `UserProfile` (manter só `language`).
 
-### Volume atual a migrar
+`src/lib/themeDefaults.ts`
+- Remover `DEFAULT_THEME_MODE` e o import correspondente.
 
+`src/contexts/BrandContext.tsx`
+- Remover qualquer referência a `themeMode` / `DEFAULT_THEME_MODE` no objeto `defaults` e no carregamento.
 
-| Tabela              | Linhas |
-| ------------------- | ------ |
-| profiles            | 38     |
-| user_roles          | 38     |
-| materials           | 50     |
-| material_assets     | 126    |
-| collections         | 7      |
-| collection_items    | 19     |
-| user_progress       | 328    |
-| collection_progress | 0      |
-| access_logs         | 877    |
-| gamification_levels | 5      |
-| invite_tokens       | 44     |
-| system_config       | 1      |
+`src/contexts/ThemeContext.tsx`
+- Remover o arquivo (não há mais alternância). Remover `ThemeProvider` de `src/App.tsx` e qualquer `useTheme` que ainda exista.
 
+`src/lib/mockDb.ts`
+- Remover leitura/escrita de `theme_mode` e `theme_light` em `getSystemConfig` / `updateSystemConfig`.
+- Tirar `theme: 'dark'` dos mocks e do fallback de `preferences`.
 
-### Perguntas antes de gerar os arquivos
+`src/lib/seed.ts` e `src/contexts/AuthContext.tsx` (`ensureProfile`)
+- Tirar `theme: 'dark'` do payload de `preferences`.
 
-1. **Auth:** Opção A (script Admin API, usuários trocam senha) ou Opção B (pg_dump preservando senhas)? B
-2. **Storage:** quer também o script para copiar os arquivos dos 3 buckets? SIM
-3. Confirma que o frontend continua no Lovable mas apontando para a nova URL/anon key? Não. O frontend rodará em uma VPS, ele será uma stack dentro de um docker swarm. preciso que gere o docker-compose.yml do projeto para criarmos a imagem no docker-hub. segue um modelo de docker-compose.yml:  
-  
+`src/components/hub/SqlSetupModal.tsx`
+- Remover `theme_light` do schema de setup e tirar `"theme": "dark"` do default de `preferences`.
 
-  ```dockercompose
-  version: "3.8"
+`src/components/hub/ThemeEditorPanel.tsx` (se houver toggle/seletor de modo)
+- Remover qualquer UI de "alternar tema" ou "tema padrão". Manter só edição da paleta dark e dos environment themes.
 
-  services:
+`src/pages/Admin.tsx` (aba de configurações)
+- Remover qualquer controle relacionado a modo/tema light.
 
-  ## --------------------------- CONEXÃO HUB --------------------------- ##
+Documentação (`docs/database-schema.md`, `docs/requirements.md`, `docs/tasks.md`, `docs/design.md`, `docs/SPEC.md`, `docs/design-system-dark.md`, `docs/branding-guide.md`)
+- Remover menções a `theme_light`, `theme_mode`, "modo dual", "tema padrão dark", deixando explícito que **só existe dark**.
 
-    app:
-      # No modo Portainer/Swarm, usamos a imagem pré-construída no Docker Hub
-      image: hevertonperes/conexao-hub:latest
-      
-      # container_name e build foram removidos para compatibilidade com Portainer Stacks
-      
-      deploy:
-        replicas: 1
-        restart_policy:
-          condition: on-failure
-        resources:
-          limits:
-            cpus: "1"
-            memory: 1024M
+## Verificação após a build
 
-      networks:
-        - network_conexao
+1. Rodar `rg "theme_light|theme_mode|themeMode|ThemeModeConfig|preferences.*theme|'light'|\"light\""` em `src/` e `supabase/` — deve retornar zero ocorrências (exceto comentários históricos em migrations antigas, que ficam intocadas).
+2. Abrir o preview, confirmar tela de login navy/dourado idêntica ao print.
+3. Abrir Admin → Configurações e confirmar que não há mais qualquer seletor de modo.
 
-      environment:
-        - NODE_ENV=production
-        - TZ=America/Sao_Paulo
-        - VITE_SUPABASE_URL=${VITE_SUPABASE_URL}
-        - VITE_SUPABASE_PUBLISHABLE_KEY=${VITE_SUPABASE_PUBLISHABLE_KEY}
-        - VITE_GEMINI_API_KEY=${VITE_GEMINI_API_KEY}
-        - VITE_OPENAI_API_KEY=${VITE_OPENAI_API_KEY}
+## Itens a confirmar com você antes da implementação
 
-      ## 🌐 Configurações Traefik (Segurança e Redirecionamento)
-      labels:
-        - "traefik.enable=true"
-        # Roteador Seguro (HTTPS)
-        - "traefik.http.routers.conexao_hub.rule=Host(`hub.vpsconexao.org`)"
-        - "traefik.http.routers.conexao_hub.entrypoints=websecure"
-        - "traefik.http.routers.conexao_hub.tls.certresolver=letsencryptresolver"
-        # Redirecionamento Automático (HTTP -> HTTPS)
-        - "traefik.http.routers.conexao_hub_http.rule=Host(`hub.vpsconexao.org`)"
-        - "traefik.http.routers.conexao_hub_http.entrypoints=web"
-        - "traefik.http.routers.conexao_hub_http.middlewares=conexao_redirect"
-        - "traefik.http.middlewares.conexao_redirect.redirectscheme.scheme=https"
-        # Porta interna do container (Nginx/Vite)
-        - "traefik.http.services.conexao_hub.loadbalancer.server.port=80"
-
-  ## --------------------------- INFRA --------------------------- ##
-
-  networks:
-    network_conexao:
-      external: true
-      name: network_conexao
-
-  ```
+1. **Logo / favicon**: o print mostra o favicon globo azul atual (`/favicon.ico`). Você quer que eu **mantenha** esse mesmo arquivo como logo + favicon padrão (não precisa subir nada novo) — confirma?
+2. **Migration destrutiva**: dropar `theme_light` e `theme_mode` apaga dados que existem hoje nessas colunas. Os valores atuais são apenas paletas/legado e não impactam o app. OK prosseguir?
+3. **Reset de `preferences.theme` em perfis existentes**: vou rodar `UPDATE profiles SET preferences = preferences - 'theme'`. OK?
