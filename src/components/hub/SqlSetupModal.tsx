@@ -29,7 +29,7 @@ create table if not exists public.profiles (
   cro text,
   allowed_types text[],
   status text default 'pending' check (status in ('pending', 'active', 'inactive', 'rejected')),
-  preferences jsonb default '{"theme": "dark", "language": "pt-br"}'::jsonb,
+  preferences jsonb default '{"language": "pt-br"}'::jsonb,
   created_at timestamp with time zone default timezone('utc'::text, now()) not null,
   updated_at timestamp with time zone default timezone('utc'::text, now()) not null
 );
@@ -70,7 +70,7 @@ create table if not exists public.system_config (
     app_name text default 'Hub Conexão',
     logo_url text,
     webhook_url text,
-    theme_light jsonb,
+    
     theme_dark jsonb,
     updated_at timestamp with time zone default now()
 );

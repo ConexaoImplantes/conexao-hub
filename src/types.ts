@@ -16,7 +16,6 @@ export interface UserProfile {
   allowedTypes?: MaterialType[];
   points: number;
   preferences: {
-    theme: 'dark';
     language: Language;
   };
   rejectionReason?: string;
@@ -138,11 +137,6 @@ export interface ColorScheme {
   hoverShadow: string;
 }
 
-export interface ThemeModeConfig {
-  mode: 'single';
-  defaultTheme: 'dark';
-}
-
 export interface EnvironmentEffects {
   pageBg: string;
   blob1Color: string;
@@ -168,7 +162,6 @@ export interface SystemConfig {
   logoUrl?: string;
   webhookUrl?: string;
   themeDark: ColorScheme;
-  themeMode: ThemeModeConfig;
   environmentThemes?: EnvironmentThemes;
 }
 

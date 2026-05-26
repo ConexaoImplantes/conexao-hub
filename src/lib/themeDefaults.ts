@@ -1,4 +1,4 @@
-import { ColorScheme, ThemeModeConfig, EnvironmentEffects, EnvironmentThemes } from '../types';
+import { ColorScheme, EnvironmentEffects, EnvironmentThemes } from '../types';
 
 export const DEFAULT_DARK: ColorScheme = {
   background: '#0f172a',
@@ -44,10 +44,6 @@ export const DEFAULT_DARK: ColorScheme = {
   hoverShadow: '#c9a65525',
 };
 
-export const DEFAULT_THEME_MODE: ThemeModeConfig = {
-  mode: 'single',
-  defaultTheme: 'dark',
-};
 
 /** Merge partial/legacy scheme with defaults */
 export function mergeScheme(partial: Partial<ColorScheme> | undefined, defaults: ColorScheme): ColorScheme {

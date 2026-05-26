@@ -54,7 +54,7 @@ export const seedUsers = async () => {
         role: u.role,
         whatsapp: '11999999999',
         status: 'active',
-        preferences: { theme: 'dark', language: 'pt-br' }
+        preferences: { language: 'pt-br' }
       });
 
       if (profileError) {
