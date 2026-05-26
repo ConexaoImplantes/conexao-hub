@@ -377,8 +377,6 @@ export type Database = {
           id: number
           logo_url: string | null
           theme_dark: Json
-          theme_light: Json
-          theme_mode: Json
           updated_at: string
           webhook_url: string | null
         }
@@ -388,8 +386,6 @@ export type Database = {
           id?: number
           logo_url?: string | null
           theme_dark?: Json
-          theme_light?: Json
-          theme_mode?: Json
           updated_at?: string
           webhook_url?: string | null
         }
@@ -399,8 +395,6 @@ export type Database = {
           id?: number
           logo_url?: string | null
           theme_dark?: Json
-          theme_light?: Json
-          theme_mode?: Json
           updated_at?: string
           webhook_url?: string | null
         }
@@ -481,8 +475,6 @@ export type Database = {
           id: number | null
           logo_url: string | null
           theme_dark: Json | null
-          theme_light: Json | null
-          theme_mode: Json | null
           updated_at: string | null
         }
         Insert: {
@@ -491,8 +483,6 @@ export type Database = {
           id?: number | null
           logo_url?: string | null
           theme_dark?: Json | null
-          theme_light?: Json | null
-          theme_mode?: Json | null
           updated_at?: string | null
         }
         Update: {
@@ -501,8 +491,6 @@ export type Database = {
           id?: number | null
           logo_url?: string | null
           theme_dark?: Json | null
-          theme_light?: Json | null
-          theme_mode?: Json | null
           updated_at?: string | null
         }
         Relationships: []
