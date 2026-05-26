@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { SystemConfig, ColorScheme, EnvironmentKey, EnvironmentEffects } from '../types';
 import { mockDb } from '../lib/mockDb';
-import { DEFAULT_DARK, DEFAULT_THEME_MODE, DEFAULT_ENVIRONMENT_THEMES } from '../lib/themeDefaults';
+import { DEFAULT_DARK, DEFAULT_ENVIRONMENT_THEMES } from '../lib/themeDefaults';
 
 interface BrandContextType {
   config: SystemConfig;
@@ -16,7 +16,6 @@ const BrandContext = createContext<BrandContextType | undefined>(undefined);
 const defaults: SystemConfig = {
   appName: 'Hub Conexão',
   themeDark: DEFAULT_DARK,
-  themeMode: DEFAULT_THEME_MODE,
   environmentThemes: DEFAULT_ENVIRONMENT_THEMES,
 };
 
