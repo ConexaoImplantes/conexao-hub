@@ -164,9 +164,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (authData.user) {
             await ensureProfile(authData.user.id, data);
 
-            // Mark invite token as used
-            if (data.inviteTokenId) {
-              await mockDb.markInviteTokenUsed(data.inviteTokenId, authData.user.id);
+            // Mark invite token as used (requires token value to prevent unauthorized claims)
+            if (data.inviteTokenId && data.inviteToken) {
+              await mockDb.markInviteTokenUsed(data.inviteTokenId, authData.user.id, data.inviteToken);
             }
         }
 

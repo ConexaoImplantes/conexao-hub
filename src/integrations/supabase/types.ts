@@ -497,6 +497,10 @@ export type Database = {
       }
     }
     Functions: {
+      consume_invite_token: {
+        Args: { _token: string; _user_id: string }
+        Returns: boolean
+      }
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]

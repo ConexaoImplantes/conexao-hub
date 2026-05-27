@@ -598,11 +598,15 @@ export const mockDb = {
     return { id: row.id, token, role: row.role, expiresAt: row.expires_at };
   },
 
-  markInviteTokenUsed: async (tokenId: string, userId: string) => {
-    const { error } = await supabase
-      .from('invite_tokens')
-      .update({ used_by: userId, used_at: new Date().toISOString(), status: 'used' } as any)
-      .eq('id', tokenId);
+  markInviteTokenUsed: async (tokenId: string, userId: string, tokenValue?: string) => {
+    if (!tokenValue) {
+      console.error('Token value required to consume invite');
+      return;
+    }
+    const { error } = await (supabase as any).rpc('consume_invite_token', {
+      _token: tokenValue,
+      _user_id: userId,
+    });
     if (error) console.error('Error marking token as used:', error);
   },
 
