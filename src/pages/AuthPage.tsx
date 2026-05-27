@@ -66,25 +66,52 @@ export const AuthPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setEmailError(null);
+    setPasswordError(null);
+    setLoginSuccess(false);
 
     if (!isLogin) {
     }
 
+    setIsSubmitting(true);
+
     try {
       if (isLogin) {
         await login(email, password);
+        setLoginSuccess(true);
+        toast.success("Login realizado com sucesso!", {
+          description: "Bem-vindo de volta.",
+          icon: <CheckCircle2 size={18} />,
+        });
       } else {
         await register({ name, email, password, whatsapp, role, cro, inviteTokenId: inviteToken?.id, inviteToken: inviteToken?.token });
       }
     } catch (err: any) {
-      let msg = err.message || 'Erro inesperado';
-      if (msg === 'Invalid login credentials') msg = 'Email ou senha incorretos.';
-      if (msg.includes('already registered')) msg = 'Este e-mail já está cadastrado.';
-      if (msg === 'MISSING_DB_SETUP' || msg.includes('relation "public.profiles" does not exist')) {
-        msg = 'Tabelas do banco de dados não encontradas.';
+      const rawMsg = err.message || 'Erro inesperado';
+
+      if (rawMsg === 'Invalid login credentials') {
+        const { data: existingProfiles, error: lookupError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .limit(1);
+
+        if (lookupError || !existingProfiles || existingProfiles.length === 0) {
+          setEmailError('Usuário não cadastrado');
+        } else {
+          setPasswordError('Senha inválida');
+        }
+      } else if (rawMsg.includes('already registered')) {
+        setEmailError('Este e-mail já está cadastrado.');
+      } else if (rawMsg === 'MISSING_DB_SETUP' || rawMsg.includes('relation "public.profiles" does not exist')) {
+        const msg = 'Tabelas do banco de dados não encontradas.';
         setShowSqlSetup(true);
+        setError(msg);
+      } else {
+        setError(rawMsg === 'Invalid login credentials' ? 'Email ou senha incorretos.' : rawMsg);
       }
-      setError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
