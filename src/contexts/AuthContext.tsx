@@ -24,9 +24,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isDbMissing, setIsDbMissing] = useState(false);
 
   useEffect(() => {
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
-        await fetchProfile(session.user.id);
+        // Defer Supabase calls to avoid deadlock inside the auth callback
+        setTimeout(() => {
+          fetchProfile(session.user.id);
+        }, 0);
       } else {
         setUser(prev => (prev && prev.id.startsWith('mock-') ? prev : null));
         setIsLoading(false);
