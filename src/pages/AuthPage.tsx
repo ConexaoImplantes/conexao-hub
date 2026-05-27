@@ -69,7 +69,7 @@ export const AuthPage: React.FC = () => {
       if (isLogin) {
         await login(email, password);
       } else {
-        await register({ name, email, password, whatsapp, role, cro, inviteTokenId: inviteToken?.id });
+        await register({ name, email, password, whatsapp, role, cro, inviteTokenId: inviteToken?.id, inviteToken: inviteToken?.token });
       }
     } catch (err: any) {
       let msg = err.message || 'Erro inesperado';
