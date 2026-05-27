@@ -261,15 +261,22 @@ export const AuthPage: React.FC = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full p-4 pr-12 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10"
+                className={`w-full p-4 pr-24 rounded-xl border outline-none transition-all shadow-inner hover:bg-white/10 ${passwordError ? 'border-red-500/50 bg-red-500/5 focus:ring-red-500/30 focus:border-red-500' : loginSuccess ? 'border-emerald-500/50 bg-emerald-500/5 focus:ring-emerald-500/30 focus:border-emerald-500' : 'border-white/10 bg-white/5 focus:ring-2'}`}
                 style={{ color: 'var(--color-text-main)' }}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} />
-
+                onChange={(e) => { setPassword(e.target.value); setPasswordError(null); }}
+              />
+              <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                {passwordError && <XCircle size={20} className="text-red-500" />}
+                {loginSuccess && <CheckCircle2 size={20} className="text-emerald-500" />}
+              </div>
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none transition-colors" style={{ color: 'var(--color-text-muted)' }} tabIndex={-1}>
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            {passwordError && (
+              <p className="mt-1.5 pl-1 text-xs font-semibold text-red-400 animate-fade-in">{passwordError}</p>
+            )}
           </div>
 
           {!isLogin &&
