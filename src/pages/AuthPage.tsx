@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Sparkles, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react';
+import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Sparkles, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
 import { mockDb } from '../lib/mockDb';
+import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
 import { colorMix } from '../lib/utils';
 export const AuthPage: React.FC = () => {
@@ -22,6 +23,10 @@ export const AuthPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [emailError, setEmailError] = useState<string | null>(null);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [loginSuccess, setLoginSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   
   const [name, setName] = useState('');
   const [whatsapp, setWhatsapp] = useState('');
@@ -61,25 +66,52 @@ export const AuthPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setEmailError(null);
+    setPasswordError(null);
+    setLoginSuccess(false);
 
     if (!isLogin) {
     }
 
+    setIsSubmitting(true);
+
     try {
       if (isLogin) {
         await login(email, password);
+        setLoginSuccess(true);
+        toast.success("Login realizado com sucesso!", {
+          description: "Bem-vindo de volta.",
+          icon: <CheckCircle2 size={18} />,
+        });
       } else {
         await register({ name, email, password, whatsapp, role, cro, inviteTokenId: inviteToken?.id, inviteToken: inviteToken?.token });
       }
     } catch (err: any) {
-      let msg = err.message || 'Erro inesperado';
-      if (msg === 'Invalid login credentials') msg = 'Email ou senha incorretos.';
-      if (msg.includes('already registered')) msg = 'Este e-mail já está cadastrado.';
-      if (msg === 'MISSING_DB_SETUP' || msg.includes('relation "public.profiles" does not exist')) {
-        msg = 'Tabelas do banco de dados não encontradas.';
+      const rawMsg = err.message || 'Erro inesperado';
+
+      if (rawMsg === 'Invalid login credentials') {
+        const { data: existingProfiles, error: lookupError } = await supabase
+          .from('profiles')
+          .select('id')
+          .eq('email', email)
+          .limit(1);
+
+        if (lookupError || !existingProfiles || existingProfiles.length === 0) {
+          setEmailError('Usuário não cadastrado');
+        } else {
+          setPasswordError('Senha inválida');
+        }
+      } else if (rawMsg.includes('already registered')) {
+        setEmailError('Este e-mail já está cadastrado.');
+      } else if (rawMsg === 'MISSING_DB_SETUP' || rawMsg.includes('relation "public.profiles" does not exist')) {
+        const msg = 'Tabelas do banco de dados não encontradas.';
         setShowSqlSetup(true);
+        setError(msg);
+      } else {
+        setError(rawMsg === 'Invalid login credentials' ? 'Email ou senha incorretos.' : rawMsg);
       }
-      setError(msg);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -204,7 +236,23 @@ export const AuthPage: React.FC = () => {
 
           <div className="group">
             <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Email</label>
-            <input type="email" required className="w-full p-4 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
+            <div className="relative">
+              <input
+                type="email"
+                required
+                className={`w-full p-4 pr-12 rounded-xl border outline-none transition-all shadow-inner hover:bg-white/10 ${emailError ? 'border-red-500/50 bg-red-500/5 focus:ring-red-500/30 focus:border-red-500' : loginSuccess ? 'border-emerald-500/50 bg-emerald-500/5 focus:ring-emerald-500/30 focus:border-emerald-500' : 'border-white/10 bg-white/5 focus:ring-2'}`}
+                style={{ color: 'var(--color-text-main)' }}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError(null); }}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-all">
+                {emailError && <XCircle size={20} className="text-red-500" />}
+                {loginSuccess && <CheckCircle2 size={20} className="text-emerald-500" />}
+              </div>
+            </div>
+            {emailError && (
+              <p className="mt-1.5 pl-1 text-xs font-semibold text-red-400 animate-fade-in">{emailError}</p>
+            )}
           </div>
 
           <div className="group">
@@ -213,15 +261,22 @@ export const AuthPage: React.FC = () => {
               <input
                 type={showPassword ? "text" : "password"}
                 required
-                className="w-full p-4 pr-12 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10"
+                className={`w-full p-4 pr-24 rounded-xl border outline-none transition-all shadow-inner hover:bg-white/10 ${passwordError ? 'border-red-500/50 bg-red-500/5 focus:ring-red-500/30 focus:border-red-500' : loginSuccess ? 'border-emerald-500/50 bg-emerald-500/5 focus:ring-emerald-500/30 focus:border-emerald-500' : 'border-white/10 bg-white/5 focus:ring-2'}`}
                 style={{ color: 'var(--color-text-main)' }}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)} />
-
+                onChange={(e) => { setPassword(e.target.value); setPasswordError(null); }}
+              />
+              <div className="absolute right-12 top-1/2 -translate-y-1/2 flex items-center gap-2 pointer-events-none">
+                {passwordError && <XCircle size={20} className="text-red-500" />}
+                {loginSuccess && <CheckCircle2 size={20} className="text-emerald-500" />}
+              </div>
               <button type="button" onClick={() => setShowPassword(!showPassword)} className="absolute right-4 top-1/2 -translate-y-1/2 focus:outline-none transition-colors" style={{ color: 'var(--color-text-muted)' }} tabIndex={-1}>
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            {passwordError && (
+              <p className="mt-1.5 pl-1 text-xs font-semibold text-red-400 animate-fade-in">{passwordError}</p>
+            )}
           </div>
 
           {!isLogin &&
@@ -255,12 +310,28 @@ export const AuthPage: React.FC = () => {
             </>
           }
 
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: `0 10px 25px -5px ${colorMix('var(--color-gradient-start)', 30, 'rgba(201,166,85,0.3)')}` }}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 active:scale-95 ${isSubmitting ? 'opacity-80 cursor-wait' : 'hover:scale-[1.02]'}`}
+            style={{ background: loginSuccess
+              ? 'linear-gradient(135deg, #059669 0%, #10b981 40%, #34d399 70%, #059669 100%)'
+              : `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`,
+              boxShadow: loginSuccess
+                ? '0 10px 25px -5px rgba(16,185,129,0.4)'
+                : `0 10px 25px -5px ${colorMix('var(--color-gradient-start)', 30, 'rgba(201,166,85,0.3)')}`
+            }}
+          >
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2 text-zinc-900">
-                {!isLogin && invitedRole && <UserPlus size={20} />}
-                {isLogin ? 'Entrar na Plataforma' : 'Confirmar Cadastro'}
-                <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                {isSubmitting && <Loader2 size={20} className="animate-spin" />}
+                {loginSuccess && <CheckCircle2 size={20} />}
+                {!isLogin && invitedRole && !isSubmitting && !loginSuccess && <UserPlus size={20} />}
+                {isLogin
+                  ? (isSubmitting ? 'Verificando...' : loginSuccess ? 'Acesso liberado!' : 'Entrar na Plataforma')
+                  : (isSubmitting ? 'Cadastrando...' : 'Confirmar Cadastro')
+                }
+                {!isSubmitting && !loginSuccess && <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />}
              </span>
           </button>
         </form>
