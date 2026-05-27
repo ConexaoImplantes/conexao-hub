@@ -236,7 +236,23 @@ export const AuthPage: React.FC = () => {
 
           <div className="group">
             <label className="block text-xs font-bold uppercase tracking-wider mb-1.5 pl-1" style={{ color: 'var(--color-text-muted)' }}>Email</label>
-            <input type="email" required className="w-full p-4 rounded-xl border border-white/10 bg-white/5 focus:ring-2 outline-none transition-all shadow-inner hover:bg-white/10" style={{ color: 'var(--color-text-main)' }} value={email} onChange={(e) => setEmail(e.target.value)} />
+            <div className="relative">
+              <input
+                type="email"
+                required
+                className={`w-full p-4 pr-12 rounded-xl border outline-none transition-all shadow-inner hover:bg-white/10 ${emailError ? 'border-red-500/50 bg-red-500/5 focus:ring-red-500/30 focus:border-red-500' : loginSuccess ? 'border-emerald-500/50 bg-emerald-500/5 focus:ring-emerald-500/30 focus:border-emerald-500' : 'border-white/10 bg-white/5 focus:ring-2'}`}
+                style={{ color: 'var(--color-text-main)' }}
+                value={email}
+                onChange={(e) => { setEmail(e.target.value); setEmailError(null); }}
+              />
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none transition-all">
+                {emailError && <XCircle size={20} className="text-red-500" />}
+                {loginSuccess && <CheckCircle2 size={20} className="text-emerald-500" />}
+              </div>
+            </div>
+            {emailError && (
+              <p className="mt-1.5 pl-1 text-xs font-semibold text-red-400 animate-fade-in">{emailError}</p>
+            )}
           </div>
 
           <div className="group">
