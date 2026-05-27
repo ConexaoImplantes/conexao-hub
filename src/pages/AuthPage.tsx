@@ -310,12 +310,28 @@ export const AuthPage: React.FC = () => {
             </>
           }
 
-          <button type="submit" className="w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 hover:scale-[1.02] active:scale-95" style={{ background: `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`, boxShadow: `0 10px 25px -5px ${colorMix('var(--color-gradient-start)', 30, 'rgba(201,166,85,0.3)')}` }}>
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className={`w-full relative overflow-hidden text-white font-bold py-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-2 group/btn mt-6 active:scale-95 ${isSubmitting ? 'opacity-80 cursor-wait' : 'hover:scale-[1.02]'}`}
+            style={{ background: loginSuccess
+              ? 'linear-gradient(135deg, #059669 0%, #10b981 40%, #34d399 70%, #059669 100%)'
+              : `linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-mid) 40%, var(--color-gradient-end) 70%, var(--color-gradient-start) 100%)`,
+              boxShadow: loginSuccess
+                ? '0 10px 25px -5px rgba(16,185,129,0.4)'
+                : `0 10px 25px -5px ${colorMix('var(--color-gradient-start)', 30, 'rgba(201,166,85,0.3)')}`
+            }}
+          >
              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out rounded-xl"></div>
              <span className="relative z-10 flex items-center gap-2 text-zinc-900">
-                {!isLogin && invitedRole && <UserPlus size={20} />}
-                {isLogin ? 'Entrar na Plataforma' : 'Confirmar Cadastro'}
-                <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />
+                {isSubmitting && <Loader2 size={20} className="animate-spin" />}
+                {loginSuccess && <CheckCircle2 size={20} />}
+                {!isLogin && invitedRole && !isSubmitting && !loginSuccess && <UserPlus size={20} />}
+                {isLogin
+                  ? (isSubmitting ? 'Verificando...' : loginSuccess ? 'Acesso liberado!' : 'Entrar na Plataforma')
+                  : (isSubmitting ? 'Cadastrando...' : 'Confirmar Cadastro')
+                }
+                {!isSubmitting && !loginSuccess && <ChevronRight size={18} className="group-hover/btn:translate-x-1 transition-transform" />}
              </span>
           </button>
         </form>
