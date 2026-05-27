@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBrand } from '../contexts/BrandContext';
-import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Sparkles, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2 } from 'lucide-react';
+import { UserPlus, ArrowLeft, Eye, EyeOff, Shield, Sparkles, Briefcase, User, Database, AlertTriangle, ChevronRight, Loader2, CheckCircle2, XCircle } from 'lucide-react';
 import { Role } from '../types';
 import { SqlSetupModal } from '../components/hub/SqlSetupModal';
 import { mockDb } from '../lib/mockDb';
+import { supabase } from '../lib/supabaseClient';
 import { toast } from 'sonner';
 import { colorMix } from '../lib/utils';
 export const AuthPage: React.FC = () => {
