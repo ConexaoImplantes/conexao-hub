@@ -157,12 +157,25 @@ export type EnvironmentKey = 'auth' | 'client' | 'manager' | 'admin' | 'global';
 
 export type EnvironmentThemes = Record<EnvironmentKey, EnvironmentEffects>;
 
+export type MaintenanceEnvironmentId = 'admin' | 'manager' | 'client';
+
+export interface MaintenanceState {
+  enabled: boolean;
+  /** ISO date-time string for the expected return of the environment. */
+  expectedReturn?: string;
+  /** Optional custom message shown to affected users. */
+  message?: string;
+}
+
+export type EnvironmentMaintenance = Partial<Record<MaintenanceEnvironmentId, MaintenanceState>>;
+
 export interface SystemConfig {
   appName: string;
   logoUrl?: string;
   webhookUrl?: string;
   themeDark: ColorScheme;
   environmentThemes?: EnvironmentThemes;
+  environmentMaintenance?: EnvironmentMaintenance;
 }
 
 // Gamification

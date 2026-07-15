@@ -75,7 +75,8 @@ import {
   Play,
   Power,
   ShieldCheck,
-  FileClock } from
+  FileClock,
+  Wrench } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
@@ -89,6 +90,7 @@ import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
 import { PermissionsPanel } from "../components/hub/PermissionsPanel";
 import { AuditLogPanel } from "../components/hub/AuditLogPanel";
+import { MaintenancePanel } from "../components/hub/MaintenancePanel";
 import { Can } from "../components/hub/Can";
 import {
   AreaChart,
@@ -229,7 +231,7 @@ export const Admin: React.FC = () => {
   };
 
 
-  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit";
+  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit" | "maintenance";
   const [activeTab, setActiveTab] = useState<TabId>("materials");
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
     "identity"
@@ -257,17 +259,18 @@ export const Admin: React.FC = () => {
     audit:       isSuperAdmin || has('audit.view'),
     settings:    isSuperAdmin || anySettingsSubtabVisible,
     permissions: isSuperAdmin,
+    maintenance: isSuperAdmin,
   };
 
   // Auto-fallback: if the currently active tab is not visible, jump to first visible one.
   useEffect(() => {
     if (!tabVisibility[activeTab]) {
-      const order: TabId[] = ["materials", "collections", "users", "analytics", "audit", "settings", "permissions"];
+      const order: TabId[] = ["materials", "collections", "users", "analytics", "audit", "settings", "permissions", "maintenance"];
       const next = order.find((t) => tabVisibility[t]);
       if (next) setActiveTab(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.settings, tabVisibility.permissions, activeTab]);
+  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.settings, tabVisibility.permissions, tabVisibility.maintenance, activeTab]);
 
   useEffect(() => {
     if (activeTab === "settings" && !settingsSubtabVisibility[settingsTab]) {
@@ -824,12 +827,14 @@ export const Admin: React.FC = () => {
           {tabVisibility.analytics && renderTabButton("analytics", t("tab.analytics"), BarChart2)}
           {tabVisibility.permissions && renderTabButton("permissions", "Permissões", ShieldCheck)}
           {tabVisibility.audit && renderTabButton("audit", "Auditoria", FileClock)}
+          {tabVisibility.maintenance && renderTabButton("maintenance", "Manutenção", Wrench)}
           {tabVisibility.settings && renderTabButton("settings", t("tab.settings"), Settings)}
         </div>
       </div>
 
       {activeTab === "permissions" && tabVisibility.permissions && <PermissionsPanel />}
       {activeTab === "audit" && tabVisibility.audit && <AuditLogPanel />}
+      {activeTab === "maintenance" && tabVisibility.maintenance && <MaintenancePanel />}
 
 
 

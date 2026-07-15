@@ -101,6 +101,7 @@ export const mockDb = {
       environmentThemes: (data as any).environment_themes && Object.keys((data as any).environment_themes).length > 0
         ? { ...DEFAULT_ENVIRONMENT_THEMES, ...(data as any).environment_themes }
         : DEFAULT_ENVIRONMENT_THEMES,
+      environmentMaintenance: ((data as any).environment_maintenance ?? {}) as any,
     };
   },
 
@@ -113,6 +114,7 @@ export const mockDb = {
         webhook_url: config.webhookUrl,
         theme_dark: config.themeDark as any,
         environment_themes: config.environmentThemes as any,
+        environment_maintenance: (config.environmentMaintenance ?? {}) as any,
         updated_at: new Date().toISOString()
       } as any)
       .eq('id', 1);
