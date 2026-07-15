@@ -15,6 +15,8 @@ import {
 import { colorMix } from "../lib/utils";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useBrand } from "../contexts/BrandContext";
+import { useAuth } from "../contexts/AuthContext";
+import { logAudit, type AuditAction } from "../lib/audit";
 import {
   Plus,
   Trash2,
