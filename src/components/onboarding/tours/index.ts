@@ -10,6 +10,15 @@ export interface TourStep {
   placement?: Placement;
   /** Optional callback executed when the step is shown (e.g. switch tabs). */
   onEnter?: () => void;
+  /**
+   * When true, the tour hides the Next button and waits for the user to interact
+   * with the highlighted element before advancing to the next step.
+   * `advanceEvent` picks which DOM event on the target advances the tour.
+   */
+  interactive?: boolean;
+  advanceEvent?: 'click' | 'change' | 'input';
+  /** Optional label overriding the default "Clique para continuar" hint. */
+  interactiveHint?: string;
 }
 
 export interface EnvironmentTour {
