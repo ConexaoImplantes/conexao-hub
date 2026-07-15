@@ -820,7 +820,7 @@ export const Admin: React.FC = () => {
               : "Acesso restrito às funções autorizadas pelo administrador."}
           </p>
         </div>
-        <div className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: "var(--color-bg)" }}>
+        <div data-tour="admin-tabs" className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: "var(--color-bg)" }}>
           {tabVisibility.materials && renderTabButton("materials", t("tab.materials"), ImageIcon)}
           {tabVisibility.users && renderTabButton("users", t("tab.users"), Users)}
           {tabVisibility.collections && renderTabButton("collections", "Trilhas", BookOpen)}
