@@ -48,13 +48,25 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
   const displayTitle = material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || t('untitled');
   const languages: Language[] = ['pt-br', 'en-us', 'es-es'];
 
+  const handleOpen = () => {
+    if (material.assets[language]) {
+      onView(material, language);
+      return;
+    }
+    // fallback to any available language
+    const fallback = (['pt-br', 'en-us', 'es-es'] as Language[]).find(l => !!material.assets[l]);
+    if (fallback) onView(material, fallback);
+  };
+
   return (
-    <div
-      className="group relative backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 h-full flex flex-col"
+    <button
+      type="button"
+      onClick={handleOpen}
+      className="group relative backdrop-blur-md rounded-2xl overflow-hidden transition-all duration-500 hover:-translate-y-2 h-full flex flex-col text-left w-full cursor-pointer"
       style={{
         backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)'),
         border: `1px solid ${colorMix('var(--color-border)', 20, 'rgba(255,255,255,0.08)')}`,
-        minHeight: '320px',
+        minHeight: '260px',
       }}
       onMouseEnter={(e) => {
         e.currentTarget.style.boxShadow = `0 8px 30px var(--color-hover-shadow)`;
@@ -87,66 +99,45 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
           {displayTitle}
         </h3>
 
-        {/* Fixed-height metadata zone */}
         <div className="min-h-[3.5rem] mb-1">
+          {progress && (
+            <div className="mb-2">
+              {progress.status === 'completed' ? (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
+                  <CheckCircle size={10} /> {t('progress.completed')}
+                </span>
+              ) : (
+                <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
+                  <PlayCircle size={10} /> {t('progress.in.progress')}
+                </span>
+              )}
+            </div>
+          )}
 
-        {progress && (
-          <div className="mb-2">
-            {progress.status === 'completed' ? (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
-                <CheckCircle size={10} /> {t('progress.completed')}
-              </span>
-            ) : (
-              <span className="inline-flex items-center gap-1 text-[10px] font-bold px-2 py-0.5 rounded-full" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
-                <PlayCircle size={10} /> {t('progress.in.progress')}
-              </span>
-            )}
-          </div>
-        )}
+          {material.tags.length > 0 && (
+            <div className="flex flex-wrap gap-1 mb-2">
+              {material.tags.slice(0, 3).map(tag => (
+                <span key={tag} className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: colorMix('var(--color-accent)', 8, 'rgba(201,166,85,0.08)'), color: 'var(--color-text-muted)' }}>
+                  <Tag size={8} /> {tag}
+                </span>
+              ))}
+            </div>
+          )}
 
-        {material.tags.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-2">
-            {material.tags.slice(0, 3).map(tag => (
-              <span key={tag} className="inline-flex items-center gap-0.5 text-[9px] font-bold px-1.5 py-0.5 rounded-full" style={{ backgroundColor: colorMix('var(--color-accent)', 8, 'rgba(201,166,85,0.08)'), color: 'var(--color-text-muted)' }}>
-                <Tag size={8} /> {tag}
-              </span>
-            ))}
-          </div>
-        )}
-
-        {material.points > 0 && (
-          <div className="flex items-center gap-1 text-[10px] font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
-            <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} /> {material.points} XP
-          </div>
-        )}
+          {material.points > 0 && (
+            <div className="flex items-center gap-1 text-[10px] font-bold mb-2" style={{ color: 'var(--color-text-muted)' }}>
+              <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} /> {material.points} XP
+            </div>
+          )}
         </div>
 
-        <div className="mt-auto pt-4 transition-colors" style={{ borderTop: `1px solid ${colorMix('var(--color-border)', 15, 'rgba(255,255,255,0.06)')}` }}>
-          <div className="flex items-center justify-between mb-3">
-             <p className="text-[10px] uppercase tracking-wider font-bold opacity-70" style={{ color: 'var(--color-text-muted)' }}>{t('versions')}</p>
-             <div className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500" style={{ color: 'var(--color-accent)' }}>
-                <ChevronRight size={16} />
-             </div>
-          </div>
-
-          <div data-tour="material-languages" className="flex flex-wrap gap-2">
-            {languages.map(lang => {
-              const hasAsset = !!material.assets[lang];
-              return (
-                <button key={lang} onClick={(e) => { e.stopPropagation(); if (hasAsset) onView(material, lang); }} disabled={!hasAsset}
-                  className={`relative overflow-hidden px-3 py-1.5 text-xs rounded-lg transition-all duration-300 flex items-center gap-1.5 font-bold group/btn ${hasAsset ? 'border border-transparent hover:border-[var(--color-accent)]/30 hover:shadow-lg' : 'opacity-30 cursor-not-allowed border border-transparent'}`}
-                  style={{ backgroundColor: hasAsset ? 'var(--color-bg)' : colorMix('var(--color-bg)', 30, 'rgba(15,23,42,0.3)'), color: hasAsset ? 'var(--color-text-main)' : 'var(--color-text-muted)' }}>
-                  {hasAsset && <div className="absolute inset-0 translate-y-full group-hover/btn:translate-y-0 transition-transform duration-300 ease-out z-0" style={{ backgroundColor: 'var(--color-accent)' }}></div>}
-                  <span className="relative z-10 flex items-center gap-1 group-hover/btn:text-white">
-                      {lang.toUpperCase().split('-')[0]}
-                      {hasAsset ? <Eye size={10} /> : <Lock size={10} />}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
+        <div className="mt-auto pt-4 flex items-center justify-end transition-colors" style={{ borderTop: `1px solid ${colorMix('var(--color-border)', 15, 'rgba(255,255,255,0.06)')}` }}>
+          <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider transition-transform duration-500 group-hover:translate-x-1" style={{ color: 'var(--color-accent)' }}>
+            {t('view')}
+            <ChevronRight size={16} />
+          </span>
         </div>
       </div>
-    </div>
+    </button>
   );
 };
