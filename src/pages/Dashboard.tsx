@@ -490,7 +490,7 @@ export const Dashboard: React.FC = () => {
             </div>
             {isLoading ? (
               <SkeletonCardGrid count={6} />
-            ) : collections.length === 0 ? (
+            ) : visibleCollections.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                 <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
@@ -498,12 +498,12 @@ export const Dashboard: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
-                {collections.map((col, i) => (
+                {visibleCollections.map((col, i) => (
                   <div key={col.id} className="animate-slide-up" style={{ animationDelay: `${i * 70}ms` }}>
                     <CollectionCard
                       collection={col}
                       userProgress={userProgress}
-                      materialIds={collectionItemMap[col.id] || []}
+                      materialIds={langCollectionItemMap[col.id] || []}
                       onClick={(c) => { setSelectedCollection(c); setActiveView('collection-detail'); }}
                     />
                   </div>
