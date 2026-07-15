@@ -125,8 +125,9 @@ export const Dashboard: React.FC = () => {
 
   const counts = useMemo(() => {
     const base = materials.filter(mat => {
-      if (!mat.allowedRoles.includes(user?.role as any)) return false;
+      if (!hasFullAccess && !mat.allowedRoles.includes(user?.role as any)) return false;
       if (user?.allowedTypes && user.allowedTypes.length > 0 && !user.allowedTypes.includes(mat.type)) return false;
+
       return true;
     });
     return {
