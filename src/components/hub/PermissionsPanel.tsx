@@ -56,7 +56,7 @@ const MODULE_LABELS: Record<string, string> = {
   analytics: 'Relatórios / Analytics',
 };
 
-export const PermissionsPanel: React.FC = () => {
+const RolePermissionsPanel: React.FC = () => {
   const { user } = useAuth();
   const { loadCatalog, loadMatrix, saveRolePermissions } = usePermissions();
   const [catalog, setCatalog] = useState<PermissionCatalogItem[]>([]);
