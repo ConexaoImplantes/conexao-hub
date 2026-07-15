@@ -1,62 +1,105 @@
-
 ## Objetivo
 
-Eliminar **toda** noção de "tema light" / "modo light" / "alternância de tema" da plataforma. O app passa a operar exclusivamente em dark mode, com o design system mostrado na imagem (navy `#0f172a` + dourado `#c9a655` + favicon globo "C" atual) como único padrão — sem coluna legada, sem campo `themeMode`, sem `preferences.theme`.
+Substituir o controle de acesso baseado apenas em role fixa por um sistema granular onde o **Super Admin define, por role, exatamente quais telas cada usuário vê e quais ações pode executar** (criar, editar, excluir, ativar/desativar, compartilhar, etc.), em todos os módulos da plataforma.
 
-## Mudanças no banco (migration)
+Regras invioláveis:
 
-Tabela `public.system_config`:
-- Remover a coluna `theme_light`.
-- Remover a coluna `theme_mode`.
-- Ajustar a coluna `preferences` em `public.profiles`: alterar o default para `'{"language":"pt-br"}'::jsonb` e fazer um `UPDATE` em todas as linhas existentes removendo a chave `theme` do JSON (`preferences = preferences - 'theme'`).
-- Atualizar a função `public.handle_new_user()` para inserir `preferences` sem a chave `theme`.
+- **Super Admin** sempre tem todas as permissões (não editável).
+- **Exclusão (delete) de qualquer entidade** é permissão exclusiva do Super Admin — não aparece na matriz.
+- Permissionamento é **por role** (sem overrides por usuário, conforme decidido).
 
-Views:
-- Recriar `public.system_config_public` removendo `theme_light` e `theme_mode` do `SELECT` (mantém `security_invoker = true`).
+---
 
-## Mudanças no frontend
+## Catálogo de permissões
 
-`src/types.ts`
-- Remover a interface `ThemeModeConfig`.
-- Remover o campo `themeMode` de `SystemConfig`.
-- Remover/limpar `preferences.theme` em `UserProfile` (manter só `language`).
+Permissões nomeadas no formato `modulo.acao`. Escopo inicial:
 
-`src/lib/themeDefaults.ts`
-- Remover `DEFAULT_THEME_MODE` e o import correspondente.
+**Materiais** — `materials.view`, `materials.create`, `materials.edit`, `materials.toggle_active`, `materials.manage_assets` (idiomas), `materials.reorder`
 
-`src/contexts/BrandContext.tsx`
-- Remover qualquer referência a `themeMode` / `DEFAULT_THEME_MODE` no objeto `defaults` e no carregamento.
+**Trilhas / Coleções** — `collections.view`, `collections.create`, `collections.edit`, `collections.toggle_active`, `collections.manage_items`, `collections.reorder`
 
-`src/contexts/ThemeContext.tsx`
-- Remover o arquivo (não há mais alternância). Remover `ThemeProvider` de `src/App.tsx` e qualquer `useTheme` que ainda exista.
+**Usuários & Acessos** — `users.view`, `users.create`, `users.edit`, `users.toggle_active`, `users.change_role`, `users.approve_pending`
 
-`src/lib/mockDb.ts`
-- Remover leitura/escrita de `theme_mode` e `theme_light` em `getSystemConfig` / `updateSystemConfig`.
-- Tirar `theme: 'dark'` dos mocks e do fallback de `preferences`.
+**Credenciais / Convites** — `invites.view`, `invites.create`, `invites.generate_link`, `invites.toggle_active`, `invites.resend`
 
-`src/lib/seed.ts` e `src/contexts/AuthContext.tsx` (`ensureProfile`)
-- Tirar `theme: 'dark'` do payload de `preferences`.
+**Gamificação** — `gamification.view`, `gamification.edit_levels`, `gamification.edit_xp`
 
-`src/components/hub/SqlSetupModal.tsx`
-- Remover `theme_light` do schema de setup e tirar `"theme": "dark"` do default de `preferences`.
+**Configurações do Sistema** — `settings.view`, `settings.edit_branding`, `settings.edit_theme`, `settings.edit_environment`
 
-`src/components/hub/ThemeEditorPanel.tsx` (se houver toggle/seletor de modo)
-- Remover qualquer UI de "alternar tema" ou "tema padrão". Manter só edição da paleta dark e dos environment themes.
+**Relatórios / Analytics** — `analytics.view_all`, `analytics.export`
 
-`src/pages/Admin.tsx` (aba de configurações)
-- Remover qualquer controle relacionado a modo/tema light.
+**Nota:** Toda ação de `delete` fica hardcoded como `super_admin only`.
 
-Documentação (`docs/database-schema.md`, `docs/requirements.md`, `docs/tasks.md`, `docs/design.md`, `docs/SPEC.md`, `docs/design-system-dark.md`, `docs/branding-guide.md`)
-- Remover menções a `theme_light`, `theme_mode`, "modo dual", "tema padrão dark", deixando explícito que **só existe dark**.
+---
 
-## Verificação após a build
+## Alterações no backend
 
-1. Rodar `rg "theme_light|theme_mode|themeMode|ThemeModeConfig|preferences.*theme|'light'|\"light\""` em `src/` e `supabase/` — deve retornar zero ocorrências (exceto comentários históricos em migrations antigas, que ficam intocadas).
-2. Abrir o preview, confirmar tela de login navy/dourado idêntica ao print.
-3. Abrir Admin → Configurações e confirmar que não há mais qualquer seletor de modo.
+Migração única criando:
 
-## Itens a confirmar com você antes da implementação
+1. `permissions` (catálogo) — `key TEXT PK`, `module`, `label`, `description`
+2. `role_permissions` — `role app_role`, `permission_key`, PK composto
+3. Função `has_permission(_user_id uuid, _permission text) RETURNS boolean` (SECURITY DEFINER) — retorna `true` se a role do usuário tem a permissão OU se é `super_admin`
+4. Seed do catálogo com todas as permissões acima
+5. Seed dos defaults por role (mantendo comportamento atual):
+  - `super_admin`: todas
+  - `manager`: todas as `.view` + `invites.*` (exceto delete)
+  - `consultant`, `distributor`, `client`: apenas `.view` dos módulos que já acessam
+6. RLS de `role_permissions`: leitura para authenticated, escrita só para super_admin
+7. Atualizar RLS das tabelas afetadas para usar `has_permission()` nas ações críticas (mantendo `has_role('super_admin')` para deletes)
 
-1. **Logo / favicon**: o print mostra o favicon globo azul atual (`/favicon.ico`). Você quer que eu **mantenha** esse mesmo arquivo como logo + favicon padrão (não precisa subir nada novo) — confirma?
-2. **Migration destrutiva**: dropar `theme_light` e `theme_mode` apaga dados que existem hoje nessas colunas. Os valores atuais são apenas paletas/legado e não impactam o app. OK prosseguir?
-3. **Reset de `preferences.theme` em perfis existentes**: vou rodar `UPDATE profiles SET preferences = preferences - 'theme'`. OK?
+---
+
+## Alterações no frontend
+
+**Novo core** (`src/lib/permissions/`):
+
+- `PermissionsContext.tsx` — carrega e cacheia permissões da role do usuário logado
+- `usePermission(key)` — hook booleano
+- `<Can permission="materials.create">...</Can>` — componente wrapper
+- Guarda de rota `<RequirePermission permission="users.view">` para telas inteiras
+
+**Refatoração dos módulos existentes** (Materiais, Trilhas, Usuários, Convites, Config, Gamificação):
+
+- Substituir checagens `role === 'super_admin'` por `<Can>` / `usePermission`
+- Esconder abas/botões conforme permissão
+- Mensagem de "sem acesso" quando rota bloqueada
+
+**Nova aba no Admin — "Permissões"**:
+
+- Matriz Role × Permissão (checkboxes agrupados por módulo)
+- Coluna `super_admin` sempre marcada e desabilitada
+- Botão "Salvar" grava em `role_permissions`
+- Botão "Restaurar padrões" reaplica o seed
+- Busca por permissão, colapsar/expandir grupos
+
+---
+
+## Migração compatível
+
+O sistema entra ativo com os defaults acima, então **nenhum usuário perde acesso** no momento do deploy. A partir daí o Super Admin pode ajustar livremente pela nova aba.
+
+---
+
+## Detalhes técnicos
+
+- Cache das permissões em memória via Context + invalidação ao trocar de usuário
+- Query única no login: `SELECT permission_key FROM role_permissions WHERE role = <user_role>` → `Set<string>` no client
+- RLS continua sendo a fonte de verdade — o frontend apenas espelha para UX
+- Deletes permanecem via `has_role('super_admin')` direto, não passam pelo catálogo
+- Sem breaking changes na API — apenas adição de tabelas e função
+
+---
+
+## Entrega em duas etapas
+
+**Etapa 1 (esta):** infra completa (migração + Context + componente `<Can>` + aba "Permissões" no Admin funcional) + refatoração dos módulos **Materiais** e **Usuários/Convites** para usar o novo sistema.
+
+**Etapa 2 (próxima mensagem sua):** refatorar Trilhas/Coleções, Gamificação, Configurações e Analytics para consumir `<Can>` / `usePermission`.
+
+Divisão evita PR gigante e permite validar a UX da matriz antes de propagar.
+
+Confirma para eu iniciar a Etapa 1?  
+  
+É IMPORTANTE QUE O LOG DE AÇÕES, PRINCIPALMENTE DE CRUD E COMPARTILHAMENTO SEJA MONITORA EM TABELA SEPARADA NO BANCO DE DADOS PARA AUDITORIA. NOME DO USUÁRIO, DATA/HORA E AÇÃO REALIZADA SÃO OS DADOS IMPORTANTES, SALVO MELHOR JUÍZO
+
+&nbsp;

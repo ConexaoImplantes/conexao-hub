@@ -15,6 +15,8 @@ import {
 import { colorMix } from "../lib/utils";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useBrand } from "../contexts/BrandContext";
+import { useAuth } from "../contexts/AuthContext";
+import { logAudit, type AuditAction } from "../lib/audit";
 import {
   Plus,
   Trash2,
@@ -70,7 +72,9 @@ import {
   Headphones,
   Globe,
   Play,
-  Power } from
+  Power,
+  ShieldCheck,
+  FileClock } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
@@ -82,6 +86,8 @@ import { InviteShareModal } from "../components/hub/InviteShareModal";
 import { RejectUserModal } from "../components/hub/RejectUserModal";
 import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
+import { PermissionsPanel } from "../components/hub/PermissionsPanel";
+import { AuditLogPanel } from "../components/hub/AuditLogPanel";
 import {
   AreaChart,
   Area,
@@ -198,8 +204,27 @@ const AnalyticsDetailModal = ({
 export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
+  const { user: currentUser } = useAuth();
 
-  const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections">(
+  const audit = (
+    module: string,
+    action: AuditAction,
+    entity?: { type?: string; id?: string | number | null; label?: string; details?: Record<string, unknown> }
+  ) => {
+    if (!currentUser) return;
+    logAudit({
+      module,
+      action,
+      entityType: entity?.type,
+      entityId: entity?.id,
+      entityLabel: entity?.label,
+      details: entity?.details,
+      user: { id: currentUser.id, name: currentUser.name, email: currentUser.email, role: currentUser.role },
+    });
+  };
+
+
+  const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit">(
     "materials"
   );
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
@@ -347,6 +372,7 @@ export const Admin: React.FC = () => {
     setInviteGenerating(true);
     try {
       await mockDb.createInviteToken(inviteRole, inviteExpiry);
+      audit('invites', 'create', { type: 'invite', label: `Convite (${inviteRole})`, details: { role: inviteRole, expiry: inviteExpiry } });
       loadInviteTokens();
     } catch (e: any) {
       toast.error('Erro ao gerar convite: ' + e.message);
@@ -416,6 +442,7 @@ export const Admin: React.FC = () => {
   const deleteInviteToken = async (id: string) => {
     try {
       await mockDb.deleteInviteToken(id);
+      audit('invites', 'delete', { type: 'invite', id, label: 'Convite excluído' });
       loadInviteTokens();
     } catch (e: any) {
       toast.error('Erro: ' + e.message);
@@ -428,6 +455,12 @@ export const Admin: React.FC = () => {
     payload: { senderName: string; recipientName: string; recipientPhone: string; message: string }
   ) => {
     await mockDb.prepareInviteShare(tokenId, payload);
+    audit('invites', 'share', {
+      type: 'invite',
+      id: tokenId,
+      label: `Link preparado para ${payload.recipientName}`,
+      details: { recipient: payload.recipientName, phone: payload.recipientPhone },
+    });
     await loadInviteTokens();
     toast.success('Link gerado!');
   };
@@ -435,18 +468,19 @@ export const Admin: React.FC = () => {
     const url =
       tk.whatsappUrl ||
       (() => {
-        // Rebuild from saved fields
         const phone = (tk.recipientPhone || '').replace(/\D/g, '');
         return `https://wa.me/${phone}?text=${encodeURIComponent(tk.recipientMessage || '')}`;
       })();
     window.open(url, '_blank', 'noopener,noreferrer');
     try {
       await mockDb.markInviteShared(tk.id);
+      audit('invites', 'share', { type: 'invite', id: tk.id, label: `Enviado via WhatsApp para ${tk.recipientName ?? '—'}` });
       await loadInviteTokens();
     } catch (e: any) {
       toast.error('Erro ao registrar envio: ' + e.message);
     }
   };
+
 
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
@@ -474,8 +508,14 @@ export const Admin: React.FC = () => {
 
   const handleSaveMaterial = async (materialData: any) => {
     try {
-      if (materialData.id) await mockDb.updateMaterial(materialData);else
-      await mockDb.createMaterial(materialData);
+      const isUpdate = !!materialData.id;
+      if (isUpdate) await mockDb.updateMaterial(materialData);
+      else await mockDb.createMaterial(materialData);
+      audit('materials', isUpdate ? 'update' : 'create', {
+        type: 'material',
+        id: materialData.id ?? null,
+        label: materialData.title?.['pt-br'] ?? materialData.title?.['en-us'] ?? 'Material',
+      });
       loadMaterials();
     } catch (e: any) {
       toast.error("Erro ao salvar material: " + (e.message || JSON.stringify(e)));
@@ -484,7 +524,13 @@ export const Admin: React.FC = () => {
 
   const handleToggleActive = async (material: Material) => {
     try {
-      await mockDb.updateMaterial({ ...material, active: !material.active });
+      const nextActive = !material.active;
+      await mockDb.updateMaterial({ ...material, active: nextActive });
+      audit('materials', nextActive ? 'activate' : 'deactivate', {
+        type: 'material',
+        id: material.id,
+        label: material.title?.['pt-br'] ?? material.title?.['en-us'] ?? 'Material',
+      });
       loadMaterials();
     } catch (e: any) {
       toast.error("Erro ao atualizar status: " + e.message);
@@ -496,12 +542,15 @@ export const Admin: React.FC = () => {
     try {
       if (itemToDelete.type === "material") {
         await mockDb.deleteMaterial(itemToDelete.id);
+        audit('materials', 'delete', { type: 'material', id: itemToDelete.id });
         loadMaterials();
       } else if (itemToDelete.type === "collection") {
         await mockDb.deleteCollection(itemToDelete.id);
+        audit('collections', 'delete', { type: 'collection', id: itemToDelete.id });
         loadCollections();
       } else {
         await mockDb.deleteUser(itemToDelete.id);
+        audit('users', 'delete', { type: 'user', id: itemToDelete.id });
         loadUsers();
       }
     } catch (e: any) {
@@ -510,6 +559,7 @@ export const Admin: React.FC = () => {
     setIsConfirmOpen(false);
     setItemToDelete(null);
   };
+
 
   const handleDeleteMaterial = (id: string) => {
     setItemToDelete({ type: "material", id });
@@ -719,9 +769,15 @@ export const Admin: React.FC = () => {
           {renderTabButton("users", t("tab.users"), Users)}
           {renderTabButton("collections", "Trilhas", BookOpen)}
           {renderTabButton("analytics", t("tab.analytics"), BarChart2)}
+          {renderTabButton("permissions", "Permissões", ShieldCheck)}
+          {renderTabButton("audit", "Auditoria", FileClock)}
           {renderTabButton("settings", t("tab.settings"), Settings)}
         </div>
       </div>
+
+      {activeTab === "permissions" && <PermissionsPanel />}
+      {activeTab === "audit" && <AuditLogPanel />}
+
 
       {/* Materials Tab */}
       {activeTab === "materials" &&

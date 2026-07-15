@@ -46,6 +46,51 @@ export type Database = {
           },
         ]
       }
+      audit_logs: {
+        Row: {
+          action: string
+          created_at: string
+          details: Json | null
+          entity_id: string | null
+          entity_label: string | null
+          entity_type: string | null
+          id: string
+          module: string
+          user_email: string | null
+          user_id: string | null
+          user_name: string
+          user_role: string | null
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_label?: string | null
+          entity_type?: string | null
+          id?: string
+          module: string
+          user_email?: string | null
+          user_id?: string | null
+          user_name: string
+          user_role?: string | null
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          details?: Json | null
+          entity_id?: string | null
+          entity_label?: string | null
+          entity_type?: string | null
+          id?: string
+          module?: string
+          user_email?: string | null
+          user_id?: string | null
+          user_name?: string
+          user_role?: string | null
+        }
+        Relationships: []
+      }
       collection_items: {
         Row: {
           collection_id: string
@@ -325,6 +370,33 @@ export type Database = {
         }
         Relationships: []
       }
+      permissions: {
+        Row: {
+          created_at: string
+          description: string | null
+          key: string
+          label: string
+          module: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          key: string
+          label: string
+          module: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          key?: string
+          label?: string
+          module?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           allowed_types: Database["public"]["Enums"]["material_type"][] | null
@@ -369,6 +441,32 @@ export type Database = {
           whatsapp?: string | null
         }
         Relationships: []
+      }
+      role_permissions: {
+        Row: {
+          granted_at: string
+          permission_key: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Insert: {
+          granted_at?: string
+          permission_key: string
+          role: Database["public"]["Enums"]["app_role"]
+        }
+        Update: {
+          granted_at?: string
+          permission_key?: string
+          role?: Database["public"]["Enums"]["app_role"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_permission_key_fkey"
+            columns: ["permission_key"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["key"]
+          },
+        ]
       }
       system_config: {
         Row: {
@@ -504,6 +602,10 @@ export type Database = {
       get_user_role: {
         Args: { _user_id: string }
         Returns: Database["public"]["Enums"]["app_role"]
+      }
+      has_permission: {
+        Args: { _permission: string; _user_id: string }
+        Returns: boolean
       }
       has_role: {
         Args: {
