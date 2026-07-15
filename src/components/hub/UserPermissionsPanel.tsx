@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Save, Search, User as UserIcon, RotateCcw, ShieldCheck, Trash2 } from 'lucide-react';
+import { Save, Search, User as UserIcon, RotateCcw, ShieldCheck, Trash2, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { usePermissions, type PermissionCatalogItem, type PermissionEffect } from '../../contexts/PermissionsContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAudit } from '../../lib/audit';
 import type { Role } from '../../types';
+import { MANAGER_UNLOCK_KEYS, CLIENT_PERMISSION_KEYS, type EnvironmentId } from '../../lib/environments';
+
 
 type OverrideState = 'inherit' | 'grant' | 'revoke';
 
