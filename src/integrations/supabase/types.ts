@@ -498,6 +498,38 @@ export type Database = {
         }
         Relationships: []
       }
+      user_permissions: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          effect: string
+          permission_key: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          effect: string
+          permission_key: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          effect?: string
+          permission_key?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_permissions_permission_key_fkey"
+            columns: ["permission_key"]
+            isOneToOne: false
+            referencedRelation: "permissions"
+            referencedColumns: ["key"]
+          },
+        ]
+      }
       user_progress: {
         Row: {
           collection_id: string | null
@@ -598,6 +630,10 @@ export type Database = {
       consume_invite_token: {
         Args: { _token: string; _user_id: string }
         Returns: boolean
+      }
+      get_effective_permissions: {
+        Args: { _user_id: string }
+        Returns: string[]
       }
       get_user_role: {
         Args: { _user_id: string }
