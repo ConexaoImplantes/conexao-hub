@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Save, RotateCcw, Search, ShieldCheck, Lock, Users } from 'lucide-react';
+import { Save, RotateCcw, Search, ShieldCheck, Lock, Users, Layers } from 'lucide-react';
 import { usePermissions, type PermissionCatalogItem } from '../../contexts/PermissionsContext';
 import type { Role } from '../../types';
 import { logAudit } from '../../lib/audit';
 import { useAuth } from '../../contexts/AuthContext';
 import { UserPermissionsPanel } from './UserPermissionsPanel';
+import { getEnvironmentsForKeys, ENVIRONMENTS, type EnvironmentId } from '../../lib/environments';
+
 
 export const PermissionsPanel: React.FC = () => {
   const { user } = useAuth();
