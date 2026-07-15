@@ -444,7 +444,7 @@ export const Dashboard: React.FC = () => {
                           className="liquid-glass-gold flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap shrink-0"
                           style={{ color: 'var(--color-accent)' }}
                         >
-                          {prog?.status === 'completed' ? 'Revisar' : prog?.status === 'started' ? 'Continuar' : 'Iniciar'}
+                          {prog?.status === 'completed' ? t('progress.review') : prog?.status === 'started' ? t('progress.continue') : t('progress.start')}
                           <ChevronRight size={14} />
                         </button>
                       </div>
