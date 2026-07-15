@@ -2275,28 +2275,32 @@ export const Admin: React.FC = () => {
                                   </button>
                                 )}
                                 {canShare && !sharePrepared && (
-                                  <button
-                                    onClick={() => setShareModalToken({ ...tk, fullUrl })}
-                                    className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold"
-                                    style={{ color: "var(--color-accent)" }}
-                                  >
-                                    <LinkIcon size={13} /> Gerar Link
-                                  </button>
+                                  <Can permission="invites.generate_link">
+                                    <button
+                                      onClick={() => setShareModalToken({ ...tk, fullUrl })}
+                                      className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold"
+                                      style={{ color: "var(--color-accent)" }}
+                                    >
+                                      <LinkIcon size={13} /> Gerar Link
+                                    </button>
+                                  </Can>
                                 )}
                                 {canShare && sharePrepared && !shared && (
-                                  <button
-                                    onClick={() => handleSendWhatsapp(tk)}
-                                    className="px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold text-white"
-                                    style={{ backgroundColor: "#22c55e" }}
-                                    title="Enviar via WhatsApp"
-                                  >
-                                    <MessageCircle size={14} /> WhatsApp
-                                  </button>
+                                  <Can permission="invites.resend">
+                                    <button
+                                      onClick={() => handleSendWhatsapp(tk)}
+                                      className="px-3 py-2 rounded-lg flex items-center gap-1.5 text-xs font-bold text-white"
+                                      style={{ backgroundColor: "#22c55e" }}
+                                      title="Enviar via WhatsApp"
+                                    >
+                                      <MessageCircle size={14} /> WhatsApp
+                                    </button>
+                                  </Can>
                                 )}
                                 <button
                                   onClick={() => deleteInviteToken(tk.id)}
                                   className="p-2 rounded-lg text-red-500"
-                                  title="Excluir convite"
+                                  title="Excluir convite (Super Admin)"
                                 >
                                   <Trash2 size={16} />
                                 </button>
