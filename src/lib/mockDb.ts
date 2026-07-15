@@ -68,6 +68,7 @@ const mapMaterialFromDb = (data: any): Material => {
         points: data.points || 0,
         tags: data.tags || [],
         category: data.category || undefined,
+        downloadable: data.downloadable ?? false,
     };
 };
 
