@@ -2286,7 +2286,6 @@ export const Admin: React.FC = () => {
                         <option value="distributor">{t("role.distributor")}</option>
                         <option value="consultant">{t("role.consultant")}</option>
                         <option value="manager">{t("role.manager")}</option>
-                        <option value="super_admin">{t("role.super_admin")}</option>
                       </select>
                     </div>
                     <div className="w-full sm:w-40">
