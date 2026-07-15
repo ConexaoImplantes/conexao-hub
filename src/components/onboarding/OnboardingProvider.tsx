@@ -2,7 +2,8 @@ import React from 'react';
 import { EnvironmentId } from '../../lib/environments';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnvironment } from '../../App';
-import { TOURS } from './tours';
+import { getTour } from './tours';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { WelcomeModal } from './WelcomeModal';
 import { OnboardingTour } from './OnboardingTour';
 
@@ -107,7 +108,8 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     isActive: phase !== 'idle',
   };
 
-  const tour = envForFlow ? TOURS[envForFlow] : null;
+  const { language } = useLanguage();
+  const tour = envForFlow ? getTour(envForFlow, language) : null;
 
   return (
     <OnboardingContext.Provider value={value}>

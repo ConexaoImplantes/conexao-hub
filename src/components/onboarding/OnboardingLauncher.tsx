@@ -3,10 +3,14 @@ import { createPortal } from 'react-dom';
 import { HelpCircle } from 'lucide-react';
 import { useOnboarding } from './OnboardingProvider';
 import { colorMix } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
+import { getOnboardingUI } from './tours';
 
 export const OnboardingLauncher: React.FC = () => {
   const { restart, isActive } = useOnboarding();
   const [hover, setHover] = React.useState(false);
+  const { language } = useLanguage();
+  const ui = getOnboardingUI(language);
 
   if (isActive) return null;
 
@@ -19,7 +23,7 @@ export const OnboardingLauncher: React.FC = () => {
       onMouseLeave={() => setHover(false)}
       onFocus={() => setHover(true)}
       onBlur={() => setHover(false)}
-      aria-label="Refazer tour de onboarding"
+      aria-label={ui.launcherTooltip}
       className="rounded-full flex items-center justify-center transition-all duration-300"
       style={{
         position: 'fixed',
@@ -50,7 +54,7 @@ export const OnboardingLauncher: React.FC = () => {
             border: '1px solid var(--color-border)',
           }}
         >
-          Refazer tour
+          {ui.launcherTooltip}
         </span>
       )}
     </button>,
