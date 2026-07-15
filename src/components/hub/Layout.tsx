@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBrand } from '../../contexts/BrandContext';
-import { LogOut, Globe, Star } from 'lucide-react';
+import { LogOut, Globe, Star, LayoutGrid } from 'lucide-react';
 import { getUserLevel } from '../../types';
 import { mockDb, GamificationLevel } from '../../lib/mockDb';
+import { useEnvironment } from '../../App';
+import { ENVIRONMENTS } from '../../lib/environments';
 import { colorMix } from '../../lib/utils';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
