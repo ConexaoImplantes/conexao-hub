@@ -265,11 +265,14 @@ const AppContent = () => {
   return (
     <EnvContext.Provider value={envValue}>
       <ShortcutProvider>
-        <Layout>
-          <GlobalEffects />
-          <KeyboardHelpModal />
-          {active === "admin" || active === "manager" ? <Admin /> : <Dashboard />}
-        </Layout>
+        <OnboardingProvider>
+          <Layout>
+            <GlobalEffects />
+            <KeyboardHelpModal />
+            {active === "admin" || active === "manager" ? <Admin /> : <Dashboard />}
+            <OnboardingLauncher />
+          </Layout>
+        </OnboardingProvider>
       </ShortcutProvider>
     </EnvContext.Provider>
   );
