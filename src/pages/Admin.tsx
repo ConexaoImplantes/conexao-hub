@@ -1220,16 +1220,18 @@ export const Admin: React.FC = () => {
               onChange={(e) => setCollectionSearch(e.target.value)} />
 
             </div>
-            <button
-            onClick={() => {
-              setEditingCollection(null);
-              setIsCollectionFormOpen(true);
-            }}
-            className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap"
-            style={{ color: "var(--color-accent)" }}>
+            <Can permission="collections.create">
+              <button
+                onClick={() => {
+                  setEditingCollection(null);
+                  setIsCollectionFormOpen(true);
+                }}
+                className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap"
+                style={{ color: "var(--color-accent)" }}>
 
-              <PlusCircle size={16} /> Nova Trilha
-            </button>
+                <PlusCircle size={16} /> Nova Trilha
+              </button>
+            </Can>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {collections.
