@@ -32,37 +32,33 @@ export const ENVIRONMENTS: Record<EnvironmentId, EnvironmentDef> = {
 };
 
 /**
- * Permission keys that unlock the ADMIN environment (any of these = admin access).
- * View-only keys DO NOT unlock admin — they belong to consumer/manager envs.
+ * Any permission in these modules unlocks the MANAGER (admin-mirror) environment.
+ * Includes both view and write keys — a manager with only invites.view still needs
+ * the manager env to reach the Invites panel.
+ * NOTE: pure consumer views (materials.view / collections.view / gamification.view)
+ * are intentionally excluded — those unlock the client env only.
  */
-const ADMIN_PERMISSION_KEYS = new Set<string>([
+const MANAGER_UNLOCK_KEYS = new Set<string>([
   // Materials write
   'materials.create', 'materials.edit', 'materials.toggle_active',
   'materials.manage_assets', 'materials.reorder',
   // Collections write
   'collections.create', 'collections.edit', 'collections.toggle_active',
   'collections.manage_items', 'collections.reorder',
-  // Users write / admin ops
-  'users.create', 'users.edit', 'users.toggle_active',
+  // Users
+  'users.view', 'users.create', 'users.edit', 'users.toggle_active',
   'users.change_role', 'users.approve_pending',
-  // Invites write
-  'invites.create', 'invites.generate_link', 'invites.toggle_active', 'invites.resend',
+  // Invites
+  'invites.view', 'invites.create', 'invites.generate_link',
+  'invites.toggle_active', 'invites.resend',
   // Gamification write
   'gamification.edit_levels', 'gamification.edit_xp',
   // Settings
-  'settings.edit_branding', 'settings.edit_theme', 'settings.edit_environment',
-  // Analytics export
-  'analytics.export',
-]);
-
-/**
- * Permission keys that grant access to the MANAGER (read-only oversight) environment.
- */
-const MANAGER_PERMISSION_KEYS = new Set<string>([
-  'users.view',
-  'invites.view',
-  'analytics.view_all',
-  'settings.view',
+  'settings.view', 'settings.edit_branding',
+  'settings.edit_theme', 'settings.edit_environment',
+  // Analytics / Audit
+  'analytics.view_all', 'analytics.export',
+  'audit.view',
 ]);
 
 /**
@@ -75,24 +71,23 @@ const CLIENT_PERMISSION_KEYS = new Set<string>([
 ]);
 
 /**
- * Compute which environments the user may access given their effective permissions and role.
- * - super_admin always has all three.
- * - Other roles unlock envs solely from the effective permissions.
+ * Compute which environments the user may access.
+ * - super_admin → ['admin', 'client'] (admin env is exclusive to super_admin; no manager env for them)
+ * - other roles → 'manager' if any admin-mirror permission; 'client' if any consumer view
  */
 export function getEligibleEnvironments(
   role: Role | undefined,
   permissions: Set<string>
 ): EnvironmentId[] {
   if (role === 'super_admin' || permissions.has('*')) {
-    return ['admin', 'manager', 'client'];
+    return ['admin', 'client'];
   }
   const eligible: EnvironmentId[] = [];
   const anyIn = (set: Set<string>) => {
     for (const k of set) if (permissions.has(k)) return true;
     return false;
   };
-  if (anyIn(ADMIN_PERMISSION_KEYS)) eligible.push('admin');
-  if (anyIn(MANAGER_PERMISSION_KEYS)) eligible.push('manager');
+  if (anyIn(MANAGER_UNLOCK_KEYS)) eligible.push('manager');
   if (anyIn(CLIENT_PERMISSION_KEYS)) eligible.push('client');
   return eligible;
 }
