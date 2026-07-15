@@ -16,25 +16,31 @@ export const OnboardingLauncher: React.FC = () => {
       onClick={restart}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onFocus={() => setHover(true)}
+      onBlur={() => setHover(false)}
       aria-label="Refazer tour de onboarding"
       className="fixed z-[900] rounded-full flex items-center justify-center transition-all duration-300"
       style={{
-        bottom: 24,
-        right: 24,
-        width: 52,
-        height: 52,
-        backgroundColor: 'var(--color-accent)',
-        color: 'var(--color-btn-primary-text)',
+        bottom: 20,
+        right: 20,
+        width: 38,
+        height: 38,
+        backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)'),
+        color: 'var(--color-accent)',
+        border: `1px solid ${colorMix('var(--color-accent)', 30, 'rgba(201,166,85,0.3)')}`,
+        backdropFilter: 'blur(8px)',
+        WebkitBackdropFilter: 'blur(8px)',
+        opacity: hover ? 1 : 0.35,
         boxShadow: hover
-          ? `0 12px 28px ${colorMix('var(--color-accent)', 55, 'rgba(201,166,85,0.55)')}`
-          : `0 8px 20px ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
-        transform: hover ? 'translateY(-2px) scale(1.05)' : 'none',
+          ? `0 6px 16px ${colorMix('var(--color-accent)', 35, 'rgba(201,166,85,0.35)')}`
+          : 'none',
+        transform: hover ? 'scale(1.08)' : 'none',
       }}
     >
-      <HelpCircle size={22} />
+      <HelpCircle size={16} />
       {hover && (
         <span
-          className="absolute right-full mr-3 whitespace-nowrap px-3 py-1.5 rounded-lg text-xs font-medium"
+          className="absolute right-full mr-2 whitespace-nowrap px-2.5 py-1 rounded-md text-[11px] font-medium pointer-events-none"
           style={{
             backgroundColor: 'var(--color-card)',
             color: 'var(--color-text-main)',
