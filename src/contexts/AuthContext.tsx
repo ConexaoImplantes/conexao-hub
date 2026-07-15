@@ -112,11 +112,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   const loginMock = async (role: Role) => {
+      if (role === 'super_admin') {
+        throw new Error('Não existe conta demo para Super Admin. Use a credencial oficial.');
+      }
       setIsLoading(true);
       mockDb.enableMockMode();
 
-      const mockId = role === 'super_admin' ? 'mock-admin' :
-                     role === 'client' ? 'mock-client' :
+      const mockId = role === 'client' ? 'mock-client' :
                      role === 'distributor' ? 'mock-distrib' :
                      role === 'manager' ? 'mock-manager' : 'mock-consult';
 
