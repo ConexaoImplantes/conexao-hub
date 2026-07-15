@@ -1975,11 +1975,11 @@ export const Admin: React.FC = () => {
                 style={{ color: "var(--color-text-muted)" }}>
                   Opções
                 </p>
-                {renderSettingsSidebarItem("identity", "Identidade Visual", Type)}
-                {renderSettingsSidebarItem("integrations", "Integrações", Webhook)}
-                {renderSettingsSidebarItem("themes", "Temas", Palette)}
-                {renderSettingsSidebarItem("gamification", "Gamificação", Trophy)}
-                {renderSettingsSidebarItem("invites", t("user.invite"), Share2)}
+                {settingsSubtabVisibility.identity && renderSettingsSidebarItem("identity", "Identidade Visual", Type)}
+                {settingsSubtabVisibility.integrations && renderSettingsSidebarItem("integrations", "Integrações", Webhook)}
+                {settingsSubtabVisibility.themes && renderSettingsSidebarItem("themes", "Temas", Palette)}
+                {settingsSubtabVisibility.gamification && renderSettingsSidebarItem("gamification", "Gamificação", Trophy)}
+                {settingsSubtabVisibility.invites && renderSettingsSidebarItem("invites", t("user.invite"), Share2)}
               </div>
             </aside>
 
