@@ -38,6 +38,16 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
   const [_forceNativeDrive] = useState(false); // kept for hook order stability
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const [downloadState, setDownloadState] = useState<'idle' | 'downloading' | 'done' | 'error'>('idle');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const materialKey = material ? `${material.id}-${language}` : '';
+  useEffect(() => {
+    if (!material) return;
+    setIsLoading(true);
+    // Safety timeout — hide loader after 15s regardless
+    const t = setTimeout(() => setIsLoading(false), 15000);
+    return () => clearTimeout(t);
+  }, [materialKey, material]);
 
   useEffect(() => {
     if (material?.type === 'html') {
@@ -45,8 +55,8 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       if (url) {
         fetch(url).
         then((res) => res.text()).
-        then((text) => setHtmlContent(text)).
-        catch(() => setHtmlContent(null));
+        then((text) => { setHtmlContent(text); setIsLoading(false); }).
+        catch(() => { setHtmlContent(null); setIsLoading(false); });
       }
     }
   }, [material?.type, material?.assets, language]);
@@ -261,6 +271,24 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
 
       <div className="flex-1 w-full h-full flex items-center justify-center bg-black overflow-hidden relative">
+        {isLoading && (
+          <div
+            className="absolute inset-0 flex flex-col items-center justify-center gap-4 animate-fade-in pointer-events-none"
+            style={{ zIndex: 40, backgroundColor: 'rgba(0,0,0,0.85)', backdropFilter: 'blur(6px)' }}
+          >
+            <div className="relative">
+              <div
+                className="absolute inset-0 rounded-full blur-2xl"
+                style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 45%, transparent)' }}
+              />
+              <Loader2 size={56} className="animate-spin relative" style={{ color: 'var(--color-accent)' }} />
+            </div>
+            <div className="text-center px-6">
+              <p className="font-bold text-lg text-white">Carregando material…</p>
+              <p className="text-sm mt-1 text-white/60">Isso pode levar alguns segundos dependendo do tamanho.</p>
+            </div>
+          </div>
+        )}
         {(() => {
           if (material.type === 'html') {
             return (
@@ -271,6 +299,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                   sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                   className="w-full h-full rounded-lg bg-white shadow-2xl"
                   title="Interactive Page"
+                  onLoad={() => setIsLoading(false)}
                   style={{ border: 'none' }} /> :
 
 
@@ -279,6 +308,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                   sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
                   className="w-full h-full rounded-lg bg-white shadow-2xl"
                   title="Interactive Page"
+                  onLoad={() => setIsLoading(false)}
                   style={{ border: 'none' }} />
 
                 }
@@ -302,6 +332,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                     title="Audio Player"
                     allow="autoplay; encrypted-media"
                     sandbox="allow-scripts allow-same-origin allow-popups"
+                    onLoad={() => setIsLoading(false)}
                     style={{ border: 'none' }} />
                   
                 </div>);
@@ -321,7 +352,10 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                   controlsList="nodownload"
                   className="w-full max-w-lg"
                   autoPlay
-                  preload="metadata">
+                  preload="metadata"
+                  onLoadedData={() => setIsLoading(false)}
+                  onCanPlay={() => setIsLoading(false)}
+                  onError={() => setIsLoading(false)}>
                   
                   <source src={asset.url} />
                   <p className="text-white text-center">Seu navegador não suporta o player de áudio.</p>
@@ -332,14 +366,26 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
           if (material.type === 'image') {
             return (
               <div className="relative w-full h-full flex items-center justify-center p-4">
-                        <img src={resolvedUrl} alt={displayTitle} className="max-w-full max-h-full object-contain shadow-2xl pointer-events-none" draggable="false" />
+                        <img
+                          src={resolvedUrl}
+                          alt={displayTitle}
+                          className="max-w-full max-h-full object-contain shadow-2xl pointer-events-none"
+                          draggable="false"
+                          onLoad={() => setIsLoading(false)}
+                          onError={() => setIsLoading(false)}
+                        />
                     </div>);
 
           }
           if (material.type === 'pdf') {
             return (
               <div className="w-full h-full max-w-6xl mx-auto pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
-                <iframe src={`${resolvedUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`} className="w-full h-full rounded-lg bg-white shadow-2xl" title="PDF Viewer" />
+                <iframe
+                  src={`${resolvedUrl}#toolbar=0&navpanes=0&scrollbar=0&view=FitH`}
+                  className="w-full h-full rounded-lg bg-white shadow-2xl"
+                  title="PDF Viewer"
+                  onLoad={() => setIsLoading(false)}
+                />
               </div>);
           }
           // --- VIDEO HANDLING ---
@@ -348,16 +394,21 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
             if (embedConfig.provider === 'YouTube') {
               return (
                 <div className="w-full h-full flex items-center justify-center max-w-screen-2xl mx-auto p-0 md:p-8 aspect-video">
-                  <iframe src={embedConfig.embedUrl} className="w-full h-full rounded-lg shadow-2xl bg-black" title="YouTube Video Player" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowFullScreen frameBorder="0" />
+                  <iframe
+                    src={embedConfig.embedUrl}
+                    className="w-full h-full rounded-lg shadow-2xl bg-black"
+                    title="YouTube Video Player"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    frameBorder="0"
+                    onLoad={() => setIsLoading(false)}
+                  />
                 </div>);
             }
             // Google Drive: ALWAYS use iframe preview (never <video> tag — Drive URLs trigger download)
             if (embedConfig.provider === 'Google Drive') {
               return (
                 <div className="w-full h-full flex flex-col items-center justify-center relative pt-16 sm:pt-20">
-                  <div className="absolute text-sm text-center px-4 animate-pulse z-0" style={{ color: 'rgba(255,255,255,0.4)' }}>
-                    Carregando vídeo...
-                  </div>
                   <iframe
                     key={embedConfig.embedUrl}
                     src={embedConfig.embedUrl}
@@ -367,6 +418,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                     sandbox="allow-forms allow-presentation allow-same-origin allow-scripts allow-popups"
                     referrerPolicy="no-referrer"
                     allowFullScreen
+                    onLoad={() => setIsLoading(false)}
                   />
                 </div>);
             }
@@ -382,6 +434,9 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
                   autoPlay
                   playsInline
                   preload="metadata"
+                  onLoadedData={() => setIsLoading(false)}
+                  onCanPlay={() => setIsLoading(false)}
+                  onError={() => setIsLoading(false)}
                 >
                   <source src={asset.url} />
                   {asset.subtitleUrl && <track kind="subtitles" src={asset.subtitleUrl} label={language} default />}
@@ -396,6 +451,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
 
         })()}
       </div>
+
     </div>,
     document.body
   );
