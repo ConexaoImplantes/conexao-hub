@@ -76,7 +76,7 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
             border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`,
           }}
         >
-          <Sparkles size={12} /> {envBadge[envId]}
+          <Sparkles size={12} /> {badgeLabel(envId, userRole)}
         </div>
 
         <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>
