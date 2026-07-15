@@ -382,7 +382,7 @@ export const Dashboard: React.FC = () => {
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="space-y-2 flex-1 min-w-[200px]">
                       <div className="flex justify-between text-sm font-medium">
-                        <span style={{ color: 'var(--color-text-muted)' }}>{completedCount} de {materialIds.length} concluídos</span>
+                        <span style={{ color: 'var(--color-text-muted)' }}>{completedCount} {t('progress.of')} {materialIds.length} {t('progress.completed.items')}</span>
                         <span style={{ color: 'var(--color-accent)' }}>{progressPct}%</span>
                       </div>
                       <Progress value={progressPct} className="h-2" />
