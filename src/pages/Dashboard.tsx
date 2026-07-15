@@ -258,12 +258,12 @@ export const Dashboard: React.FC = () => {
             <div data-tour="user-level-card" className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
-                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nível {userLevel}</span>
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>{t('level')} {userLevel}</span>
                 <span className="ml-auto text-xs font-bold" style={{ color: 'var(--color-accent)' }}>{user.points} XP</span>
               </div>
               <Progress value={levelProgress} className="h-1.5" />
               <p className="text-[10px] mt-1.5 text-right" style={{ color: 'var(--color-text-muted)' }}>
-                Próximo: {nextThreshold} XP
+                {t('next')}: {nextThreshold} XP
               </p>
             </div>
           )}
