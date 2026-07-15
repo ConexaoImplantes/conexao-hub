@@ -1,7 +1,7 @@
 import React from 'react';
 import { EnvironmentId } from '../../lib/environments';
 import { useAuth } from '../../contexts/AuthContext';
-import { useEnvironment } from '../../App';
+import { useEnvironment } from '../../contexts/EnvironmentContext';
 import { getTour } from './tours';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { Language } from '../../types';
