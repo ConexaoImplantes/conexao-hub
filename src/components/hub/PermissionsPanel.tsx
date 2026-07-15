@@ -135,6 +135,25 @@ const RolePermissionsPanel: React.FC = () => {
     return Array.from(map.entries());
   }, [filteredCatalog]);
 
+  /** Environments each role can reach given its current granted keys. Super Admin = all. */
+  const roleEnvs = useMemo(() => {
+    const out: Record<Role, EnvironmentId[]> = {} as any;
+    ROLES.forEach((r) => {
+      if (r.value === 'super_admin') {
+        out[r.value] = ['admin', 'manager', 'client'];
+      } else {
+        out[r.value] = getEnvironmentsForKeys(matrix[r.value] ?? new Set());
+      }
+    });
+    return out;
+  }, [matrix]);
+
+  const visibleRoles = useMemo(() => {
+    if (envFilter === 'all') return ROLES;
+    return ROLES.filter((r) => roleEnvs[r.value]?.includes(envFilter));
+  }, [envFilter, roleEnvs]);
+
+
   const toggle = (role: Role, key: string) => {
     if (role === 'super_admin') return;
     setMatrix((prev) => {
