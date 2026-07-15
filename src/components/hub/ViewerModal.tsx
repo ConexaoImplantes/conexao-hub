@@ -98,27 +98,30 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
   const handleDownload = async () => {
     const filename = sanitizeFilename(displayTitle) + '.' + extForType(material.type, asset.url);
 
-    if (material.type === 'html') {
-      if (htmlContent) {
-        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-        await triggerDownload('', filename, blob);
-        return;
-      }
-      await triggerDownload(asset.url, filename);
+    // Interactive HTML: download the fetched srcDoc content directly
+    if (material.type === 'html' && htmlContent) {
+      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+      await triggerDownload('', filename, blob);
       return;
     }
 
-    const driveMatch = asset.url.match(/\/d\/([a-zA-Z0-9_-]+)/) || asset.url.match(/id=([a-zA-Z0-9_-]+)/);
-    if (driveMatch?.[1]) {
-      const id = driveMatch[1];
-      const driveUrl = `https://drive.google.com/uc?export=download&id=${id}`;
-      // Drive blocks CORS fetch — open in new tab reliably.
-      window.open(driveUrl, '_blank', 'noopener,noreferrer');
-      return;
-    }
+    // Route every remote asset (Drive, Supabase, YouTube-hosted files, direct URLs)
+    // through the download-proxy edge function so browsers get proper
+    // Content-Disposition and CORS-safe streaming regardless of the origin.
+    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+    const proxyUrl = `${supabaseUrl}/functions/v1/download-proxy?url=${encodeURIComponent(
+      asset.url
+    )}&filename=${encodeURIComponent(filename)}`;
 
-    const target = material.type === 'image' ? resolvedUrl : asset.url;
-    await triggerDownload(target, filename);
+    try {
+      const res = await fetch(proxyUrl);
+      if (!res.ok) throw new Error(`proxy ${res.status}`);
+      const blob = await res.blob();
+      await triggerDownload('', filename, blob);
+    } catch {
+      // Last resort: open the original URL in a new tab
+      window.open(asset.url, '_blank', 'noopener,noreferrer');
+    }
   };
 
 
