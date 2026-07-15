@@ -146,7 +146,7 @@ const AppContent = () => {
         <Layout>
           <GlobalEffects />
           <KeyboardHelpModal />
-          {active === "admin" ? <Admin /> : active === "manager" ? <ManagerDashboard /> : <Dashboard />}
+          {active === "admin" || active === "manager" ? <Admin /> : <Dashboard />}
         </Layout>
       </ShortcutProvider>
     </EnvContext.Provider>
