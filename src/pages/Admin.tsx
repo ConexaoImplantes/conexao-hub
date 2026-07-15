@@ -608,7 +608,7 @@ export const Admin: React.FC = () => {
     try {
       const next = !material.downloadable;
       await mockDb.updateMaterial({ ...material, downloadable: next });
-      audit('materials', next ? 'enable_download' : 'disable_download', {
+      audit('materials', 'update', {
         type: 'material',
         id: material.id,
         label: material.title?.['pt-br'] ?? material.title?.['en-us'] ?? 'Material',
