@@ -2364,13 +2364,15 @@ export const Admin: React.FC = () => {
                                     </button>
                                   </Can>
                                 )}
-                                <button
-                                  onClick={() => deleteInviteToken(tk.id)}
-                                  className="p-2 rounded-lg text-red-500"
-                                  title="Excluir convite (Super Admin)"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
+                                {isSuperAdmin && (
+                                  <button
+                                    onClick={() => deleteInviteToken(tk.id)}
+                                    className="p-2 rounded-lg text-red-500"
+                                    title="Excluir convite (Super Admin)"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                )}
                               </div>
                             </div>
                           );
