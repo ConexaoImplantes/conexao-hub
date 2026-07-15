@@ -266,24 +266,50 @@ const RolePermissionsPanel: React.FC = () => {
         </div>
       </div>
 
-      <div className="relative">
-        <Search
-          size={14}
-          className="absolute left-3 top-1/2 -translate-y-1/2"
-          style={{ color: 'var(--color-text-muted)' }}
-        />
-        <input
-          type="text"
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder="Buscar permissão, módulo ou descrição…"
-          className="w-full pl-9 pr-3 py-2 rounded-md text-sm"
-          style={{
-            backgroundColor: 'var(--color-bg)',
-            color: 'var(--color-text-main)',
-            border: '1px solid var(--color-border)',
-          }}
-        />
+      <div className="flex flex-col md:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search
+            size={14}
+            className="absolute left-3 top-1/2 -translate-y-1/2"
+            style={{ color: 'var(--color-text-muted)' }}
+          />
+          <input
+            type="text"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="Buscar permissão, módulo ou descrição…"
+            className="w-full pl-9 pr-3 py-2 rounded-md text-sm"
+            style={{
+              backgroundColor: 'var(--color-bg)',
+              color: 'var(--color-text-main)',
+              border: '1px solid var(--color-border)',
+            }}
+          />
+        </div>
+        <div
+          className="flex items-center gap-1 rounded-md p-1"
+          style={{ backgroundColor: 'var(--color-bg)', border: '1px solid var(--color-border)' }}
+        >
+          <Layers size={14} className="ml-2" style={{ color: 'var(--color-text-muted)' }} />
+          <span className="text-xs mr-1" style={{ color: 'var(--color-text-muted)' }}>Ambiente:</span>
+          {(['all', 'admin', 'manager', 'client'] as const).map((env) => {
+            const active = envFilter === env;
+            const label = env === 'all' ? 'Todos' : ENVIRONMENTS[env].label.replace('Painel ', '').replace('Ambiente do ', '');
+            return (
+              <button
+                key={env}
+                onClick={() => setEnvFilter(env)}
+                className="px-2.5 py-1 rounded text-xs font-medium transition-colors"
+                style={{
+                  backgroundColor: active ? 'var(--color-accent)' : 'transparent',
+                  color: active ? 'var(--color-bg)' : 'var(--color-text-muted)',
+                }}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div
@@ -296,7 +322,7 @@ const RolePermissionsPanel: React.FC = () => {
               <th className="p-3 sticky left-0 z-10" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)', minWidth: 260 }}>
                 Permissão
               </th>
-              {ROLES.map((r) => (
+              {visibleRoles.map((r) => (
                 <th
                   key={r.value}
                   className="p-3 text-center"
@@ -305,6 +331,9 @@ const RolePermissionsPanel: React.FC = () => {
                 >
                   <div className="flex flex-col items-center gap-1">
                     <span>{r.label}</span>
+                    <span className="text-[10px]" style={{ color: 'var(--color-text-muted)' }}>
+                      {roleEnvs[r.value]?.length ? roleEnvs[r.value].join(' · ') : 'sem ambiente'}
+                    </span>
                     {r.value === 'super_admin' && <Lock size={12} style={{ color: 'var(--color-accent)' }} />}
                     {isDirty(r.value) && (
                       <span
@@ -317,6 +346,11 @@ const RolePermissionsPanel: React.FC = () => {
                   </div>
                 </th>
               ))}
+              {visibleRoles.length === 0 && (
+                <th className="p-3 text-center text-xs" style={{ color: 'var(--color-text-muted)' }}>
+                  Nenhum papel neste ambiente
+                </th>
+              )}
             </tr>
           </thead>
           <tbody>
@@ -324,7 +358,7 @@ const RolePermissionsPanel: React.FC = () => {
               <React.Fragment key={moduleKey}>
                 <tr style={{ backgroundColor: 'var(--color-bg)' }}>
                   <td
-                    colSpan={ROLES.length + 1}
+                    colSpan={visibleRoles.length + 1}
                     className="p-2 px-3 text-xs uppercase tracking-wider font-semibold"
                     style={{ color: 'var(--color-accent)' }}
                   >
@@ -344,7 +378,7 @@ const RolePermissionsPanel: React.FC = () => {
                         </div>
                       )}
                     </td>
-                    {ROLES.map((r) => {
+                    {visibleRoles.map((r) => {
                       const checked = matrix[r.value]?.has(p.key) ?? false;
                       const locked = r.value === 'super_admin';
                       return (
@@ -366,7 +400,7 @@ const RolePermissionsPanel: React.FC = () => {
             ))}
             {filteredCatalog.length === 0 && (
               <tr>
-                <td colSpan={ROLES.length + 1} className="p-8 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                <td colSpan={visibleRoles.length + 1} className="p-8 text-center text-sm" style={{ color: 'var(--color-text-muted)' }}>
                   Nenhuma permissão encontrada.
                 </td>
               </tr>
@@ -376,7 +410,7 @@ const RolePermissionsPanel: React.FC = () => {
       </div>
 
       <div className="flex flex-wrap gap-2 pt-2">
-        {ROLES.filter((r) => r.value !== 'super_admin').map((r) => (
+        {visibleRoles.filter((r) => r.value !== 'super_admin').map((r) => (
           <button
             key={r.value}
             onClick={() => saveRole(r.value)}
@@ -389,6 +423,7 @@ const RolePermissionsPanel: React.FC = () => {
           </button>
         ))}
       </div>
+
     </div>
   );
 };
