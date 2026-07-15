@@ -282,7 +282,7 @@ export const Dashboard: React.FC = () => {
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'collections' ? 'liquid-glass-gold' : ''}`}
               style={activeView === 'collections' ? { color: 'var(--color-accent)' } : { color: 'var(--color-text-muted)' }}
             >
-              <BookOpen size={14} /> Trilhas
+              <BookOpen size={14} /> {t('tab.collections')}
             </button>
           </div>
 
