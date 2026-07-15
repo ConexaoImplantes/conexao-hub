@@ -418,8 +418,22 @@ export const Admin: React.FC = () => {
     then(setGamificationLevels).
     catch((e) => console.error(e));
   };
-  const loadInviteTokens = () => {
-    mockDb.getInviteTokens().then(setInviteTokens).catch((e) => console.error(e));
+  const loadInviteTokens = async () => {
+    try {
+      const tokens = await mockDb.getInviteTokens();
+      // Auto-remove used or expired invites so the list only shows actionable ones.
+      const now = Date.now();
+      const stale = tokens.filter((tk: any) => tk.usedAt || (tk.expiresAt && new Date(tk.expiresAt).getTime() < now));
+      if (stale.length) {
+        await Promise.all(stale.map((tk: any) => mockDb.deleteInviteToken(tk.id).catch(() => {})));
+        const fresh = tokens.filter((tk: any) => !stale.some((s: any) => s.id === tk.id));
+        setInviteTokens(fresh);
+      } else {
+        setInviteTokens(tokens);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   };
   const generateInviteToken = async () => {
     setInviteGenerating(true);
