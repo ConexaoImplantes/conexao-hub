@@ -29,6 +29,8 @@ const badgeLabel = (
 
 export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }) => {
   const [dontShow, setDontShow] = React.useState(false);
+  const { language } = useLanguage();
+  const ui = getOnboardingUI(language);
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -54,7 +56,7 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
           onClick={() => onClose(dontShow, false)}
           className="absolute top-4 right-4 p-1 rounded-md"
           style={{ color: 'var(--color-text-muted)' }}
-          aria-label="Fechar"
+          aria-label={ui.close}
         >
           <X size={18} />
         </button>
@@ -67,7 +69,7 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
             border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`,
           }}
         >
-          <Sparkles size={12} /> {badgeLabel(envId, userRole)}
+          <Sparkles size={12} /> {badgeLabel(envId, userRole, ui)}
         </div>
 
         <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>
@@ -105,7 +107,7 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
             style={{ accentColor: 'var(--color-accent)' }}
           />
           <span className="text-xs" style={{ color: 'var(--color-text-muted)' }}>
-            Não mostrar novamente
+            {ui.dontShowAgain}
           </span>
         </label>
 
@@ -120,7 +122,7 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
               backgroundColor: 'transparent',
             }}
           >
-            Agora não
+            {ui.notNow}
           </button>
           <button
             type="button"
@@ -131,7 +133,7 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
               color: 'var(--color-btn-primary-text)',
             }}
           >
-            <PlayCircle size={16} /> Fazer o tour
+            <PlayCircle size={16} /> {ui.startTour}
           </button>
         </div>
       </div>
