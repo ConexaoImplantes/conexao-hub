@@ -290,6 +290,7 @@ const App = () => (
                 <PermissionsProvider>
                   <Toaster />
                   <Sonner />
+                  <LanguagePersistence />
                   <AppContent />
                 </PermissionsProvider>
               </AuthProvider>
