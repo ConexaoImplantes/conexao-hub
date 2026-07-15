@@ -58,6 +58,7 @@ function fromLocalInput(v: string): string | undefined {
 
 export const MaintenancePanel: React.FC = () => {
   const { config, updateConfig } = useBrand();
+  const { user } = useAuth();
   const [draft, setDraft] = useState<EnvironmentMaintenance>({});
   const [saving, setSaving] = useState(false);
 
