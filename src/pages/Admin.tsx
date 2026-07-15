@@ -231,7 +231,7 @@ export const Admin: React.FC = () => {
   };
 
 
-  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit";
+  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit" | "maintenance";
   const [activeTab, setActiveTab] = useState<TabId>("materials");
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
     "identity"
@@ -259,17 +259,18 @@ export const Admin: React.FC = () => {
     audit:       isSuperAdmin || has('audit.view'),
     settings:    isSuperAdmin || anySettingsSubtabVisible,
     permissions: isSuperAdmin,
+    maintenance: isSuperAdmin,
   };
 
   // Auto-fallback: if the currently active tab is not visible, jump to first visible one.
   useEffect(() => {
     if (!tabVisibility[activeTab]) {
-      const order: TabId[] = ["materials", "collections", "users", "analytics", "audit", "settings", "permissions"];
+      const order: TabId[] = ["materials", "collections", "users", "analytics", "audit", "settings", "permissions", "maintenance"];
       const next = order.find((t) => tabVisibility[t]);
       if (next) setActiveTab(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.settings, tabVisibility.permissions, activeTab]);
+  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.settings, tabVisibility.permissions, tabVisibility.maintenance, activeTab]);
 
   useEffect(() => {
     if (activeTab === "settings" && !settingsSubtabVisibility[settingsTab]) {
