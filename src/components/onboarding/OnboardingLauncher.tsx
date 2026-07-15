@@ -10,7 +10,7 @@ export const OnboardingLauncher: React.FC = () => {
 
   if (isActive) return null;
 
-  return (
+  return createPortal(
     <button
       type="button"
       data-tour="onboarding-launcher"
@@ -20,10 +20,12 @@ export const OnboardingLauncher: React.FC = () => {
       onFocus={() => setHover(true)}
       onBlur={() => setHover(false)}
       aria-label="Refazer tour de onboarding"
-      className="fixed z-[900] rounded-full flex items-center justify-center transition-all duration-300"
+      className="rounded-full flex items-center justify-center transition-all duration-300"
       style={{
+        position: 'fixed',
         bottom: 20,
         right: 20,
+        zIndex: 900,
         width: 38,
         height: 38,
         backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)'),
@@ -51,6 +53,7 @@ export const OnboardingLauncher: React.FC = () => {
           Refazer tour
         </span>
       )}
-    </button>
+    </button>,
+    document.body
   );
 };
