@@ -1799,13 +1799,13 @@ export const Admin: React.FC = () => {
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {user.status === "pending" && (
-                        <>
+                        <Can permission="users.approve_pending">
                           <button onClick={() => handleUserStatus(user.id, "active")} className="p-1.5 rounded-lg text-green-500"><CheckCircle size={16} /></button>
                           <button onClick={() => handleRejectUser(user)} className="p-1.5 rounded-lg text-red-500"><XCircle size={16} /></button>
-                        </>
+                        </Can>
                       )}
-                      <button onClick={() => setUserEditing(user)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
-                      <button onClick={() => handleDeleteUser(user.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                      <Can permission="users.edit"><button onClick={() => setUserEditing(user)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button></Can>
+                      {isSuperAdmin && <button onClick={() => handleDeleteUser(user.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>}
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
