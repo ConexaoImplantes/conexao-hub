@@ -90,12 +90,20 @@ export const MaintenancePanel: React.FC = () => {
       });
       const nextConfig: SystemConfig = { ...config, environmentMaintenance: cleaned };
       await updateConfig(nextConfig);
-      try {
-        await logAudit("system_config.maintenance.update", "system_config", "1", {
-          environmentMaintenance: cleaned,
-        });
-      } catch {
-        /* noop */
+      if (user) {
+        try {
+          await logAudit({
+            module: "settings",
+            action: "update",
+            entityType: "system_config",
+            entityId: "1",
+            entityLabel: "Manutenção por ambiente",
+            details: { environmentMaintenance: cleaned },
+            user: { id: user.id, name: user.name, email: user.email, role: user.role },
+          });
+        } catch {
+          /* noop */
+        }
       }
       toast.success("Manutenção atualizada com sucesso.");
     } catch (e: any) {
