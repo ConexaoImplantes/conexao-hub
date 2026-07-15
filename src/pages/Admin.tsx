@@ -88,6 +88,7 @@ import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
 import { PermissionsPanel } from "../components/hub/PermissionsPanel";
 import { AuditLogPanel } from "../components/hub/AuditLogPanel";
+import { Can } from "../components/hub/Can";
 import {
   AreaChart,
   Area,
