@@ -229,11 +229,24 @@ export const Admin: React.FC = () => {
   };
 
 
-  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit" | "invites";
+  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit";
   const [activeTab, setActiveTab] = useState<TabId>("materials");
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
     "identity"
   );
+
+  // Settings subtab visibility (declared before tabVisibility so settings tab can reflect subtab availability)
+  const settingsSubtabVisibility = {
+    identity:     isSuperAdmin || has('settings.edit_branding'),
+    integrations: isSuperAdmin || has('settings.edit_branding'),
+    themes:       isSuperAdmin || hasAny('settings.edit_theme', 'settings.edit_environment'),
+    invites:      isSuperAdmin || has('invites.view'),
+    gamification: isSuperAdmin || hasAny('gamification.view', 'gamification.edit_levels', 'gamification.edit_xp'),
+  } as const;
+  const anySettingsSubtabVisible =
+    settingsSubtabVisibility.identity || settingsSubtabVisibility.integrations ||
+    settingsSubtabVisibility.themes || settingsSubtabVisibility.invites ||
+    settingsSubtabVisibility.gamification;
 
   // Tab visibility gated by granular permissions. Super admin sees all.
   const tabVisibility: Record<TabId, boolean> = {
@@ -242,36 +255,19 @@ export const Admin: React.FC = () => {
     collections: isSuperAdmin || has('collections.view'),
     analytics:   isSuperAdmin || has('analytics.view_all'),
     audit:       isSuperAdmin || has('audit.view'),
-    // Top-level Invites tab is visible to non-super_admins with invites.view.
-    // Super admin keeps invites nested inside Settings (existing behavior).
-    invites:     !isSuperAdmin && has('invites.view'),
-    settings:    isSuperAdmin || hasAny(
-      'settings.view', 'settings.edit_branding', 'settings.edit_theme',
-      'settings.edit_environment', 'gamification.view',
-      'gamification.edit_levels', 'gamification.edit_xp',
-      // super_admin only for invites-inside-settings; managers use top-level invites tab
-    ),
+    settings:    isSuperAdmin || anySettingsSubtabVisible,
     permissions: isSuperAdmin,
   };
 
   // Auto-fallback: if the currently active tab is not visible, jump to first visible one.
   useEffect(() => {
     if (!tabVisibility[activeTab]) {
-      const order: TabId[] = ["materials", "collections", "users", "invites", "analytics", "audit", "settings", "permissions"];
+      const order: TabId[] = ["materials", "collections", "users", "analytics", "audit", "settings", "permissions"];
       const next = order.find((t) => tabVisibility[t]);
       if (next) setActiveTab(next);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.invites, tabVisibility.settings, tabVisibility.permissions, activeTab]);
-
-  // Settings subtab visibility
-  const settingsSubtabVisibility = {
-    identity:     isSuperAdmin || has('settings.edit_branding'),
-    integrations: isSuperAdmin || has('settings.edit_branding'),
-    themes:       isSuperAdmin || hasAny('settings.edit_theme', 'settings.edit_environment'),
-    invites:      isSuperAdmin, // managers use top-level invites tab
-    gamification: isSuperAdmin || hasAny('gamification.view', 'gamification.edit_levels', 'gamification.edit_xp'),
-  } as const;
+  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.settings, tabVisibility.permissions, activeTab]);
 
   useEffect(() => {
     if (activeTab === "settings" && !settingsSubtabVisibility[settingsTab]) {
@@ -281,6 +277,55 @@ export const Admin: React.FC = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activeTab, settingsTab, isSuperAdmin]);
+
+  const [materials, setMaterials] = useState<Material[]>([]);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
+  const [viewingMaterial, setViewingMaterial] = useState<{mat: Material;lang: Language;} | null>(null);
+  const [materialSearch, setMaterialSearch] = useState("");
+  const [materialTypeFilter, setMaterialTypeFilter] = useState<MaterialType | "all">("all");
+  const [materialStatusFilter, setMaterialStatusFilter] = useState<"all" | "active" | "inactive">("all");
+  const [materialSortOrder, setMaterialSortOrder] = useState<"asc" | "desc">("asc");
+  const [users, setUsers] = useState<UserProfile[]>([]);
+  const [userComm, setUserComm] = useState<UserProfile | null>(null);
+  const [userEditing, setUserEditing] = useState<UserProfile | null>(null);
+  const [copiedLink, setCopiedLink] = useState<string | null>(null);
+  const [userSearch, setUserSearch] = useState("");
+  const [userRoleFilter, setUserRoleFilter] = useState<Role | "all">("all");
+  const [userStatusFilter, setUserStatusFilter] = useState<UserStatus | "all">("all");
+  const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
+  const [analyticsDetail, setAnalyticsDetail] = useState<{material: Material;logs: AccessLog[];} | null>(null);
+  const [analyticsTypeFilter, setAnalyticsTypeFilter] = useState<MaterialType | "all">("all");
+  const [analyticsRoleFilter, setAnalyticsRoleFilter] = useState<Role | "all">("all");
+  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{type: "material" | "user" | "collection";id: string;} | null>(
+    null
+  );
+  const [localConfig, setLocalConfig] = useState(config);
+  // Collections state
+  const [collections, setCollections] = useState<Collection[]>([]);
+  const [isCollectionFormOpen, setIsCollectionFormOpen] = useState(false);
+  const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
+  const [collectionSearch, setCollectionSearch] = useState("");
+  const [expandedCollection, setExpandedCollection] = useState<string | null>(null);
+  const [expandedCollectionItems, setExpandedCollectionItems] = useState<import("../types").CollectionItem[]>([]);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
+  const [collectionProgress, setCollectionProgress] = useState<CollectionProgress[]>([]);
+  // Gamification levels state
+  const [gamificationLevels, setGamificationLevels] = useState<GamificationLevel[]>([]);
+  const [editingLevel, setEditingLevel] = useState<GamificationLevel | null>(null);
+  const [newLevelName, setNewLevelName] = useState("");
+  const [newLevelPoints, setNewLevelPoints] = useState(0);
+  const [newLevelColor, setNewLevelColor] = useState("#c9a655");
+  const analyticsRef = useRef<HTMLDivElement>(null);
+  // Invite tokens state
+  const [inviteTokens, setInviteTokens] = useState<any[]>([]);
+  const [inviteRole, setInviteRole] = useState<Role>('client');
+  const [inviteExpiry, setInviteExpiry] = useState(7);
+  const [inviteGenerating, setInviteGenerating] = useState(false);
+  // Reject modal state
+  const [rejectingUser, setRejectingUser] = useState<UserProfile | null>(null);
+
 
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
