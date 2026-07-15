@@ -9,6 +9,7 @@ import type {
   SystemConfig,
 } from "../../types";
 import { logAudit } from "../../lib/audit";
+import { useAuth } from "../../contexts/AuthContext";
 
 interface EnvMeta {
   id: MaintenanceEnvironmentId;
