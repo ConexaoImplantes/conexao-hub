@@ -108,7 +108,8 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     isActive: phase !== 'idle',
   };
 
-  const tour = envForFlow ? TOURS[envForFlow] : null;
+  const { language } = useLanguage();
+  const tour = envForFlow ? getTour(envForFlow, language) : null;
 
   return (
     <OnboardingContext.Provider value={value}>
