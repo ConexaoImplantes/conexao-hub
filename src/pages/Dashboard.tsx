@@ -129,7 +129,7 @@ export const Dashboard: React.FC = () => {
     const base = materials.filter(mat => {
       if (!hasFullAccess && !mat.allowedRoles.includes(user?.role as any)) return false;
       if (user?.allowedTypes && user.allowedTypes.length > 0 && !user.allowedTypes.includes(mat.type)) return false;
-
+      if (!mat.assets[language]) return false;
       return true;
     });
     return {
@@ -140,7 +140,7 @@ export const Dashboard: React.FC = () => {
       audio: base.filter(m => m.type === 'audio').length,
       html: base.filter(m => m.type === 'html').length,
     };
-  }, [materials, user]);
+  }, [materials, user, language]);
 
   const handleViewMaterial = async (mat: Material, lang: Language) => {
     const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
