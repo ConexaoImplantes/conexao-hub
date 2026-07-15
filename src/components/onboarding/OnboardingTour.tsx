@@ -308,6 +308,18 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
               >
                 Concluir <Check size={12} />
               </button>
+            ) : step.interactive ? (
+              <span
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 animate-pulse"
+                style={{
+                  backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'),
+                  color: 'var(--color-accent)',
+                  border: `1px dashed ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
+                }}
+              >
+                <MousePointerClick size={12} />
+                {step.interactiveHint || 'Clique para continuar'}
+              </span>
             ) : (
               <button
                 type="button"
