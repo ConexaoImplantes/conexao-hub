@@ -471,8 +471,8 @@ export const Dashboard: React.FC = () => {
             ) : visibleCollections.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                 <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
-                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
-                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>As trilhas de aprendizagem serão exibidas aqui.</p>
+                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>{t('trail.no.available')}</h3>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t('trail.no.available.desc')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
