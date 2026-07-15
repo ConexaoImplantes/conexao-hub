@@ -500,7 +500,7 @@ export const Dashboard: React.FC = () => {
               <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 sm:gap-8 backdrop-blur-sm">
                 <div>
                   <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
-                  <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
+                  <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('dashboard.desc')}</p>
                 </div>
                 <div data-tour="search-input" className="relative w-full xl:w-96 group/search">
                    <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)') }} />
