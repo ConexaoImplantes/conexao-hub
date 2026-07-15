@@ -10,6 +10,15 @@ export interface TourStep {
   placement?: Placement;
   /** Optional callback executed when the step is shown (e.g. switch tabs). */
   onEnter?: () => void;
+  /**
+   * When true, the tour hides the Next button and waits for the user to interact
+   * with the highlighted element before advancing to the next step.
+   * `advanceEvent` picks which DOM event on the target advances the tour.
+   */
+  interactive?: boolean;
+  advanceEvent?: 'click' | 'change' | 'input';
+  /** Optional label overriding the default "Clique para continuar" hint. */
+  interactiveHint?: string;
 }
 
 export interface EnvironmentTour {
@@ -43,14 +52,18 @@ const clientTour: EnvironmentTour = {
     {
       targetSelector: '[data-tour="view-toggle"]',
       title: 'Materiais e Trilhas',
-      body: 'Alterne entre a biblioteca completa de materiais e as trilhas de aprendizado.',
+      body: 'Alterne entre a biblioteca de materiais e as trilhas. Clique em uma das opções para continuar.',
       placement: 'right',
+      interactive: true,
+      interactiveHint: 'Clique em Materiais ou Trilhas',
     },
     {
       targetSelector: '[data-tour="material-filters"]',
       title: 'Filtros por tipo',
-      body: 'Filtre os materiais pelo formato (PDF, imagem, vídeo, áudio, página) e por tags.',
+      body: 'Filtre os materiais pelo formato (PDF, imagem, vídeo, áudio, página) e por tags. Clique em um filtro para continuar.',
       placement: 'right',
+      interactive: true,
+      interactiveHint: 'Clique em qualquer filtro',
     },
     {
       targetSelector: '[data-tour="search-input"]',
@@ -105,20 +118,26 @@ const managerTour: EnvironmentTour = {
     {
       targetSelector: '[data-tour="tab-analytics"]',
       title: 'Métricas',
-      body: 'Acompanhe acessos, materiais mais vistos e progresso geral dos usuários.',
+      body: 'Acompanhe acessos, materiais mais vistos e progresso geral. Clique na aba para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Métricas',
     },
     {
       targetSelector: '[data-tour="tab-audit"]',
       title: 'Auditoria',
-      body: 'Se o Super Admin liberar, você verá aqui um histórico das ações realizadas na plataforma. Contas de teste e Super Admin não aparecem.',
+      body: 'Histórico das ações realizadas na plataforma. Contas de teste e Super Admin não aparecem. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Auditoria',
     },
     {
       targetSelector: '[data-tour="tab-permissions"]',
       title: 'Permissões',
-      body: 'Consulte quais permissões cada papel e usuário possui. Alterações só podem ser feitas pelo Super Admin.',
+      body: 'Consulte quais permissões cada papel e usuário possui. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Permissões',
     },
     {
       targetSelector: '[data-tour="env-switch"]',
@@ -156,50 +175,66 @@ const adminTour: EnvironmentTour = {
     {
       targetSelector: '[data-tour="tab-materials"]',
       title: 'Materiais',
-      body: 'Crie, edite, ative/desative e exclua materiais. Cada material pode ser publicado em vários idiomas.',
+      body: 'Crie, edite, ative/desative e exclua materiais. Cada material pode ter várias línguas. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Materiais',
     },
     {
       targetSelector: '[data-tour="tab-users"]',
       title: 'Usuários',
-      body: 'Aprove novos cadastros, ative/desative contas com um clique e defina permissões individuais.',
+      body: 'Aprove novos cadastros, ative/desative contas com um clique e defina permissões individuais. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Usuários',
     },
     {
       targetSelector: '[data-tour="tab-collections"]',
       title: 'Trilhas',
-      body: 'Monte coleções de materiais em ordem, com XP próprio. Ideal para jornadas guiadas.',
+      body: 'Monte coleções de materiais em ordem, com XP próprio. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Trilhas',
     },
     {
       targetSelector: '[data-tour="tab-analytics"]',
       title: 'Métricas',
-      body: 'Acompanhe consumo, acessos, materiais mais vistos e evolução dos usuários. Contas mock e Super Admin não são contabilizadas.',
+      body: 'Consumo, acessos, materiais mais vistos. Contas mock e Super Admin não são contabilizadas. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Métricas',
     },
     {
       targetSelector: '[data-tour="tab-permissions"]',
       title: 'Permissões granulares',
-      body: 'Configure o que cada papel enxerga (materiais, usuários, gamificação, auditoria...) e sobreponha por usuário quando necessário.',
+      body: 'Configure o que cada papel enxerga e sobreponha por usuário. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Permissões',
     },
     {
       targetSelector: '[data-tour="tab-audit"]',
       title: 'Auditoria',
-      body: 'Histórico imutável de ações. Filtros por papel, ambiente e ação. Contas mock e Super Admin ficam de fora dos registros.',
+      body: 'Histórico imutável com filtros por papel, ambiente e ação. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Auditoria',
     },
     {
       targetSelector: '[data-tour="tab-maintenance"]',
       title: 'Manutenção por ambiente',
-      body: 'Coloque qualquer ambiente em manutenção com data e hora de retorno. Os usuários daquele ambiente verão uma tela de aviso até você desativar.',
+      body: 'Coloque qualquer ambiente em manutenção com data e hora de retorno. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Manutenção',
     },
     {
       targetSelector: '[data-tour="tab-settings"]',
       title: 'Configurações e tema',
-      body: 'Ajuste identidade visual, cores por ambiente, textos e integrações da plataforma.',
+      body: 'Identidade visual, cores por ambiente, textos e integrações. Clique para abrir.',
       placement: 'bottom',
+      interactive: true,
+      interactiveHint: 'Clique na aba Configurações',
     },
     {
       targetSelector: '[data-tour="onboarding-launcher"]',

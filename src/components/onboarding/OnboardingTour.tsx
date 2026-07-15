@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, ArrowRight, X, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X, Check, MousePointerClick } from 'lucide-react';
 import { TourStep, Placement } from './tours';
 import { colorMix } from '../../lib/utils';
 
@@ -124,15 +124,33 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
     };
   }, [step]);
 
+  // Wait for the user to interact with the target element on interactive steps.
+  React.useEffect(() => {
+    if (!step?.interactive) return;
+    const target = findTarget(step.targetSelector);
+    if (!target) return;
+    const evt = step.advanceEvent || 'click';
+    const handler = () => {
+      // Delay slightly so the app's own click handlers run first (tab switch, etc.).
+      window.setTimeout(() => {
+        setIndex((i) => Math.min(i + 1, steps.length - 1));
+      }, 250);
+    };
+    target.addEventListener(evt, handler, { once: true });
+    return () => target.removeEventListener(evt, handler);
+  }, [step, steps.length]);
+
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, steps.length - 1));
-      if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+      if (!step?.interactive) {
+        if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, steps.length - 1));
+        if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, steps.length]);
+  }, [onClose, steps.length, step]);
 
   if (!step) return null;
 
@@ -290,6 +308,18 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
               >
                 Concluir <Check size={12} />
               </button>
+            ) : step.interactive ? (
+              <span
+                className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 animate-pulse"
+                style={{
+                  backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'),
+                  color: 'var(--color-accent)',
+                  border: `1px dashed ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
+                }}
+              >
+                <MousePointerClick size={12} />
+                {step.interactiveHint || 'Clique para continuar'}
+              </span>
             ) : (
               <button
                 type="button"
