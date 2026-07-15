@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType } from '../../types';
-import { X, ExternalLink, RefreshCw, Youtube, Headphones, Globe, Download } from 'lucide-react';
+import { X, ExternalLink, RefreshCw, Youtube, Headphones, Globe, Download, CheckCircle2, Loader2 } from 'lucide-react';
 import { colorMix } from '../../lib/utils';
 
 interface ViewerModalProps {
@@ -37,6 +37,7 @@ const getResolvedUrl = (url: string, type: MaterialType): string => {
 export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, onClose }) => {
   const [_forceNativeDrive] = useState(false); // kept for hook order stability
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
+  const [downloadState, setDownloadState] = useState<'idle' | 'downloading' | 'done' | 'error'>('idle');
 
   useEffect(() => {
     if (material?.type === 'html') {
@@ -96,31 +97,33 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     !!material.downloadable && embedConfig.provider !== 'YouTube';
 
   const handleDownload = async () => {
+    if (downloadState === 'downloading') return;
     const filename = sanitizeFilename(displayTitle) + '.' + extForType(material.type, asset.url);
-
-    // Interactive HTML: download the fetched srcDoc content directly
-    if (material.type === 'html' && htmlContent) {
-      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      await triggerDownload('', filename, blob);
-      return;
-    }
-
-    // Route every remote asset (Drive, Supabase, YouTube-hosted files, direct URLs)
-    // through the download-proxy edge function so browsers get proper
-    // Content-Disposition and CORS-safe streaming regardless of the origin.
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-    const proxyUrl = `${supabaseUrl}/functions/v1/download-proxy?url=${encodeURIComponent(
-      asset.url
-    )}&filename=${encodeURIComponent(filename)}`;
+    setDownloadState('downloading');
 
     try {
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error(`proxy ${res.status}`);
-      const blob = await res.blob();
-      await triggerDownload('', filename, blob);
+      // Interactive HTML: download the fetched srcDoc content directly
+      if (material.type === 'html' && htmlContent) {
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        await triggerDownload('', filename, blob);
+      } else {
+        // Route every remote asset through the download-proxy edge function
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+        const proxyUrl = `${supabaseUrl}/functions/v1/download-proxy?url=${encodeURIComponent(
+          asset.url
+        )}&filename=${encodeURIComponent(filename)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error(`proxy ${res.status}`);
+        const blob = await res.blob();
+        await triggerDownload('', filename, blob);
+      }
+      setDownloadState('done');
+      setTimeout(() => setDownloadState('idle'), 3200);
     } catch {
       // Last resort: open the original URL in a new tab
       window.open(asset.url, '_blank', 'noopener,noreferrer');
+      setDownloadState('error');
+      setTimeout(() => setDownloadState('idle'), 3200);
     }
   };
 
@@ -130,6 +133,79 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       className="fixed inset-0 bg-black flex flex-col animate-fade-in select-none"
       style={{ zIndex: 9999 }}
       onContextMenu={handleContextMenu}>
+
+      {/* Download overlay — blocks the whole viewport while working, then shows success */}
+      {downloadState !== 'idle' && (
+        <div
+          className="fixed inset-0 flex items-center justify-center animate-fade-in"
+          style={{ zIndex: 10000, backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          <div
+            className="flex flex-col items-center gap-5 px-8 py-7 rounded-2xl border shadow-2xl animate-scale-in max-w-sm text-center"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'color-mix(in srgb, var(--color-accent) 25%, transparent)',
+            }}
+          >
+            {downloadState === 'downloading' && (
+              <>
+                <div className="relative">
+                  <div
+                    className="absolute inset-0 rounded-full blur-2xl"
+                    style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 45%, transparent)' }}
+                  />
+                  <Loader2 size={56} className="animate-spin relative" style={{ color: 'var(--color-accent)' }} />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>
+                    Baixando material…
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Preparando seu arquivo. Não feche esta janela.
+                  </p>
+                </div>
+              </>
+            )}
+
+            {downloadState === 'done' && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full blur-2xl bg-emerald-400/40" />
+                  <CheckCircle2 size={64} className="relative text-emerald-400" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>
+                    Download concluído!
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Verifique a pasta <span className="font-semibold" style={{ color: 'var(--color-text-main)' }}>Downloads</span> do seu dispositivo.
+                  </p>
+                </div>
+              </>
+            )}
+
+            {downloadState === 'error' && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full blur-2xl bg-red-500/40" />
+                  <X size={56} className="relative text-red-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>
+                    Não foi possível baixar
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Abrimos o arquivo em uma nova aba para você.
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
 
       <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 flex justify-between items-start bg-gradient-to-b from-black/90 via-black/50 to-transparent z-50 pointer-events-none">
         <div className="pointer-events-auto flex flex-col gap-2 max-w-[70%] sm:max-w-[80%]">
