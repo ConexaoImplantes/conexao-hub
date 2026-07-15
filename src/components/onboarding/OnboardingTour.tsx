@@ -1,7 +1,8 @@
 import React from 'react';
 import { ArrowLeft, ArrowRight, X, Check, MousePointerClick } from 'lucide-react';
-import { TourStep, Placement } from './tours';
+import { TourStep, Placement, getOnboardingUI } from './tours';
 import { colorMix } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface Props {
   steps: TourStep[];
@@ -87,6 +88,8 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
   const [index, setIndex] = React.useState(0);
   const [rect, setRect] = React.useState<Rect | null>(null);
   const [viewport, setViewport] = React.useState({ w: window.innerWidth, h: window.innerHeight });
+  const { language } = useLanguage();
+  const ui = getOnboardingUI(language);
   const step = steps[index];
 
   // Recompute target rect on step change, resize, scroll.
