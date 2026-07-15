@@ -1,108 +1,105 @@
-## Objetivo
+# Plano: Onboarding guiado por ambiente
 
-Adicionar **permissões por usuário (overrides)** ao sistema granular existente, mantendo o padrão por role como base, e garantir que **toda a UI (botões, ícones, abas, colunas, dados)** respeite a permissão efetiva — se não tem permissão, o elemento **não renderiza**.
-
----
-
-## Modelo de permissão efetiva
-
-Precedência (do mais forte para o mais fraco):
-
-1. **Super Admin** → tudo liberado, sempre.
-2. **Override do usuário** (`user_permissions`), com dois tipos:
-  - `grant` → concede permissão extra além da role.
-  - `revoke` → remove permissão que a role concederia.
-3. **Permissões da role** (`role_permissions`) — comportamento atual.
-
-Regra: `has_permission(user, key) = super_admin? OR (role_has(key) AND NOT revoked_for_user) OR granted_for_user`.
-
-Delete continua **exclusivo do Super Admin** — não entra nem em role nem em override.
+Onboarding em duas camadas para cada ambiente (Admin, Gestor, Usuário):
+1. **Modal de boas-vindas** na primeira entrada — explica o que o usuário pode fazer e visualizar naquele ambiente.
+2. **Tour interativo** com destaque (spotlight) sobre elementos reais da tela + balão explicativo passo-a-passo.
+3. **Balão flutuante** fixo no canto inferior direito, presente em todos os ambientes, para reabrir o tour a qualquer momento.
 
 ---
 
-## Backend
+## 1. Persistência da preferência
 
-Nova tabela `user_permissions`:
+- Guardar por usuário + ambiente no `profiles.preferences` (jsonb já existente), sob a chave `onboarding`:
+  ```json
+  { "onboarding": { "admin": { "seen": true }, "manager": { "seen": false }, "client": { "seen": true } } }
+  ```
+- Para contas mock (`mock-*`) usar `localStorage` (`hub:onboarding:<role>`), sem tocar no banco.
+- Checkbox no modal: *"Não mostrar novamente"* → grava `seen: true`.
+- O balão flutuante ignora essa preferência: sempre reabre o tour sob demanda.
 
-- `user_id uuid` → `auth.users`
-- `permission_key text` → `permissions.key`
-- `effect text CHECK IN ('grant','revoke')`
-- `created_at`, `created_by`
-- PK `(user_id, permission_key)`
-- RLS: leitura pelo próprio usuário e por super_admin; escrita só super_admin.
-- GRANTs para `authenticated` e `service_role`.
+## 2. Componentes novos
 
-Atualizar `has_permission(_user_id, _permission)`:
+Em `src/components/onboarding/`:
 
-```sql
-super_admin
-OR EXISTS (user_permissions where effect='grant')
-OR (
-  EXISTS (role_permissions via user_roles) 
-  AND NOT EXISTS (user_permissions where effect='revoke')
-)
+- **`OnboardingProvider.tsx`** — contexto global: estado do tour ativo (`step`, `running`), método `startTour(envId)`, integração com o ambiente ativo do `App.tsx`.
+- **`WelcomeModal.tsx`** — modal inicial com resumo do ambiente (título, permissões-chave, o que pode ver/fazer), botões *Fazer tour*, *Pular*, e checkbox *Não mostrar novamente*.
+- **`OnboardingTour.tsx`** — overlay com spotlight (buraco recortado sobre o elemento-alvo via `clip-path`) + tooltip posicionado (top/bottom/left/right), botões *Anterior / Próximo / Concluir / Pular*, indicador `3/8`.
+- **`OnboardingLauncher.tsx`** — botão flutuante bottom-right (ícone balão de ajuda), com tooltip "Refazer tour". Escondido enquanto o tour está ativo.
+- **`tours/adminTour.ts`, `managerTour.ts`, `clientTour.ts`** — arrays de passos declarativos:
+  ```ts
+  { targetSelector: '[data-tour="materials-tab"]', title: '...', body: '...', placement: 'bottom' }
+  ```
+
+## 3. Conteúdo dos tours
+
+**Ambiente Usuário (`client`)** — 8 passos:
+1. Boas-vindas + patente/XP atual (foco no card de perfil/gamificação).
+2. Aba **Materiais** — o que é.
+3. Filtros (tipo, tag, busca).
+4. Card de material → botão *Visualizar*.
+5. Seletor de idiomas dentro do card (PT/EN/ES).
+6. Aba **Trilhas** — coleções e progresso.
+7. Sistema de conquistas / XP / patentes.
+8. Onde alterar idioma e sair.
+
+**Ambiente Gestor (`manager`)** — 6 passos:
+1. Boas-vindas — acesso somente leitura ampliado.
+2. Painel de métricas do gestor.
+3. Auditoria (o que aparece / o que é oculto).
+4. Permissões visíveis (somente super_admin altera).
+5. Alternância entre painel do gestor e ambiente do usuário.
+6. Balão de ajuda sempre disponível.
+
+**Ambiente Admin (`super_admin`)** — 10 passos:
+1. Boas-vindas.
+2. Materiais (CRUD, ativos/inativos).
+3. Usuários (toggle de ativação, aprovação, exclusão).
+4. Trilhas e coleções.
+5. Métricas.
+6. Permissões granulares (papel × ambiente).
+7. Auditoria.
+8. Configurações + tema.
+9. Manutenção por ambiente.
+10. Balão de ajuda.
+
+## 4. Marcação dos alvos (data-tour)
+
+Adicionar `data-tour="<chave>"` nos elementos reais já existentes (`Dashboard.tsx`, `Admin.tsx`, `MaterialCard.tsx`, cabeçalho, etc.). Nenhuma mudança de lógica ou estilo — apenas atributos.
+
+## 5. Integração
+
+- Montar `OnboardingProvider` dentro de `AppInner` (`src/App.tsx`), após `active` estar definido.
+- Quando `active` muda para um ambiente cujo `preferences.onboarding[env].seen !== true` → abre `WelcomeModal` automaticamente.
+- `OnboardingLauncher` renderizado sempre que houver `active` (não aparece na tela de seleção de ambiente nem na tela de manutenção).
+- Persistência via `supabase.from('profiles').update({ preferences })` + atualização otimista no `AuthContext`.
+
+## 6. Estilo
+
+- Reutiliza tokens do design system (Navy/Gold, glassmorphism, sem cores hardcoded).
+- Modal reaproveita padrão dos modais existentes (`ConfirmModal`, `ViewerModal`).
+- Overlay do tour: `backdrop` escuro com recorte via `clip-path: polygon(...)` calculado a partir do `getBoundingClientRect()` do alvo; atualiza em `resize`/`scroll`.
+- Tooltip: liquid-glass, seta apontando para o alvo.
+- Balão flutuante: mesmo padrão visual dos botões de ação (círculo dourado, ícone `HelpCircle`).
+
+## Detalhes técnicos
+
+```text
+src/
+├── components/onboarding/
+│   ├── OnboardingProvider.tsx     (contexto + auto-open)
+│   ├── WelcomeModal.tsx           (modal inicial + checkbox)
+│   ├── OnboardingTour.tsx         (spotlight + tooltip)
+│   ├── OnboardingLauncher.tsx     (balão bottom-right)
+│   └── tours/
+│       ├── clientTour.ts
+│       ├── managerTour.ts
+│       └── adminTour.ts
+├── App.tsx                        (monta Provider + Launcher)
+├── pages/Dashboard.tsx            (+ data-tour attrs)
+├── pages/Admin.tsx                (+ data-tour attrs)
+└── components/hub/MaterialCard.tsx (+ data-tour attrs)
 ```
 
-Nova RPC/view `get_effective_permissions(_user_id)` retornando o `Set` final — usada pelo `PermissionsContext` para carregar de uma vez.
-
----
-
-## Frontend — Context
-
-`PermissionsContext` passa a:
-
-- Carregar via `get_effective_permissions(auth.uid())` em uma única chamada.
-- Expor `loadUserOverrides(userId)` e `saveUserOverrides(userId, grants[], revokes[])` para a UI de admin.
-- Recomputar ao trocar usuário logado.
-
----
-
-## Frontend — Admin: nova subaba "Por Usuário"
-
-Dentro da aba **Permissões**, duas subabas:
-
-- **Por Papel** (a matriz atual).
-- **Por Usuário** (nova):
-  - Campo de busca/select de usuário (nome/email).
-  - Mostra a role e as permissões herdadas (checkbox marcado, cinza).
-  - Para cada permissão: três estados — `herdado`, `conceder` (grant), `revogar` (revoke).
-  - Resumo "Efetivo" no topo (contadores).
-  - Botões: Salvar, Descartar, Limpar overrides.
-  - Log de auditoria a cada save.
-
----
-
-## Enforcement completo no frontend (Mantendo como padrão o que cada um pode ver e fazer hoje sem quebrar o dar permissões de MANAGER a usuários que não são MANAGER)
-
-Varredura e substituição de **toda checagem `user.role === '...'**` por `<Can>` / `usePermission()` nos arquivos:
-
-- `Admin.tsx` — abas, subabas (inclusive **Convites de Cadastro** → botão "Gerar convite" só com `invites.create`, "Gerar link" só com `invites.generate_link`, toggle ativo só com `invites.toggle_active`, reenvio só com `invites.resend`).
-- `MaterialCard`, `MaterialFormModal`, `AssetManagerModal` — botões editar/ativar/gerir idiomas.
-- `CollectionCard`, `CollectionFormModal` — idem para trilhas.
-- `UserEditModal`, `RejectUserModal`, `UserCommunicationModal` — ações de usuários.
-- `Dashboard.tsx` / `ManagerDashboard.tsx` / `Layout.tsx` — itens de menu e cards.
-- `ThemeEditorPanel`, `PermissionsPanel`, `AuditLogPanel` — visibilidade das próprias abas.
-
-Padrão: elementos sem permissão **não renderizam** (não ficam apenas desabilitados), inclusive colunas de tabela que só contenham ações negadas.
-
-Rotas inteiras protegidas por `<RequirePermission>` — se o usuário perder `settings.view`, a subaba some do menu e a URL redireciona.
-
----
-
-## Migração de dados
-
-- Nenhum override criado por padrão → comportamento atual preservado.
-- Seed apenas do schema + função atualizada.
-
----
-
-## Entrega
-
-Uma única leva:
-
-1. Migração (`user_permissions` + `has_permission` + `get_effective_permissions` + RLS/GRANTs).
-2. Extensão do `PermissionsContext` + UI "Por Usuário".
-3. Varredura e substituição de checagens hardcoded em todos os componentes listados.
-4. Auditoria de cada alteração de override.
-
-Confirma para eu implementar?
+- Sem novas dependências (spotlight/tooltip caseiros — evita bundle de libs como `driver.js` / `intro.js` e mantém o visual coerente).
+- Sem alterações de schema (usa `profiles.preferences` existente).
+- i18n: strings dos passos passam pelo `LanguageContext` (PT-BR, EN-US, ES-ES).
