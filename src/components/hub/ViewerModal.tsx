@@ -97,31 +97,33 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     !!material.downloadable && embedConfig.provider !== 'YouTube';
 
   const handleDownload = async () => {
+    if (downloadState === 'downloading') return;
     const filename = sanitizeFilename(displayTitle) + '.' + extForType(material.type, asset.url);
-
-    // Interactive HTML: download the fetched srcDoc content directly
-    if (material.type === 'html' && htmlContent) {
-      const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
-      await triggerDownload('', filename, blob);
-      return;
-    }
-
-    // Route every remote asset (Drive, Supabase, YouTube-hosted files, direct URLs)
-    // through the download-proxy edge function so browsers get proper
-    // Content-Disposition and CORS-safe streaming regardless of the origin.
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
-    const proxyUrl = `${supabaseUrl}/functions/v1/download-proxy?url=${encodeURIComponent(
-      asset.url
-    )}&filename=${encodeURIComponent(filename)}`;
+    setDownloadState('downloading');
 
     try {
-      const res = await fetch(proxyUrl);
-      if (!res.ok) throw new Error(`proxy ${res.status}`);
-      const blob = await res.blob();
-      await triggerDownload('', filename, blob);
+      // Interactive HTML: download the fetched srcDoc content directly
+      if (material.type === 'html' && htmlContent) {
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        await triggerDownload('', filename, blob);
+      } else {
+        // Route every remote asset through the download-proxy edge function
+        const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string;
+        const proxyUrl = `${supabaseUrl}/functions/v1/download-proxy?url=${encodeURIComponent(
+          asset.url
+        )}&filename=${encodeURIComponent(filename)}`;
+        const res = await fetch(proxyUrl);
+        if (!res.ok) throw new Error(`proxy ${res.status}`);
+        const blob = await res.blob();
+        await triggerDownload('', filename, blob);
+      }
+      setDownloadState('done');
+      setTimeout(() => setDownloadState('idle'), 3200);
     } catch {
       // Last resort: open the original URL in a new tab
       window.open(asset.url, '_blank', 'noopener,noreferrer');
+      setDownloadState('error');
+      setTimeout(() => setDownloadState('idle'), 3200);
     }
   };
 
