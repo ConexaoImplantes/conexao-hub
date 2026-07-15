@@ -88,27 +88,64 @@ export const AuthPage: React.FC = () => {
       }
     } catch (err: any) {
       const rawMsg = err.message || 'Erro inesperado';
+      const errCode = err.code || err.status || 'unknown';
 
+      // Friendly Portuguese message per known error
+      let friendly = rawMsg;
       if (rawMsg === 'Invalid login credentials') {
-        const { data: existingProfiles, error: lookupError } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('email', email)
-          .limit(1);
-
-        if (lookupError || !existingProfiles || existingProfiles.length === 0) {
-          setEmailError('Usuário não cadastrado');
-        } else {
-          setPasswordError('Senha inválida');
-        }
-      } else if (rawMsg.includes('already registered')) {
-        setEmailError('Este e-mail já está cadastrado.');
+        friendly = 'Email ou senha incorretos.';
+      } else if (rawMsg.includes('already registered') || rawMsg.includes('User already registered')) {
+        friendly = 'Este e-mail já está cadastrado. Faça login ou use outro e-mail.';
+      } else if (rawMsg.toLowerCase().includes('password') && rawMsg.toLowerCase().includes('short')) {
+        friendly = 'A senha é muito curta. Use pelo menos 6 caracteres.';
+      } else if (rawMsg.toLowerCase().includes('pwned') || rawMsg.toLowerCase().includes('compromised')) {
+        friendly = 'Esta senha aparece em vazamentos conhecidos. Escolha outra mais segura.';
+      } else if (rawMsg.toLowerCase().includes('rate limit') || errCode === 429) {
+        friendly = 'Muitas tentativas. Aguarde alguns minutos e tente novamente.';
+      } else if (rawMsg.toLowerCase().includes('invalid email')) {
+        friendly = 'E-mail inválido.';
       } else if (rawMsg === 'MISSING_DB_SETUP' || rawMsg.includes('relation "public.profiles" does not exist')) {
-        const msg = 'Tabelas do banco de dados não encontradas.';
+        friendly = 'Tabelas do banco de dados não encontradas.';
         setShowSqlSetup(true);
-        setError(msg);
+      }
+
+      // ---- SIGNUP path: log the failure and show a big sticky toast ----
+      if (!isLogin) {
+        // Fire-and-forget: record so Super Admin can see the reason
+        supabase.from('signup_failures').insert({
+          email: email || null,
+          invite_token_id: inviteToken?.id ?? null,
+          invite_role: inviteToken?.role ?? role ?? null,
+          error_code: String(errCode),
+          error_message: rawMsg.slice(0, 500),
+          user_agent: navigator.userAgent.slice(0, 300),
+        }).then(({ error: logErr }) => {
+          if (logErr) console.warn('[signup_failures] insert failed:', logErr.message);
+        });
+
+        toast.error('Não foi possível concluir o cadastro', {
+          description: friendly,
+          icon: <XCircle size={18} />,
+          duration: 10000,
+        });
+        setError(friendly);
+        if (rawMsg.includes('already registered')) setEmailError(friendly);
       } else {
-        setError(rawMsg === 'Invalid login credentials' ? 'Email ou senha incorretos.' : rawMsg);
+        // ---- LOGIN path (unchanged behavior) ----
+        if (rawMsg === 'Invalid login credentials') {
+          const { data: existingProfiles, error: lookupError } = await supabase
+            .from('profiles')
+            .select('id')
+            .eq('email', email)
+            .limit(1);
+          if (lookupError || !existingProfiles || existingProfiles.length === 0) {
+            setEmailError('Usuário não cadastrado');
+          } else {
+            setPasswordError('Senha inválida');
+          }
+        } else {
+          setError(friendly);
+        }
       }
     } finally {
       setIsSubmitting(false);

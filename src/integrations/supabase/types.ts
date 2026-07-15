@@ -468,6 +468,39 @@ export type Database = {
           },
         ]
       }
+      signup_failures: {
+        Row: {
+          created_at: string
+          email: string | null
+          error_code: string | null
+          error_message: string | null
+          id: string
+          invite_role: string | null
+          invite_token_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          email?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          invite_role?: string | null
+          invite_token_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          email?: string | null
+          error_code?: string | null
+          error_message?: string | null
+          id?: string
+          invite_role?: string | null
+          invite_token_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       system_config: {
         Row: {
           app_name: string
