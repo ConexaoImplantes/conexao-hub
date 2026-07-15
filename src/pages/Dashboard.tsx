@@ -242,7 +242,7 @@ export const Dashboard: React.FC = () => {
           )}
 
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
+          <div data-tour="view-toggle" className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
             <button
               onClick={() => setActiveView('materials')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'materials' ? 'liquid-glass-gold' : ''}`}
