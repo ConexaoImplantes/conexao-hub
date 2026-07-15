@@ -140,7 +140,7 @@ export const Dashboard: React.FC = () => {
   const handleViewMaterial = async (mat: Material, lang: Language) => {
     const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
     if (user) {
-      mockDb.logAccess(mat.id, user.id, lang);
+      mockDb.logAccess(mat.id, user.id, lang, user.role);
       // Mark as started / award XP on first view
       const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === currentCollectionId);
       if (!existing) {
