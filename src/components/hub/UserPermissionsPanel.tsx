@@ -143,17 +143,28 @@ export const UserPermissionsPanel: React.FC = () => {
   }, [users, userSearch, roleFilter, envFilter, roleEnvsMap]);
 
 
+  /** Envs a given permission key belongs to. */
+  const keyEnvs = (key: string): EnvironmentId[] => {
+    const envs: EnvironmentId[] = [];
+    if (CLIENT_PERMISSION_KEYS.has(key)) envs.push('client');
+    if (MANAGER_UNLOCK_KEYS.has(key)) envs.push('manager', 'admin');
+    if (envs.length === 0) envs.push('admin'); // admin-only (e.g. permissions.*)
+    return envs;
+  };
+
   const filteredCatalog = useMemo(() => {
     const s = permSearch.trim().toLowerCase();
-    if (!s) return catalog;
-    return catalog.filter(
-      (p) =>
+    return catalog.filter((p) => {
+      if (envFilter !== 'all' && !keyEnvs(p.key).includes(envFilter)) return false;
+      if (!s) return true;
+      return (
         p.key.toLowerCase().includes(s) ||
         p.label.toLowerCase().includes(s) ||
         (p.description ?? '').toLowerCase().includes(s) ||
         (MODULE_LABELS[p.module] ?? p.module).toLowerCase().includes(s)
-    );
-  }, [catalog, permSearch]);
+      );
+    });
+  }, [catalog, permSearch, envFilter]);
 
   const groupedByModule = useMemo(() => {
     const map = new Map<string, PermissionCatalogItem[]>();
