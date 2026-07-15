@@ -319,21 +319,24 @@ export const mockDb = {
     const profMap = new Map<string, any>((profsRes.data || []).map((p: any) => [p.id, p]));
     const roleMap = new Map<string, any>((rolesRes.data || []).map((r: any) => [r.user_id, r.role]));
 
-    return rows.map((log: any) => {
-      const mat = matMap.get(log.material_id);
-      const prof = profMap.get(log.user_id);
-      const title = mat?.title || {};
-      return {
-        id: log.id,
-        materialId: log.material_id,
-        materialTitle: title['pt-br'] || title['en-us'] || title['es-es'] || 'Item Excluído',
-        userId: log.user_id,
-        userName: prof?.name || 'Desconhecido',
-        userRole: roleMap.get(log.user_id) || 'client',
-        language: log.language,
-        timestamp: log.timestamp,
-      };
-    });
+    return rows
+      .map((log: any) => {
+        const mat = matMap.get(log.material_id);
+        const prof = profMap.get(log.user_id);
+        const title = mat?.title || {};
+        return {
+          id: log.id,
+          materialId: log.material_id,
+          materialTitle: title['pt-br'] || title['en-us'] || title['es-es'] || 'Item Excluído',
+          userId: log.user_id,
+          userName: prof?.name || 'Desconhecido',
+          userRole: roleMap.get(log.user_id) || 'client',
+          language: log.language,
+          timestamp: log.timestamp,
+        };
+      })
+      // Exclude mock accounts and super_admin from analytics.
+      .filter((l: AccessLog) => l.userRole !== 'super_admin' && !(typeof l.userId === 'string' && l.userId.startsWith('mock-')));
   },
 
 
