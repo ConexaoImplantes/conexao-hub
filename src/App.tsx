@@ -43,6 +43,74 @@ export const useEnvironment = () => {
   return ctx;
 };
 
+const MaintenanceScreen: React.FC<{
+  env: EnvironmentId;
+  expectedReturn?: string;
+  message?: string;
+  canSwitch: boolean;
+  onSwitch: () => void;
+}> = ({ env, expectedReturn, message, canSwitch, onSwitch }) => {
+  const envLabels: Record<EnvironmentId, string> = {
+    admin: "Painel Administrativo",
+    manager: "Painel do Gestor",
+    client: "Ambiente do Usuário",
+  };
+  const formatted = expectedReturn
+    ? new Date(expectedReturn).toLocaleString("pt-BR", {
+        dateStyle: "long",
+        timeStyle: "short",
+      })
+    : null;
+  return (
+    <div
+      className="flex flex-col items-center justify-center min-h-screen p-6 text-center"
+      style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-main)" }}
+    >
+      <div
+        className="max-w-md w-full rounded-2xl p-8 liquid-glass"
+        style={{ backgroundColor: "var(--color-card)", borderColor: "var(--color-border)" }}
+      >
+        <div className="mx-auto icon-box mb-4" style={{ width: 56, height: 56 }}>
+          <span style={{ fontSize: 28 }}>🛠️</span>
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Ambiente em manutenção</h1>
+        <p className="text-sm mb-4" style={{ color: "var(--color-text-muted)" }}>
+          O <strong>{envLabels[env]}</strong> está temporariamente indisponível.
+        </p>
+        {message && (
+          <p className="text-sm mb-4" style={{ color: "var(--color-text-main)" }}>
+            {message}
+          </p>
+        )}
+        {formatted && (
+          <div
+            className="rounded-lg px-4 py-3 mb-4 text-sm"
+            style={{
+              backgroundColor: "var(--color-warning-bg)",
+              color: "var(--color-warning)",
+            }}
+          >
+            Retorno previsto: <strong>{formatted}</strong>
+          </div>
+        )}
+        {canSwitch && (
+          <button
+            type="button"
+            onClick={onSwitch}
+            className="mt-2 px-5 py-2 rounded-lg text-sm font-semibold"
+            style={{
+              backgroundColor: "var(--color-btn-primary-bg)",
+              color: "var(--color-btn-primary-text)",
+            }}
+          >
+            Escolher outro ambiente
+          </button>
+        )}
+      </div>
+    </div>
+  );
+};
+
 const AppContent = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { permissions, loading: permsLoading } = usePermissions();
