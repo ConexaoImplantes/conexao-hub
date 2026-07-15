@@ -52,14 +52,18 @@ const clientTour: EnvironmentTour = {
     {
       targetSelector: '[data-tour="view-toggle"]',
       title: 'Materiais e Trilhas',
-      body: 'Alterne entre a biblioteca completa de materiais e as trilhas de aprendizado.',
+      body: 'Alterne entre a biblioteca de materiais e as trilhas. Clique em uma das opções para continuar.',
       placement: 'right',
+      interactive: true,
+      interactiveHint: 'Clique em Materiais ou Trilhas',
     },
     {
       targetSelector: '[data-tour="material-filters"]',
       title: 'Filtros por tipo',
-      body: 'Filtre os materiais pelo formato (PDF, imagem, vídeo, áudio, página) e por tags.',
+      body: 'Filtre os materiais pelo formato (PDF, imagem, vídeo, áudio, página) e por tags. Clique em um filtro para continuar.',
       placement: 'right',
+      interactive: true,
+      interactiveHint: 'Clique em qualquer filtro',
     },
     {
       targetSelector: '[data-tour="search-input"]',
