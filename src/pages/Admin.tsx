@@ -1919,7 +1919,7 @@ export const Admin: React.FC = () => {
                       <td className="p-4 text-right">
                         <div className="flex justify-end gap-1 items-center">
                           {user.status === "pending" &&
-                      <>
+                      <Can permission="users.approve_pending">
                               <button
                           onClick={() => handleUserStatus(user.id, "active")}
                           className="p-2 rounded-lg text-green-500"
@@ -1934,23 +1934,27 @@ export const Admin: React.FC = () => {
 
                                 <XCircle size={18} />
                               </button>
-                            </>
+                            </Can>
                       }
-                          <button
-                        onClick={() => setUserEditing(user)}
-                        className="p-2 rounded-lg ml-1"
-                        title={t("edit")}
-                        style={{ color: "var(--color-accent)" }}>
+                          <Can permission="users.edit">
+                            <button
+                              onClick={() => setUserEditing(user)}
+                              className="p-2 rounded-lg ml-1"
+                              title={t("edit")}
+                              style={{ color: "var(--color-accent)" }}>
 
-                            <Edit size={18} />
-                          </button>
-                          <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 rounded-lg text-red-500 ml-1"
-                        title={t("delete")}>
+                              <Edit size={18} />
+                            </button>
+                          </Can>
+                          {isSuperAdmin && (
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="p-2 rounded-lg text-red-500 ml-1"
+                              title={t("delete")}>
 
-                            <Trash2 size={18} />
-                          </button>
+                              <Trash2 size={18} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
