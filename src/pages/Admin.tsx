@@ -1197,6 +1197,17 @@ export const Admin: React.FC = () => {
                                 <Power size={16} />
                               </button>
                             </Can>
+                            {/* Toggle downloadable — super admin only */}
+                            {isSuperAdmin && (
+                              <button
+                                onClick={() => handleToggleDownloadable(mat)}
+                                className="p-1.5 rounded-lg transition-colors"
+                                title={mat.downloadable ? "Desativar download" : "Ativar download"}
+                                style={{ color: mat.downloadable ? "#10b981" : "var(--color-text-muted)", opacity: mat.downloadable ? 1 : 0.5 }}
+                              >
+                                <Download size={16} />
+                              </button>
+                            )}
                             {/* Edit */}
                             <Can permission="materials.edit">
                               <button
