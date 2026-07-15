@@ -65,10 +65,17 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     }
   }, [user, active, phase]);
 
-  // Reset when user or environment changes so the next visit reevaluates.
+  // When user or environment changes, close any open flow and clear the
+  // auto-opened tracker so the new environment can auto-open on its own.
+  const prevKeyRef = React.useRef<string | null>(null);
   React.useEffect(() => {
-    setPhase('idle');
-    setEnvForFlow(null);
+    const key = user && active ? `${user.id}:${active}` : null;
+    if (prevKeyRef.current !== null && prevKeyRef.current !== key) {
+      setPhase('idle');
+      setEnvForFlow(null);
+      autoOpenedRef.current.clear();
+    }
+    prevKeyRef.current = key;
   }, [user?.id, active]);
 
   const restart = React.useCallback(() => {
