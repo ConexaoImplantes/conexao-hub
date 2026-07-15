@@ -471,6 +471,7 @@ export type Database = {
       system_config: {
         Row: {
           app_name: string
+          environment_maintenance: Json
           environment_themes: Json
           id: number
           logo_url: string | null
@@ -480,6 +481,7 @@ export type Database = {
         }
         Insert: {
           app_name?: string
+          environment_maintenance?: Json
           environment_themes?: Json
           id?: number
           logo_url?: string | null
@@ -489,6 +491,7 @@ export type Database = {
         }
         Update: {
           app_name?: string
+          environment_maintenance?: Json
           environment_themes?: Json
           id?: number
           logo_url?: string | null
@@ -601,6 +604,7 @@ export type Database = {
       system_config_public: {
         Row: {
           app_name: string | null
+          environment_maintenance: Json | null
           environment_themes: Json | null
           id: number | null
           logo_url: string | null
@@ -609,6 +613,7 @@ export type Database = {
         }
         Insert: {
           app_name?: string | null
+          environment_maintenance?: Json | null
           environment_themes?: Json | null
           id?: number | null
           logo_url?: string | null
@@ -617,6 +622,7 @@ export type Database = {
         }
         Update: {
           app_name?: string | null
+          environment_maintenance?: Json | null
           environment_themes?: Json | null
           id?: number | null
           logo_url?: string | null
