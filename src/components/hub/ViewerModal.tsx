@@ -163,11 +163,22 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
             }
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="pointer-events-auto p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors border border-white/10 shrink-0 ml-4">
+        <div className="pointer-events-auto flex items-center gap-2 shrink-0 ml-4">
+          {canDownload && (
+            <button
+              onClick={handleDownload}
+              title="Baixar"
+              className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors border border-white/10">
+              <Download size={22} />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors border border-white/10">
+            <X size={24} />
+          </button>
+        </div>
 
-          <X size={24} />
         </button>
       </div>
 
