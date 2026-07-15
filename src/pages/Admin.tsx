@@ -1284,23 +1284,27 @@ export const Admin: React.FC = () => {
                           title="Ver conteúdos da trilha">
                           <List size={16} />
                         </button>
-                        <button
-                      onClick={() => {
-                        setEditingCollection(col);
-                        setIsCollectionFormOpen(true);
-                      }}
-                      className="p-2 rounded-lg"
-                      style={{ color: "var(--color-accent)" }}>
-                          <Edit size={16} />
-                        </button>
-                        <button
-                      onClick={() => {
-                        setItemToDelete({ type: "collection", id: col.id });
-                        setIsConfirmOpen(true);
-                      }}
-                      className="p-2 rounded-lg text-red-500">
-                          <Trash2 size={16} />
-                        </button>
+                        <Can permission="collections.edit">
+                          <button
+                            onClick={() => {
+                              setEditingCollection(col);
+                              setIsCollectionFormOpen(true);
+                            }}
+                            className="p-2 rounded-lg"
+                            style={{ color: "var(--color-accent)" }}>
+                            <Edit size={16} />
+                          </button>
+                        </Can>
+                        {isSuperAdmin && (
+                          <button
+                            onClick={() => {
+                              setItemToDelete({ type: "collection", id: col.id });
+                              setIsConfirmOpen(true);
+                            }}
+                            className="p-2 rounded-lg text-red-500">
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-1 flex-wrap">
