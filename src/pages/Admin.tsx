@@ -981,14 +981,16 @@ export const Admin: React.FC = () => {
               {materialSortOrder === "asc" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               {materialSortOrder === "asc" ? "A→Z" : "Z→A"}
             </button>
-            <button
-            onClick={handleOpenCreate}
-            className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
-            style={{ color: "var(--color-accent)" }}>
+            <Can permission="materials.create">
+              <button
+                onClick={handleOpenCreate}
+                className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
+                style={{ color: "var(--color-accent)" }}>
 
-              <Plus size={20} />
-              <span className="hidden md:inline">{t("add.material")}</span>
-            </button>
+                <Plus size={20} />
+                <span className="hidden md:inline">{t("add.material")}</span>
+              </button>
+            </Can>
           </div>
 
           <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
