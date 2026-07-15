@@ -1,22 +1,42 @@
 import React from 'react';
 import { X, Sparkles, PlayCircle, Check } from 'lucide-react';
 import { EnvironmentId } from '../../lib/environments';
+import { Role } from '../../types';
 import { EnvironmentTour } from './tours';
 import { colorMix } from '../../lib/utils';
 
 interface Props {
   envId: EnvironmentId;
+  userRole?: Role;
   tour: EnvironmentTour;
   onClose: (dontShowAgain: boolean, startTour: boolean) => void;
 }
 
-const envBadge: Record<EnvironmentId, string> = {
+const roleLabels: Record<Role, string> = {
+  client: 'Ambiente do Cliente',
+  distributor: 'Ambiente do Distribuidor',
+  consultant: 'Ambiente do Consultor',
+  manager: 'Ambiente do Gestor',
+  super_admin: 'Painel Administrativo',
+};
+
+const envFallback: Record<EnvironmentId, string> = {
   admin: 'Painel Administrativo',
-  manager: 'Painel do Gestor',
+  manager: 'Ambiente do Gestor',
   client: 'Ambiente do Usuário',
 };
 
-export const WelcomeModal: React.FC<Props> = ({ envId, tour, onClose }) => {
+const badgeLabel = (envId: EnvironmentId, role?: Role): string => {
+  if (envId === 'admin') return 'Painel Administrativo';
+  if (envId === 'manager') return 'Ambiente do Gestor';
+  // client environment — personalize by user role.
+  if (role && roleLabels[role] && role !== 'super_admin' && role !== 'manager') {
+    return roleLabels[role];
+  }
+  return envFallback[envId];
+};
+
+export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }) => {
   const [dontShow, setDontShow] = React.useState(false);
 
   React.useEffect(() => {
