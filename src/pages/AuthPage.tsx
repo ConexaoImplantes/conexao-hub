@@ -127,7 +127,6 @@ export const AuthPage: React.FC = () => {
           description: friendly,
           icon: <XCircle size={18} />,
           duration: 10000,
-          important: true,
         });
         setError(friendly);
         if (rawMsg.includes('already registered')) setEmailError(friendly);
