@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { HelpCircle } from 'lucide-react';
 import { useOnboarding } from './OnboardingProvider';
 import { colorMix } from '../../lib/utils';
