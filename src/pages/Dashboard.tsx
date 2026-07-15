@@ -97,6 +97,8 @@ export const Dashboard: React.FC = () => {
       if (user?.allowedTypes && user.allowedTypes.length > 0) {
         if (!user.allowedTypes.includes(mat.type)) return false;
       }
+      // Only show materials that have an asset for the user's current language
+      if (!mat.assets[language]) return false;
       const displayTitle = mat.title[language] || mat.title['pt-br'] || Object.values(mat.title)[0] || '';
       const matchesSearch = displayTitle.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesType = filterType === 'all' || mat.type === filterType;
