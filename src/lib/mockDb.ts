@@ -286,7 +286,9 @@ export const mockDb = {
     return (data || []).map(mapMaterialFromDb);
   },
 
-  logAccess: async (materialId: string, userId: string, language: Language): Promise<void> => {
+  logAccess: async (materialId: string, userId: string, language: Language, role?: Role): Promise<void> => {
+    // Skip mock accounts and super_admin — they never appear in metrics.
+    if (!userId || userId.startsWith('mock-') || role === 'super_admin') return;
     const { error } = await supabase.from('access_logs').insert({ material_id: materialId, user_id: userId, language: language });
     if (error) console.error("Error logging access:", error);
   },
