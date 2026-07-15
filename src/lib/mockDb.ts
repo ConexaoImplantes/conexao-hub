@@ -152,8 +152,15 @@ export const mockDb = {
     if (status === 'active') {
       updateData.rejection_reason = null;
     }
-    const { error } = await supabase.from('profiles').update(updateData).eq('id', userId);
+    const { data, error } = await supabase
+      .from('profiles')
+      .update(updateData)
+      .eq('id', userId)
+      .select('id');
     if (error) throw error;
+    if (!data || data.length === 0) {
+      throw new Error('Sem permissão para alterar este usuário (nenhuma linha atualizada).');
+    }
   },
 
   updateUser: async (updatedUser: UserProfile): Promise<void> => {
