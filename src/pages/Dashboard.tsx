@@ -364,7 +364,7 @@ export const Dashboard: React.FC = () => {
                 className="mb-6 flex items-center gap-2 text-sm font-semibold transition-all hover:opacity-70"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                <ArrowLeft size={16} /> Voltar para Trilhas
+                <ArrowLeft size={16} /> {t('trail.back')}
               </button>
 
               <div className="relative rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden mb-6 sm:mb-10">
