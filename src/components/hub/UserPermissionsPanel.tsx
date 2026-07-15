@@ -37,6 +37,8 @@ export const UserPermissionsPanel: React.FC = () => {
   const [roleMatrix, setRoleMatrix] = useState<Record<Role, Set<string>>>({} as any);
   const [users, setUsers] = useState<AppUser[]>([]);
   const [userSearch, setUserSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all' | Role>('all');
+  const [envFilter, setEnvFilter] = useState<'all' | EnvironmentId>('all');
   const [selected, setSelected] = useState<AppUser | null>(null);
   const [permSearch, setPermSearch] = useState('');
   const [overrides, setOverrides] = useState<Record<string, PermissionEffect>>({});
@@ -44,6 +46,7 @@ export const UserPermissionsPanel: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingUser, setLoadingUser] = useState(false);
   const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     (async () => {
