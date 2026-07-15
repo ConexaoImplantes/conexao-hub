@@ -2,7 +2,8 @@ import React from 'react';
 import { EnvironmentId } from '../../lib/environments';
 import { useAuth } from '../../contexts/AuthContext';
 import { useEnvironment } from '../../App';
-import { TOURS } from './tours';
+import { getTour } from './tours';
+import { useLanguage } from '../../contexts/LanguageContext';
 import { WelcomeModal } from './WelcomeModal';
 import { OnboardingTour } from './OnboardingTour';
 
