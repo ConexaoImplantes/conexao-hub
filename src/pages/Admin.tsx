@@ -827,12 +827,14 @@ export const Admin: React.FC = () => {
           {tabVisibility.analytics && renderTabButton("analytics", t("tab.analytics"), BarChart2)}
           {tabVisibility.permissions && renderTabButton("permissions", "Permissões", ShieldCheck)}
           {tabVisibility.audit && renderTabButton("audit", "Auditoria", FileClock)}
+          {tabVisibility.maintenance && renderTabButton("maintenance", "Manutenção", Wrench)}
           {tabVisibility.settings && renderTabButton("settings", t("tab.settings"), Settings)}
         </div>
       </div>
 
       {activeTab === "permissions" && tabVisibility.permissions && <PermissionsPanel />}
       {activeTab === "audit" && tabVisibility.audit && <AuditLogPanel />}
+      {activeTab === "maintenance" && tabVisibility.maintenance && <MaintenancePanel />}
 
 
 
