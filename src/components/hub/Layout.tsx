@@ -2,15 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useBrand } from '../../contexts/BrandContext';
-import { LogOut, Globe, Star } from 'lucide-react';
+import { LogOut, Globe, Star, LayoutGrid } from 'lucide-react';
 import { getUserLevel } from '../../types';
 import { mockDb, GamificationLevel } from '../../lib/mockDb';
+import { useEnvironment } from '../../App';
+import { ENVIRONMENTS } from '../../lib/environments';
 import { colorMix } from '../../lib/utils';
 
 export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { config } = useBrand();
+  const { active, eligible, switchEnvironment } = useEnvironment();
   const [levels, setLevels] = useState<GamificationLevel[]>([]);
 
   useEffect(() => {
@@ -97,6 +100,38 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
                             )}
                         </div>
                     </div>
+
+                    {eligible.length > 1 && (
+                      <button
+                        onClick={switchEnvironment}
+                        className="group relative hidden sm:flex items-center gap-1.5 h-10 px-3 rounded-full transition-all duration-300"
+                        style={{
+                          backgroundColor: colorMix('var(--color-accent)', 12, 'rgba(201,166,85,0.12)'),
+                          color: 'var(--color-accent)',
+                          border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`,
+                        }}
+                        title={`Ambiente atual: ${active ? ENVIRONMENTS[active].label : ''} — clique para trocar`}
+                      >
+                        <LayoutGrid size={14} />
+                        <span className="text-[10px] font-bold uppercase tracking-wide">
+                          {active ? ENVIRONMENTS[active].label.replace(/^(Painel |Ambiente )/i, '') : ''}
+                        </span>
+                      </button>
+                    )}
+                    {eligible.length > 1 && (
+                      <button
+                        onClick={switchEnvironment}
+                        className="sm:hidden w-8 h-8 flex items-center justify-center rounded-full transition-all"
+                        style={{
+                          backgroundColor: colorMix('var(--color-accent)', 12, 'rgba(201,166,85,0.12)'),
+                          color: 'var(--color-accent)',
+                          border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`,
+                        }}
+                        title="Trocar ambiente"
+                      >
+                        <LayoutGrid size={14} />
+                      </button>
+                    )}
 
                     <button
                         onClick={logout}
