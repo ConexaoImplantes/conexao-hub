@@ -2192,14 +2192,16 @@ export const Admin: React.FC = () => {
                         <option value={30}>30 dias</option>
                       </select>
                     </div>
-                    <button
-                      onClick={generateInviteToken}
-                      disabled={inviteGenerating}
-                      className="liquid-glass-gold px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
-                      style={{ color: "var(--color-accent)" }}
-                    >
-                      <Plus size={16} /> {inviteGenerating ? "Gerando..." : "Gerar Convite"}
-                    </button>
+                    <Can permission="invites.create">
+                      <button
+                        onClick={generateInviteToken}
+                        disabled={inviteGenerating}
+                        className="liquid-glass-gold px-5 py-2.5 rounded-lg text-sm font-bold flex items-center gap-2 whitespace-nowrap disabled:opacity-50"
+                        style={{ color: "var(--color-accent)" }}
+                      >
+                        <Plus size={16} /> {inviteGenerating ? "Gerando..." : "Gerar Convite"}
+                      </button>
+                    </Can>
                     <button
                       onClick={downloadInvitesPdf}
                       disabled={!inviteTokens.length}
