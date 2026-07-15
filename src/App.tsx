@@ -28,23 +28,13 @@ import {
   getStoredEnvironment,
   setStoredEnvironment,
 } from "./lib/environments";
+import { EnvContext, EnvContextValue, useEnvironment } from "./contexts/EnvironmentContext";
+
+export { useEnvironment };
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1 } },
 });
-
-interface EnvContextValue {
-  active: EnvironmentId | null;
-  eligible: EnvironmentId[];
-  switchEnvironment: () => void;
-  setActive: (env: EnvironmentId) => void;
-}
-const EnvContext = React.createContext<EnvContextValue | undefined>(undefined);
-export const useEnvironment = () => {
-  const ctx = React.useContext(EnvContext);
-  if (!ctx) throw new Error("useEnvironment must be used within AppContent");
-  return ctx;
-};
 
 const MaintenanceScreen: React.FC<{
   env: EnvironmentId;
