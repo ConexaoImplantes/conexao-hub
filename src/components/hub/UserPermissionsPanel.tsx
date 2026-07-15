@@ -290,6 +290,53 @@ export const UserPermissionsPanel: React.FC = () => {
               }}
             />
           </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+              <Filter size={10} /> Papel
+            </label>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value as any)}
+              className="w-full px-2 py-1.5 rounded-md text-xs"
+              style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)', border: '1px solid var(--color-border)' }}
+            >
+              <option value="all">Todos os papéis</option>
+              <option value="super_admin">Super Admin</option>
+              <option value="manager">Manager</option>
+              <option value="consultant">Consultor</option>
+              <option value="distributor">Distribuidor</option>
+              <option value="client">Cliente</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+              <Filter size={10} /> Ambiente
+            </label>
+            <select
+              value={envFilter}
+              onChange={(e) => setEnvFilter(e.target.value as any)}
+              className="w-full px-2 py-1.5 rounded-md text-xs"
+              style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)', border: '1px solid var(--color-border)' }}
+            >
+              <option value="all">Todos os ambientes</option>
+              <option value="admin">Administrativo</option>
+              <option value="manager">Gestão</option>
+              <option value="client">Usuário</option>
+            </select>
+          </div>
+
+          {(roleFilter !== 'all' || envFilter !== 'all') && (
+            <button
+              onClick={() => { setRoleFilter('all'); setEnvFilter('all'); }}
+              className="text-[11px] underline"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              Limpar filtros
+            </button>
+          )}
+
           <div className="max-h-[520px] overflow-y-auto space-y-1">
             {filteredUsers.map((u) => (
               <button
