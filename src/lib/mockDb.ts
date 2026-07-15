@@ -240,6 +240,7 @@ export const mockDb = {
         points: material.points || 0,
         tags: material.tags || [],
         category: material.category || null,
+        downloadable: material.downloadable ?? false,
       })
       .eq('id', material.id);
 
