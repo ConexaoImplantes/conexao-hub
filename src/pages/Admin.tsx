@@ -70,7 +70,9 @@ import {
   Headphones,
   Globe,
   Play,
-  Power } from
+  Power,
+  ShieldCheck,
+  FileClock } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
