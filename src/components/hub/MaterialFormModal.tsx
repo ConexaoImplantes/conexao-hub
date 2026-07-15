@@ -191,8 +191,9 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
       allowedRoles,
       active,
       assets: cleanedAssets,
-      tags,
+      tags: initialData?.tags ?? [],
       points,
+      downloadable,
     };
 
     await onSave(payload);
