@@ -604,6 +604,21 @@ export const Admin: React.FC = () => {
     }
   };
 
+  const handleToggleDownloadable = async (material: Material) => {
+    try {
+      const next = !material.downloadable;
+      await mockDb.updateMaterial({ ...material, downloadable: next });
+      audit('materials', next ? 'enable_download' : 'disable_download', {
+        type: 'material',
+        id: material.id,
+        label: material.title?.['pt-br'] ?? material.title?.['en-us'] ?? 'Material',
+      });
+      loadMaterials();
+    } catch (e: any) {
+      toast.error("Erro ao atualizar download: " + e.message);
+    }
+  };
+
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
