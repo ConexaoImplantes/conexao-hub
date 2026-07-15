@@ -91,6 +91,8 @@ interface MaterialFormModalProps {
 
 export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialData, onClose, onSave }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
   const languages: Language[] = ['pt-br', 'en-us', 'es-es'];
   const allRoles: Role[] = ['client', 'distributor', 'consultant'];
 
@@ -101,7 +103,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
   const [assets, setAssets] = useState<Partial<Record<Language, MaterialAsset>>>({});
   const [activeTab, setActiveTab] = useState<Language>('pt-br');
   const [error, setError] = useState<string | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
+  const [downloadable, setDownloadable] = useState<boolean>(false);
   const defaultPointsByType: Record<MaterialType, number> = { pdf: 150, image: 50, video: 100, audio: 150, html: 100 };
   const [points, setPoints] = useState(defaultPointsByType['pdf']);
   const [htmlInputMode, setHtmlInputMode] = useState<'upload' | 'url'>('upload');
