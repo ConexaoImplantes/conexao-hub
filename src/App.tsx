@@ -8,6 +8,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { BrandProvider } from "./contexts/BrandContext";
 import { AuthProvider, useAuth } from "./contexts/AuthContext";
+import { PermissionsProvider } from "./contexts/PermissionsContext";
 import { useBrand } from "./contexts/BrandContext";
 import { ShortcutProvider } from "./contexts/ShortcutContext";
 import { Layout } from "./components/hub/Layout";
