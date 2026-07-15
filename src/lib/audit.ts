@@ -26,11 +26,13 @@ export interface AuditLogInput {
 
 /**
  * Fire-and-forget audit log write. Never throws — failures are only logged.
- * Skips mock accounts (ids starting with 'mock-').
+ * Skips mock accounts (ids starting with 'mock-') and super_admin actions —
+ * neither should appear in audit trails per product decision.
  */
 export async function logAudit(input: AuditLogInput): Promise<void> {
   try {
     if (!input.user?.id || input.user.id.startsWith('mock-')) return;
+    if (input.user.role === 'super_admin') return;
     const { error } = await supabase.from('audit_logs').insert([{
       user_id: input.user.id,
       user_name: input.user.name,
