@@ -130,7 +130,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const ensureProfile = async (userId: string, data: any) => {
       const { error: profileError } = await supabase.from('profiles').upsert({
           id: userId,
-          name: data.name,
+          name: normalizeName(data.name),
           email: data.email,
           whatsapp: data.whatsapp,
           cro: data.cro || null,
@@ -150,12 +150,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const register = async (data: any) => {
     try {
+        const normalizedName = normalizeName(data.name);
         const { data: authData, error: authError } = await supabase.auth.signUp({
           email: data.email,
           password: data.password || 'temp-password-change-me',
           options: {
             data: {
-              name: data.name,
+              name: normalizedName,
               role: data.role,
               whatsapp: data.whatsapp,
               cro: data.cro
