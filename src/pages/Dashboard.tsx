@@ -529,7 +529,7 @@ export const Dashboard: React.FC = () => {
                 <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
                   <Filter size={32} className="opacity-50" />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhum resultado encontrado</h3>
+                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>{t('no.results')}</h3>
                 <p className="text-sm max-w-xs" style={{ color: 'var(--color-text-muted)' }}>{t('no.materials')}</p>
                 {(searchTerm || filterType !== 'all' || filterTag) && (
                   <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95" style={{ backgroundColor: colorMix('var(--color-bg)', 80, 'rgba(15,23,42,0.8)'), border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`, color: 'var(--color-accent)' }}>
