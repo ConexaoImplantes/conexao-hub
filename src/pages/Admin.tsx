@@ -508,8 +508,14 @@ export const Admin: React.FC = () => {
 
   const handleSaveMaterial = async (materialData: any) => {
     try {
-      if (materialData.id) await mockDb.updateMaterial(materialData);else
-      await mockDb.createMaterial(materialData);
+      const isUpdate = !!materialData.id;
+      if (isUpdate) await mockDb.updateMaterial(materialData);
+      else await mockDb.createMaterial(materialData);
+      audit('materials', isUpdate ? 'update' : 'create', {
+        type: 'material',
+        id: materialData.id ?? null,
+        label: materialData.title?.['pt-br'] ?? materialData.title?.['en-us'] ?? 'Material',
+      });
       loadMaterials();
     } catch (e: any) {
       toast.error("Erro ao salvar material: " + (e.message || JSON.stringify(e)));
@@ -518,7 +524,13 @@ export const Admin: React.FC = () => {
 
   const handleToggleActive = async (material: Material) => {
     try {
-      await mockDb.updateMaterial({ ...material, active: !material.active });
+      const nextActive = !material.active;
+      await mockDb.updateMaterial({ ...material, active: nextActive });
+      audit('materials', nextActive ? 'activate' : 'deactivate', {
+        type: 'material',
+        id: material.id,
+        label: material.title?.['pt-br'] ?? material.title?.['en-us'] ?? 'Material',
+      });
       loadMaterials();
     } catch (e: any) {
       toast.error("Erro ao atualizar status: " + e.message);
@@ -530,12 +542,15 @@ export const Admin: React.FC = () => {
     try {
       if (itemToDelete.type === "material") {
         await mockDb.deleteMaterial(itemToDelete.id);
+        audit('materials', 'delete', { type: 'material', id: itemToDelete.id });
         loadMaterials();
       } else if (itemToDelete.type === "collection") {
         await mockDb.deleteCollection(itemToDelete.id);
+        audit('collections', 'delete', { type: 'collection', id: itemToDelete.id });
         loadCollections();
       } else {
         await mockDb.deleteUser(itemToDelete.id);
+        audit('users', 'delete', { type: 'user', id: itemToDelete.id });
         loadUsers();
       }
     } catch (e: any) {
@@ -544,6 +559,7 @@ export const Admin: React.FC = () => {
     setIsConfirmOpen(false);
     setItemToDelete(null);
   };
+
 
   const handleDeleteMaterial = (id: string) => {
     setItemToDelete({ type: "material", id });
