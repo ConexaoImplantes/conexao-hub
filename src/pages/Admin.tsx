@@ -723,9 +723,15 @@ export const Admin: React.FC = () => {
           {renderTabButton("users", t("tab.users"), Users)}
           {renderTabButton("collections", "Trilhas", BookOpen)}
           {renderTabButton("analytics", t("tab.analytics"), BarChart2)}
+          {renderTabButton("permissions", "Permissões", ShieldCheck)}
+          {renderTabButton("audit", "Auditoria", FileClock)}
           {renderTabButton("settings", t("tab.settings"), Settings)}
         </div>
       </div>
+
+      {activeTab === "permissions" && <PermissionsPanel />}
+      {activeTab === "audit" && <AuditLogPanel />}
+
 
       {/* Materials Tab */}
       {activeTab === "materials" &&
