@@ -75,7 +75,8 @@ import {
   Play,
   Power,
   ShieldCheck,
-  FileClock } from
+  FileClock,
+  Wrench } from
 "lucide-react";
 import { MaterialFormModal } from "../components/hub/MaterialFormModal";
 import { ThemeEditorPanel } from "../components/hub/ThemeEditorPanel";
