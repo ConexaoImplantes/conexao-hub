@@ -124,15 +124,33 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
     };
   }, [step]);
 
+  // Wait for the user to interact with the target element on interactive steps.
+  React.useEffect(() => {
+    if (!step?.interactive) return;
+    const target = findTarget(step.targetSelector);
+    if (!target) return;
+    const evt = step.advanceEvent || 'click';
+    const handler = () => {
+      // Delay slightly so the app's own click handlers run first (tab switch, etc.).
+      window.setTimeout(() => {
+        setIndex((i) => Math.min(i + 1, steps.length - 1));
+      }, 250);
+    };
+    target.addEventListener(evt, handler, { once: true });
+    return () => target.removeEventListener(evt, handler);
+  }, [step, steps.length]);
+
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
-      if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, steps.length - 1));
-      if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+      if (!step?.interactive) {
+        if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, steps.length - 1));
+        if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+      }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, steps.length]);
+  }, [onClose, steps.length, step]);
 
   if (!step) return null;
 
