@@ -442,6 +442,7 @@ export const Admin: React.FC = () => {
   const deleteInviteToken = async (id: string) => {
     try {
       await mockDb.deleteInviteToken(id);
+      audit('invites', 'delete', { type: 'invite', id, label: 'Convite excluído' });
       loadInviteTokens();
     } catch (e: any) {
       toast.error('Erro: ' + e.message);
@@ -454,6 +455,12 @@ export const Admin: React.FC = () => {
     payload: { senderName: string; recipientName: string; recipientPhone: string; message: string }
   ) => {
     await mockDb.prepareInviteShare(tokenId, payload);
+    audit('invites', 'share', {
+      type: 'invite',
+      id: tokenId,
+      label: `Link preparado para ${payload.recipientName}`,
+      details: { recipient: payload.recipientName, phone: payload.recipientPhone },
+    });
     await loadInviteTokens();
     toast.success('Link gerado!');
   };
@@ -461,18 +468,19 @@ export const Admin: React.FC = () => {
     const url =
       tk.whatsappUrl ||
       (() => {
-        // Rebuild from saved fields
         const phone = (tk.recipientPhone || '').replace(/\D/g, '');
         return `https://wa.me/${phone}?text=${encodeURIComponent(tk.recipientMessage || '')}`;
       })();
     window.open(url, '_blank', 'noopener,noreferrer');
     try {
       await mockDb.markInviteShared(tk.id);
+      audit('invites', 'share', { type: 'invite', id: tk.id, label: `Enviado via WhatsApp para ${tk.recipientName ?? '—'}` });
       await loadInviteTokens();
     } catch (e: any) {
       toast.error('Erro ao registrar envio: ' + e.message);
     }
   };
+
 
   const loadAnalytics = async () => {
     setAnalyticsLoading(true);
