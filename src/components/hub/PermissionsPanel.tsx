@@ -79,6 +79,8 @@ const RolePermissionsPanel: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState<Role | null>(null);
   const [search, setSearch] = useState('');
+  const [envFilter, setEnvFilter] = useState<'all' | EnvironmentId>('all');
+
 
   const load = async () => {
     setLoading(true);
