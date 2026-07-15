@@ -331,11 +331,11 @@ export const Dashboard: React.FC = () => {
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-2" style={{ color: 'var(--color-warning)' }}>
                       <Sparkles size={16} className="animate-pulse" />
-                      <span className="text-xs font-bold uppercase tracking-wide">Dica Pro</span>
+                      <span className="text-xs font-bold uppercase tracking-wide">{t('pro.tip')}</span>
                     </div>
                     <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                      Use <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>Ctrl+F</span> para focar na busca rapidamente.
-                      Pressione <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>?</span> para ver todos os atalhos.
+                      <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>Ctrl+F</span> {t('pro.tip.search')}{' '}
+                      <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>?</span> {t('pro.tip.shortcuts')}
                     </p>
                   </div>
                 </div>
