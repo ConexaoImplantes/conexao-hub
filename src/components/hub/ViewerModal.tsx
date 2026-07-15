@@ -37,6 +37,7 @@ const getResolvedUrl = (url: string, type: MaterialType): string => {
 export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, onClose }) => {
   const [_forceNativeDrive] = useState(false); // kept for hook order stability
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
+  const [downloadState, setDownloadState] = useState<'idle' | 'downloading' | 'done' | 'error'>('idle');
 
   useEffect(() => {
     if (material?.type === 'html') {
