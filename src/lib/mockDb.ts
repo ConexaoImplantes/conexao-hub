@@ -265,10 +265,13 @@ export const mockDb = {
     const { data: roles } = await supabase.from('user_roles').select('user_id, role');
     const roleMap = new Map((roles || []).map((r: any) => [r.user_id, r.role]));
     
-    return (profiles || []).map((p: any) => mapProfileFromDb({
-      ...p,
-      user_roles: roleMap.has(p.id) ? [{ role: roleMap.get(p.id) }] : []
-    }));
+    return (profiles || [])
+      .map((p: any) => mapProfileFromDb({
+        ...p,
+        user_roles: roleMap.has(p.id) ? [{ role: roleMap.get(p.id) }] : []
+      }))
+      // Super admin credentials must never appear in any user listing (security).
+      .filter((u: UserProfile) => u.role !== 'super_admin');
   },
 
   getMaterials: async (role: Role): Promise<Material[]> => {
