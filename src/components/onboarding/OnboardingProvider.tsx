@@ -4,10 +4,12 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useEnvironment } from '../../App';
 import { getTour } from './tours';
 import { useLanguage } from '../../contexts/LanguageContext';
+import { Language } from '../../types';
 import { WelcomeModal } from './WelcomeModal';
 import { OnboardingTour } from './OnboardingTour';
+import { LanguageChoiceModal } from './LanguageChoiceModal';
 
-type Phase = 'idle' | 'welcome' | 'tour';
+type Phase = 'idle' | 'language' | 'welcome' | 'tour';
 
 interface OnboardingContextValue {
   /** Manually reopen the welcome modal + tour for the active environment. */
@@ -28,6 +30,11 @@ export const useOnboarding = () => {
 // the auto-open behavior always reflects the current rule (only the checkbox suppresses it).
 const seenKey = (userId: string, env: EnvironmentId) => `hub:onboarding:dismissed:v2:${userId}:${env}`;
 
+// Tracks whether the user has already picked a language for the client env
+// via the pre-onboarding language selector. Independent from the tour "seen" flag
+// so users who dismissed the tour still get asked once.
+const langChosenKey = (userId: string) => `hub:onboarding:lang-chosen:v1:${userId}:client`;
+
 const wasSeen = (userId: string, env: EnvironmentId): boolean => {
   try {
     return localStorage.getItem(seenKey(userId, env)) === '1';
@@ -44,21 +51,48 @@ const markSeen = (userId: string, env: EnvironmentId) => {
   }
 };
 
+const wasLangChosen = (userId: string): boolean => {
+  try {
+    return localStorage.getItem(langChosenKey(userId)) === '1';
+  } catch {
+    return false;
+  }
+};
+
+const markLangChosen = (userId: string) => {
+  try {
+    localStorage.setItem(langChosenKey(userId), '1');
+  } catch {
+    /* ignore */
+  }
+};
+
 export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { user } = useAuth();
   const { active } = useEnvironment();
+  const { language, setLanguage } = useLanguage();
   const [phase, setPhase] = React.useState<Phase>('idle');
   const [envForFlow, setEnvForFlow] = React.useState<EnvironmentId | null>(null);
   // Track which envs already auto-opened in THIS page session — reload resets it.
   const autoOpenedRef = React.useRef<Set<string>>(new Set());
 
-  // Auto-open the welcome modal the first time the user lands on an environment
-  // AFTER each page reload — as long as they haven't ticked "não mostrar novamente".
+  // Auto-open logic. For the CLIENT environment, the very first time (per user)
+  // we show a language chooser first so the tour is loaded in the picked idiom.
+  // Once chosen, subsequent visits behave like other envs and rely on the
+  // "don't show again" checkbox.
   React.useEffect(() => {
     if (!user || !active) return;
     if (phase !== 'idle') return;
     const key = `${user.id}:${active}`;
     if (autoOpenedRef.current.has(key)) return;
+
+    if (active === 'client' && !wasLangChosen(user.id)) {
+      autoOpenedRef.current.add(key);
+      setEnvForFlow(active);
+      setPhase('language');
+      return;
+    }
+
     if (!wasSeen(user.id, active)) {
       autoOpenedRef.current.add(key);
       setEnvForFlow(active);
@@ -82,8 +116,20 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const restart = React.useCallback(() => {
     if (!active) return;
     setEnvForFlow(active);
+    // Manual restart uses the current language directly — no re-prompt.
     setPhase('welcome');
   }, [active]);
+
+  const handleLanguagePicked = React.useCallback(
+    (lang: Language) => {
+      if (user) markLangChosen(user.id);
+      // Applying the language BEFORE moving to the welcome/tour phase guarantees
+      // that getTour() picks up the new value on the next render.
+      if (lang !== language) setLanguage(lang);
+      setPhase('welcome');
+    },
+    [user, language, setLanguage]
+  );
 
   const handleWelcomeClose = React.useCallback(
     (dontShowAgain: boolean, startTour: boolean) => {
@@ -108,12 +154,14 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     isActive: phase !== 'idle',
   };
 
-  const { language } = useLanguage();
   const tour = envForFlow ? getTour(envForFlow, language) : null;
 
   return (
     <OnboardingContext.Provider value={value}>
       {children}
+      {phase === 'language' && envForFlow === 'client' && (
+        <LanguageChoiceModal currentLanguage={language} onSelect={handleLanguagePicked} />
+      )}
       {phase === 'welcome' && tour && envForFlow && (
         <WelcomeModal envId={envForFlow} userRole={user?.role} tour={tour} onClose={handleWelcomeClose} />
       )}
