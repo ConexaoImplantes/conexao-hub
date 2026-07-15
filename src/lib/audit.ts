@@ -84,5 +84,8 @@ export async function fetchAuditLogs(opts?: {
   if (opts?.since) q = q.gte('created_at', opts.since);
   const { data, error } = await q;
   if (error) throw error;
-  return (data ?? []) as AuditLogRow[];
+  // Exclude super_admin and mock accounts from audit views.
+  return (data ?? []).filter((r: any) =>
+    r.user_role !== 'super_admin' && !(typeof r.user_id === 'string' && r.user_id.startsWith('mock-'))
+  ) as AuditLogRow[];
 }
