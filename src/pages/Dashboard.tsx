@@ -375,7 +375,7 @@ export const Dashboard: React.FC = () => {
                 <div className="relative z-10 p-5 sm:p-8 md:p-10">
                   <div className="flex items-center gap-2 mb-3">
                     <BookOpen size={20} style={{ color: 'var(--color-accent)' }} />
-                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>Trilha de Aprendizagem</span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>{t('trail.learning')}</span>
                   </div>
                   <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--color-text-main)' }}>{displayTitle}</h2>
                   {displayDesc && <p className="text-base mb-6 max-w-2xl" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p>}
