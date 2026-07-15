@@ -1418,14 +1418,16 @@ export const Admin: React.FC = () => {
               <option value="manager">{t("role.manager")}</option>
             </select>
             <div className="flex gap-2">
-              <button
-              onClick={exportAnalyticsCsv}
-              className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap text-sm"
-              style={{ color: "var(--color-accent)" }}>
+              <Can permission="analytics.export">
+                <button
+                  onClick={exportAnalyticsCsv}
+                  className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap text-sm"
+                  style={{ color: "var(--color-accent)" }}>
 
-                <Download size={16} />
-                <span className="hidden md:inline">CSV</span>
-              </button>
+                  <Download size={16} />
+                  <span className="hidden md:inline">CSV</span>
+                </button>
+              </Can>
               
 
 
