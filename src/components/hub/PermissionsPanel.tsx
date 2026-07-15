@@ -114,7 +114,7 @@ export const PermissionsPanel: React.FC = () => {
     if (role === 'super_admin') return;
     setSaving(role);
     try {
-      const keys = Array.from(matrix[role] ?? new Set());
+      const keys = Array.from(matrix[role] ?? new Set<string>()) as string[];
       await saveRolePermissions(role, keys);
       setInitialMatrix((prev) => ({ ...prev, [role]: new Set(keys) }));
       toast.success(`Permissões do papel "${role}" salvas.`);
