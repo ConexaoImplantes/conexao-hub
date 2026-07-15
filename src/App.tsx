@@ -19,6 +19,8 @@ import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
 import { RegistrationProgress } from "./components/hub/RegistrationProgress";
 import { EnvironmentSelector } from "./pages/EnvironmentSelector";
+import { OnboardingProvider } from "./components/onboarding/OnboardingProvider";
+import { OnboardingLauncher } from "./components/onboarding/OnboardingLauncher";
 import {
   EnvironmentId,
   getEligibleEnvironments,
