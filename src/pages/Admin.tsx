@@ -810,25 +810,30 @@ export const Admin: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4">
         <div>
           <h2 className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-            {t("admin.title")}
+            {isSuperAdmin ? t("admin.title") : "Painel de Gestão"}
           </h2>
           <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-            Gerencie materiais, usuários e a aparência da plataforma.
+            {isSuperAdmin
+              ? "Gerencie materiais, usuários e a aparência da plataforma."
+              : "Acesso restrito às funções autorizadas pelo administrador."}
           </p>
         </div>
         <div className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: "var(--color-bg)" }}>
-          {renderTabButton("materials", t("tab.materials"), ImageIcon)}
-          {renderTabButton("users", t("tab.users"), Users)}
-          {renderTabButton("collections", "Trilhas", BookOpen)}
-          {renderTabButton("analytics", t("tab.analytics"), BarChart2)}
-          {renderTabButton("permissions", "Permissões", ShieldCheck)}
-          {renderTabButton("audit", "Auditoria", FileClock)}
-          {renderTabButton("settings", t("tab.settings"), Settings)}
+          {tabVisibility.materials && renderTabButton("materials", t("tab.materials"), ImageIcon)}
+          {tabVisibility.users && renderTabButton("users", t("tab.users"), Users)}
+          {tabVisibility.collections && renderTabButton("collections", "Trilhas", BookOpen)}
+          {tabVisibility.invites && renderTabButton("invites", "Convites", LinkIcon)}
+          {tabVisibility.analytics && renderTabButton("analytics", t("tab.analytics"), BarChart2)}
+          {tabVisibility.permissions && renderTabButton("permissions", "Permissões", ShieldCheck)}
+          {tabVisibility.audit && renderTabButton("audit", "Auditoria", FileClock)}
+          {tabVisibility.settings && renderTabButton("settings", t("tab.settings"), Settings)}
         </div>
       </div>
 
-      {activeTab === "permissions" && <PermissionsPanel />}
-      {activeTab === "audit" && <AuditLogPanel />}
+      {activeTab === "permissions" && tabVisibility.permissions && <PermissionsPanel />}
+      {activeTab === "audit" && tabVisibility.audit && <AuditLogPanel />}
+
+
 
 
       {/* Materials Tab */}
