@@ -820,7 +820,7 @@ export const Admin: React.FC = () => {
           {tabVisibility.materials && renderTabButton("materials", t("tab.materials"), ImageIcon)}
           {tabVisibility.users && renderTabButton("users", t("tab.users"), Users)}
           {tabVisibility.collections && renderTabButton("collections", "Trilhas", BookOpen)}
-          {tabVisibility.invites && renderTabButton("invites", "Convites", LinkIcon)}
+          
           {tabVisibility.analytics && renderTabButton("analytics", t("tab.analytics"), BarChart2)}
           {tabVisibility.permissions && renderTabButton("permissions", "Permissões", ShieldCheck)}
           {tabVisibility.audit && renderTabButton("audit", "Auditoria", FileClock)}
