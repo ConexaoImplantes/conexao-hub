@@ -129,7 +129,7 @@ export const Dashboard: React.FC = () => {
     const base = materials.filter(mat => {
       if (!hasFullAccess && !mat.allowedRoles.includes(user?.role as any)) return false;
       if (user?.allowedTypes && user.allowedTypes.length > 0 && !user.allowedTypes.includes(mat.type)) return false;
-
+      if (!mat.assets[language]) return false;
       return true;
     });
     return {
@@ -140,7 +140,32 @@ export const Dashboard: React.FC = () => {
       audio: base.filter(m => m.type === 'audio').length,
       html: base.filter(m => m.type === 'html').length,
     };
-  }, [materials, user]);
+  }, [materials, user, language]);
+
+  // Language-scoped views for trails: only materials with an asset in the current language count
+  const langCollectionItemMap = useMemo(() => {
+    const out: Record<string, string[]> = {};
+    Object.entries(collectionItemMap).forEach(([colId, ids]) => {
+      out[colId] = ids.filter(mid => {
+        const mat = (collectionMaterialsMap[colId] || []).find(m => m.id === mid);
+        return mat ? !!mat.assets[language] : false;
+      });
+    });
+    return out;
+  }, [collectionItemMap, collectionMaterialsMap, language]);
+
+  const langCollectionMaterialsMap = useMemo(() => {
+    const out: Record<string, Material[]> = {};
+    Object.entries(collectionMaterialsMap).forEach(([colId, mats]) => {
+      out[colId] = mats.filter(m => !!m.assets[language]);
+    });
+    return out;
+  }, [collectionMaterialsMap, language]);
+
+  const visibleCollections = useMemo(
+    () => collections.filter(c => (langCollectionMaterialsMap[c.id] || []).length > 0),
+    [collections, langCollectionMaterialsMap]
+  );
 
   const handleViewMaterial = async (mat: Material, lang: Language) => {
     const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
@@ -325,8 +350,8 @@ export const Dashboard: React.FC = () => {
 
         {/* ─── Collection Detail View ─── */}
         {activeView === 'collection-detail' && selectedCollection && (() => {
-          const colMaterials = collectionMaterialsMap[selectedCollection.id] || [];
-          const materialIds = collectionItemMap[selectedCollection.id] || [];
+          const colMaterials = langCollectionMaterialsMap[selectedCollection.id] || [];
+          const materialIds = langCollectionItemMap[selectedCollection.id] || [];
           const completedCount = userProgress.filter(p => p.status === 'completed' && p.collectionId === selectedCollection.id && materialIds.includes(p.materialId)).length;
           const progressPct = materialIds.length > 0 ? Math.round((completedCount / materialIds.length) * 100) : 0;
           const displayTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || '';
@@ -386,8 +411,7 @@ export const Dashboard: React.FC = () => {
                 <div className="space-y-2 sm:space-y-3 pb-20">
                   {colMaterials.map((mat, idx) => {
                     const prog = userProgress.find(p => p.materialId === mat.id && p.collectionId === selectedCollection.id);
-                    const langs: Language[] = ['pt-br', 'en-us', 'es-es'];
-                    const availableLang = langs.find(l => mat.assets[l]?.url) || 'pt-br';
+                    const availableLang: Language = mat.assets[language] ? language : (['pt-br', 'en-us', 'es-es'] as Language[]).find(l => mat.assets[l]?.url) || language;
                     const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
                     return (
                       <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: colorMix('var(--color-surface)', 50, 'rgba(30,41,59,0.5)') }}>
@@ -414,27 +438,6 @@ export const Dashboard: React.FC = () => {
                               </span>
                             )}
                           </div>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {langs.map(l => {
-                            const has = !!mat.assets[l]?.url;
-                            return (
-                              <button
-                                key={l}
-                                onClick={() => has && handleViewMaterial(mat, l)}
-                                disabled={!has}
-                                title={l.toUpperCase()}
-                                className={`px-2 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider transition-all ${has ? 'hover:opacity-80 active:scale-95' : 'opacity-30 cursor-not-allowed'}`}
-                                style={{
-                                  backgroundColor: has ? colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)') : 'transparent',
-                                  color: has ? 'var(--color-accent)' : 'var(--color-text-muted)',
-                                  border: `1px solid ${has ? colorMix('var(--color-accent)', 30, 'rgba(201,166,85,0.3)') : 'transparent'}`,
-                                }}
-                              >
-                                {l.split('-')[0]}
-                              </button>
-                            );
-                          })}
                         </div>
                         <button
                           onClick={() => handleViewMaterial(mat, availableLang)}
@@ -465,7 +468,7 @@ export const Dashboard: React.FC = () => {
             </div>
             {isLoading ? (
               <SkeletonCardGrid count={6} />
-            ) : collections.length === 0 ? (
+            ) : visibleCollections.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                 <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
                 <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
@@ -473,12 +476,12 @@ export const Dashboard: React.FC = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
-                {collections.map((col, i) => (
+                {visibleCollections.map((col, i) => (
                   <div key={col.id} className="animate-slide-up" style={{ animationDelay: `${i * 70}ms` }}>
                     <CollectionCard
                       collection={col}
                       userProgress={userProgress}
-                      materialIds={collectionItemMap[col.id] || []}
+                      materialIds={langCollectionItemMap[col.id] || []}
                       onClick={(c) => { setSelectedCollection(c); setActiveView('collection-detail'); }}
                     />
                   </div>
