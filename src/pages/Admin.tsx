@@ -775,6 +775,7 @@ export const Admin: React.FC = () => {
 
   const renderTabButton = (id: typeof activeTab, label: string, Icon: any) =>
   <button
+    data-tour={`tab-${id}`}
     onClick={() => setActiveTab(id)}
     className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === id ? "liquid-glass-gold shadow-sm" : ""}`}
     style={
