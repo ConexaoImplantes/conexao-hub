@@ -275,7 +275,7 @@ export const Dashboard: React.FC = () => {
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'materials' ? 'liquid-glass-gold' : ''}`}
               style={activeView === 'materials' ? { color: 'var(--color-accent)' } : { color: 'var(--color-text-muted)' }}
             >
-              <Grid size={14} /> Materiais
+              <Grid size={14} /> {t('tab.materials')}
             </button>
             <button
               onClick={() => setActiveView('collections')}
