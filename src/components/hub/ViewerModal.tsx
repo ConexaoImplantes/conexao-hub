@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType } from '../../types';
-import { X, ExternalLink, RefreshCw, Youtube, Headphones, Globe } from 'lucide-react';
+import { X, ExternalLink, RefreshCw, Youtube, Headphones, Globe, Download } from 'lucide-react';
 import { colorMix } from '../../lib/utils';
 
 interface ViewerModalProps {
@@ -62,6 +62,66 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     return false;
   };
 
+  const sanitizeFilename = (name: string) =>
+    (name || 'material').replace(/[\\/:*?"<>|]+/g, '_').trim().slice(0, 80) || 'material';
+
+  const extForType = (t: MaterialType, url: string) => {
+    const m = url.match(/\.([a-zA-Z0-9]{2,5})(?:\?|$)/);
+    if (m) return m[1].toLowerCase();
+    if (t === 'pdf') return 'pdf';
+    if (t === 'image') return 'jpg';
+    if (t === 'video') return 'mp4';
+    if (t === 'audio') return 'mp3';
+    if (t === 'html') return 'html';
+    return 'bin';
+  };
+
+  const triggerDownload = async (url: string, filename: string, blob?: Blob) => {
+    try {
+      const b = blob ?? (await (await fetch(url)).blob());
+      const objectUrl = URL.createObjectURL(b);
+      const a = document.createElement('a');
+      a.href = objectUrl;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(objectUrl), 1000);
+    } catch {
+      window.open(url, '_blank', 'noopener,noreferrer');
+    }
+  };
+
+  const canDownload =
+    !!material.downloadable && embedConfig.provider !== 'YouTube';
+
+  const handleDownload = async () => {
+    const filename = sanitizeFilename(displayTitle) + '.' + extForType(material.type, asset.url);
+
+    if (material.type === 'html') {
+      if (htmlContent) {
+        const blob = new Blob([htmlContent], { type: 'text/html;charset=utf-8' });
+        await triggerDownload('', filename, blob);
+        return;
+      }
+      await triggerDownload(asset.url, filename);
+      return;
+    }
+
+    const driveMatch = asset.url.match(/\/d\/([a-zA-Z0-9_-]+)/) || asset.url.match(/id=([a-zA-Z0-9_-]+)/);
+    if (driveMatch?.[1]) {
+      const id = driveMatch[1];
+      const driveUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+      // Drive blocks CORS fetch — open in new tab reliably.
+      window.open(driveUrl, '_blank', 'noopener,noreferrer');
+      return;
+    }
+
+    const target = material.type === 'image' ? resolvedUrl : asset.url;
+    await triggerDownload(target, filename);
+  };
+
+
   return createPortal(
     <div
       className="fixed inset-0 bg-black flex flex-col animate-fade-in select-none"
@@ -103,13 +163,23 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
             }
           </div>
         </div>
-        <button
-          onClick={onClose}
-          className="pointer-events-auto p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors border border-white/10 shrink-0 ml-4">
-
-          <X size={24} />
-        </button>
+        <div className="pointer-events-auto flex items-center gap-2 shrink-0 ml-4">
+          {canDownload && (
+            <button
+              onClick={handleDownload}
+              title="Baixar"
+              className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors border border-white/10">
+              <Download size={22} />
+            </button>
+          )}
+          <button
+            onClick={onClose}
+            className="p-2 bg-white/10 hover:bg-white/20 rounded-full text-white backdrop-blur-sm transition-colors border border-white/10">
+            <X size={24} />
+          </button>
+        </div>
       </div>
+
 
       <div className="flex-1 w-full h-full flex items-center justify-center bg-black overflow-hidden relative">
         {(() => {

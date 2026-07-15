@@ -1,105 +1,42 @@
-# Plano: Onboarding guiado por ambiente
+## Objetivo
+Permitir download de materiais no ViewerModal, controlado por uma flag por material (`downloadable`) que o Super Admin ativa/desativa no modal de criar/editar material. Ao mesmo tempo, remover o campo de tags do formulário para dar lugar a esse novo controle.
 
-Onboarding em duas camadas para cada ambiente (Admin, Gestor, Usuário):
-1. **Modal de boas-vindas** na primeira entrada — explica o que o usuário pode fazer e visualizar naquele ambiente.
-2. **Tour interativo** com destaque (spotlight) sobre elementos reais da tela + balão explicativo passo-a-passo.
-3. **Balão flutuante** fixo no canto inferior direito, presente em todos os ambientes, para reabrir o tour a qualquer momento.
+## Mudanças
 
----
+### 1. Banco de dados (migration)
+- Adicionar coluna `downloadable BOOLEAN NOT NULL DEFAULT false` na tabela `materials`.
+- Nenhuma mudança de RLS/GRANT (a tabela já possui).
 
-## 1. Persistência da preferência
+### 2. Tipos (`src/types.ts`)
+- Adicionar `downloadable: boolean` em `Material`.
 
-- Guardar por usuário + ambiente no `profiles.preferences` (jsonb já existente), sob a chave `onboarding`:
-  ```json
-  { "onboarding": { "admin": { "seen": true }, "manager": { "seen": false }, "client": { "seen": true } } }
-  ```
-- Para contas mock (`mock-*`) usar `localStorage` (`hub:onboarding:<role>`), sem tocar no banco.
-- Checkbox no modal: *"Não mostrar novamente"* → grava `seen: true`.
-- O balão flutuante ignora essa preferência: sempre reabre o tour sob demanda.
+### 3. Modal de material (`src/components/hub/MaterialFormModal.tsx`)
+- **Remover** o campo/seção de **Tags** (inclui import de `TagInput`, estado e persistência de `tags`).
+  - Nota: `tags` continua existindo no banco; apenas não editaremos mais pela UI. Ao salvar, preservar `tags` já existentes (não sobrescrever com array vazio em edição).
+- **Adicionar** toggle "Permitir download deste material" no lugar antes ocupado pelas tags.
+  - Visível tanto na criação quanto na edição.
+  - Só é editável pelo `super_admin`; para outros roles fica desabilitado e apenas exibe o estado atual.
+- Persistir `downloadable` no insert/update (snake_case no banco ↔ camelCase no tipo).
 
-## 2. Componentes novos
+### 4. Leitura de materiais
+- Onde `materials` são lidos (Admin, Dashboard, Collections, etc.), incluir `downloadable` no mapeamento para `Material` (default `false` se ausente).
 
-Em `src/components/onboarding/`:
-
-- **`OnboardingProvider.tsx`** — contexto global: estado do tour ativo (`step`, `running`), método `startTour(envId)`, integração com o ambiente ativo do `App.tsx`.
-- **`WelcomeModal.tsx`** — modal inicial com resumo do ambiente (título, permissões-chave, o que pode ver/fazer), botões *Fazer tour*, *Pular*, e checkbox *Não mostrar novamente*.
-- **`OnboardingTour.tsx`** — overlay com spotlight (buraco recortado sobre o elemento-alvo via `clip-path`) + tooltip posicionado (top/bottom/left/right), botões *Anterior / Próximo / Concluir / Pular*, indicador `3/8`.
-- **`OnboardingLauncher.tsx`** — botão flutuante bottom-right (ícone balão de ajuda), com tooltip "Refazer tour". Escondido enquanto o tour está ativo.
-- **`tours/adminTour.ts`, `managerTour.ts`, `clientTour.ts`** — arrays de passos declarativos:
-  ```ts
-  { targetSelector: '[data-tour="materials-tab"]', title: '...', body: '...', placement: 'bottom' }
-  ```
-
-## 3. Conteúdo dos tours
-
-**Ambiente Usuário (`client`)** — 8 passos:
-1. Boas-vindas + patente/XP atual (foco no card de perfil/gamificação).
-2. Aba **Materiais** — o que é.
-3. Filtros (tipo, tag, busca).
-4. Card de material → botão *Visualizar*.
-5. Seletor de idiomas dentro do card (PT/EN/ES).
-6. Aba **Trilhas** — coleções e progresso.
-7. Sistema de conquistas / XP / patentes.
-8. Onde alterar idioma e sair.
-
-**Ambiente Gestor (`manager`)** — 6 passos:
-1. Boas-vindas — acesso somente leitura ampliado.
-2. Painel de métricas do gestor.
-3. Auditoria (o que aparece / o que é oculto).
-4. Permissões visíveis (somente super_admin altera).
-5. Alternância entre painel do gestor e ambiente do usuário.
-6. Balão de ajuda sempre disponível.
-
-**Ambiente Admin (`super_admin`)** — 10 passos:
-1. Boas-vindas.
-2. Materiais (CRUD, ativos/inativos).
-3. Usuários (toggle de ativação, aprovação, exclusão).
-4. Trilhas e coleções.
-5. Métricas.
-6. Permissões granulares (papel × ambiente).
-7. Auditoria.
-8. Configurações + tema.
-9. Manutenção por ambiente.
-10. Balão de ajuda.
-
-## 4. Marcação dos alvos (data-tour)
-
-Adicionar `data-tour="<chave>"` nos elementos reais já existentes (`Dashboard.tsx`, `Admin.tsx`, `MaterialCard.tsx`, cabeçalho, etc.). Nenhuma mudança de lógica ou estilo — apenas atributos.
-
-## 5. Integração
-
-- Montar `OnboardingProvider` dentro de `AppInner` (`src/App.tsx`), após `active` estar definido.
-- Quando `active` muda para um ambiente cujo `preferences.onboarding[env].seen !== true` → abre `WelcomeModal` automaticamente.
-- `OnboardingLauncher` renderizado sempre que houver `active` (não aparece na tela de seleção de ambiente nem na tela de manutenção).
-- Persistência via `supabase.from('profiles').update({ preferences })` + atualização otimista no `AuthContext`.
-
-## 6. Estilo
-
-- Reutiliza tokens do design system (Navy/Gold, glassmorphism, sem cores hardcoded).
-- Modal reaproveita padrão dos modais existentes (`ConfirmModal`, `ViewerModal`).
-- Overlay do tour: `backdrop` escuro com recorte via `clip-path: polygon(...)` calculado a partir do `getBoundingClientRect()` do alvo; atualiza em `resize`/`scroll`.
-- Tooltip: liquid-glass, seta apontando para o alvo.
-- Balão flutuante: mesmo padrão visual dos botões de ação (círculo dourado, ícone `HelpCircle`).
+### 5. ViewerModal (`src/components/hub/ViewerModal.tsx`)
+- Se `material.downloadable === true`, exibir botão "Baixar" (ícone `Download` do lucide) no cabeçalho, à esquerda do X, com o mesmo estilo (`bg-white/10 ...`).
+- Comportamento por tipo:
+  - **image**: usar `resolvedUrl` → tentar `fetch` como blob e disparar `a.download`; em falha (CORS), abrir em nova aba.
+  - **pdf**: se Google Drive, usar `https://drive.google.com/uc?export=download&id=<id>`; se direto, download direto.
+  - **video/audio**: mesma lógica do PDF (Drive usa `uc?export=download`; direto baixa direto). YouTube: botão oculto mesmo com flag ligada (sem download legítimo).
+  - **html**: salvar `htmlContent` já carregado como `.html`; se ainda não carregou, baixar via fetch do `asset.url`.
+- Nome do arquivo derivado do `displayTitle` + extensão apropriada.
 
 ## Detalhes técnicos
+- Migration só faz `ALTER TABLE public.materials ADD COLUMN downloadable BOOLEAN NOT NULL DEFAULT false;` — sem GRANT novo (tabela existente).
+- Após aprovação da migration, `src/integrations/supabase/types.ts` é regenerado e as edições de código que dependem da nova coluna entram em seguida.
+- Preservação de `tags` na edição: ao montar o payload de update, reutilizar o valor de `tags` já carregado do material original, evitando perda de dados.
 
-```text
-src/
-├── components/onboarding/
-│   ├── OnboardingProvider.tsx     (contexto + auto-open)
-│   ├── WelcomeModal.tsx           (modal inicial + checkbox)
-│   ├── OnboardingTour.tsx         (spotlight + tooltip)
-│   ├── OnboardingLauncher.tsx     (balão bottom-right)
-│   └── tours/
-│       ├── clientTour.ts
-│       ├── managerTour.ts
-│       └── adminTour.ts
-├── App.tsx                        (monta Provider + Launcher)
-├── pages/Dashboard.tsx            (+ data-tour attrs)
-├── pages/Admin.tsx                (+ data-tour attrs)
-└── components/hub/MaterialCard.tsx (+ data-tour attrs)
-```
-
-- Sem novas dependências (spotlight/tooltip caseiros — evita bundle de libs como `driver.js` / `intro.js` e mantém o visual coerente).
-- Sem alterações de schema (usa `profiles.preferences` existente).
-- i18n: strings dos passos passam pelo `LanguageContext` (PT-BR, EN-US, ES-ES).
+## Fora do escopo (para depois)
+- Adicionar permissão de "materiais" para gestor.
+- Registrar downloads em `audit_logs`.
+- Marca d'água em arquivos baixados.
+- Botão de download fora do ViewerModal (ex.: no card).

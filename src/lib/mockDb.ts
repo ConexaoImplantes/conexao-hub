@@ -68,6 +68,7 @@ const mapMaterialFromDb = (data: any): Material => {
         points: data.points || 0,
         tags: data.tags || [],
         category: data.category || undefined,
+        downloadable: data.downloadable ?? false,
     };
 };
 
@@ -205,6 +206,7 @@ export const mockDb = {
         points: material.points || 0,
         tags: material.tags || [],
         category: material.category || null,
+        downloadable: material.downloadable ?? false,
       })
       .select()
       .single();
@@ -238,6 +240,7 @@ export const mockDb = {
         points: material.points || 0,
         tags: material.tags || [],
         category: material.category || null,
+        downloadable: material.downloadable ?? false,
       })
       .eq('id', material.id);
 
@@ -399,6 +402,7 @@ export const mockDb = {
         points: item.materials.points || 0,
         tags: item.materials.tags || [],
         category: item.materials.category,
+        downloadable: item.materials.downloadable ?? false,
       } : undefined,
     }));
   },

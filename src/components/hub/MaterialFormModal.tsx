@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType, Role, MaterialAsset } from '../../types';
 import { useLanguage } from '../../contexts/LanguageContext';
-import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones, Globe, Upload, Languages, Copy, CheckCircle2, Loader2 } from 'lucide-react';
-import { TagInput } from './TagInput';
+import { useAuth } from '../../contexts/AuthContext';
+import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Link as LinkIcon, AlertCircle, Star, Headphones, Globe, Upload, Languages, Copy, CheckCircle2, Loader2, Download } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { colorMix } from '../../lib/utils';
 import { toast } from '@/hooks/use-toast';
@@ -91,6 +91,8 @@ interface MaterialFormModalProps {
 
 export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialData, onClose, onSave }) => {
   const { t } = useLanguage();
+  const { user } = useAuth();
+  const isSuperAdmin = user?.role === 'super_admin';
   const languages: Language[] = ['pt-br', 'en-us', 'es-es'];
   const allRoles: Role[] = ['client', 'distributor', 'consultant'];
 
@@ -101,7 +103,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
   const [assets, setAssets] = useState<Partial<Record<Language, MaterialAsset>>>({});
   const [activeTab, setActiveTab] = useState<Language>('pt-br');
   const [error, setError] = useState<string | null>(null);
-  const [tags, setTags] = useState<string[]>([]);
+  const [downloadable, setDownloadable] = useState<boolean>(false);
   const defaultPointsByType: Record<MaterialType, number> = { pdf: 150, image: 50, video: 100, audio: 150, html: 100 };
   const [points, setPoints] = useState(defaultPointsByType['pdf']);
   const [htmlInputMode, setHtmlInputMode] = useState<'upload' | 'url'>('upload');
@@ -119,7 +121,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
       setAllowedRoles(initialData.allowedRoles);
       setActive(initialData.active);
       setAssets(initialData.assets);
-      setTags(initialData.tags || []);
+      setDownloadable(initialData.downloadable ?? false);
       setPoints(initialData.points || 0);
     }
   }, [initialData]);
@@ -189,8 +191,9 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
       allowedRoles,
       active,
       assets: cleanedAssets,
-      tags,
+      tags: initialData?.tags ?? [],
       points,
+      downloadable,
     };
 
     await onSave(payload);
@@ -372,12 +375,27 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 </div>
               </div>
 
-              {/* Tags */}
+              {/* Download toggle (replaces Tags) */}
               <div className="flex-1">
-                <label className="text-[11px] font-bold uppercase mb-2 block tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                  Tags
+                <label className="text-[11px] font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                  <Download size={12} /> Download
                 </label>
-                <TagInput tags={tags} onChange={setTags} />
+                <div
+                  onClick={() => { if (isSuperAdmin) setDownloadable(!downloadable); }}
+                  className={`p-3 rounded-xl flex items-center justify-between transition-colors h-[46px] ${isSuperAdmin ? 'cursor-pointer' : 'cursor-not-allowed opacity-70'}`}
+                  style={{
+                    backgroundColor: downloadable ? 'var(--color-success-bg)' : 'var(--color-bg)',
+                    color: downloadable ? 'var(--color-success)' : 'var(--color-text-muted)',
+                  }}
+                  title={isSuperAdmin ? '' : 'Somente Super Admin pode alterar'}
+                >
+                  <span className="text-sm font-medium">
+                    {downloadable ? 'Permitido' : 'Bloqueado'}
+                  </span>
+                  <div className="w-9 h-5 rounded-full relative transition-colors shrink-0" style={{ backgroundColor: downloadable ? 'var(--color-success)' : 'var(--color-border)' }}>
+                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm ${downloadable ? 'left-[18px]' : 'left-0.5'}`} />
+                  </div>
+                </div>
               </div>
             </div>
 
