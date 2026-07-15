@@ -203,7 +203,7 @@ export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
 
-  const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections">(
+  const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit">(
     "materials"
   );
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
