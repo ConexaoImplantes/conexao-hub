@@ -31,18 +31,18 @@ export interface AuditLogInput {
 export async function logAudit(input: AuditLogInput): Promise<void> {
   try {
     if (!input.user?.id || input.user.id.startsWith('mock-')) return;
-    const { error } = await supabase.from('audit_logs').insert({
+    const { error } = await supabase.from('audit_logs').insert([{
       user_id: input.user.id,
       user_name: input.user.name,
-      user_email: input.user.email ?? null,
-      user_role: input.user.role ?? null,
+      user_email: input.user.email ?? undefined,
+      user_role: input.user.role ?? undefined,
       module: input.module,
       action: input.action,
-      entity_type: input.entityType ?? null,
-      entity_id: input.entityId != null ? String(input.entityId) : null,
-      entity_label: input.entityLabel ?? null,
-      details: input.details ?? {},
-    });
+      entity_type: input.entityType ?? undefined,
+      entity_id: input.entityId != null ? String(input.entityId) : undefined,
+      entity_label: input.entityLabel ?? undefined,
+      details: (input.details ?? {}) as any,
+    }]);
     if (error) console.warn('[audit] insert failed:', error.message);
   } catch (e) {
     console.warn('[audit] unexpected error:', e);
