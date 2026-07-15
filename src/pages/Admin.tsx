@@ -207,6 +207,9 @@ export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
   const { user: currentUser } = useAuth();
+  const { has, hasAny } = usePermissions();
+  const isSuperAdmin = currentUser?.role === 'super_admin';
+
 
   const audit = (
     module: string,
