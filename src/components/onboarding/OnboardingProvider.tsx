@@ -46,12 +46,18 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   const { active } = useEnvironment();
   const [phase, setPhase] = React.useState<Phase>('idle');
   const [envForFlow, setEnvForFlow] = React.useState<EnvironmentId | null>(null);
+  // Track which envs already auto-opened in THIS page session — reload resets it.
+  const autoOpenedRef = React.useRef<Set<string>>(new Set());
 
-  // Auto-open the welcome modal the first time the user lands on an environment.
+  // Auto-open the welcome modal the first time the user lands on an environment
+  // AFTER each page reload — as long as they haven't ticked "não mostrar novamente".
   React.useEffect(() => {
     if (!user || !active) return;
     if (phase !== 'idle') return;
+    const key = `${user.id}:${active}`;
+    if (autoOpenedRef.current.has(key)) return;
     if (!wasSeen(user.id, active)) {
+      autoOpenedRef.current.add(key);
       setEnvForFlow(active);
       setPhase('welcome');
     }
@@ -82,9 +88,10 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
   );
 
   const handleTourClose = React.useCallback(() => {
-    if (user && envForFlow) markSeen(user.id, envForFlow);
+    // Do NOT auto-mark as seen. The preference is controlled exclusively by the
+    // "não mostrar novamente" checkbox in the welcome modal.
     setPhase('idle');
-  }, [user, envForFlow]);
+  }, []);
 
   const value: OnboardingContextValue = {
     restart,
