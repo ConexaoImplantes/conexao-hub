@@ -656,6 +656,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      normalize_person_name: { Args: { _name: string }; Returns: string }
       validate_invite_token: {
         Args: { _token: string }
         Returns: {
