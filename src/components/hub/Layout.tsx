@@ -103,6 +103,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
                     {eligible.length > 1 && (
                       <button
+                        data-tour="env-switch"
                         onClick={switchEnvironment}
                         className="group relative hidden sm:flex items-center gap-1.5 h-10 px-3 rounded-full transition-all duration-300"
                         style={{
