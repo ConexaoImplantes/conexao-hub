@@ -337,6 +337,7 @@ export type Database = {
           allowed_roles: Database["public"]["Enums"]["app_role"][]
           category: string | null
           created_at: string
+          downloadable: boolean
           id: string
           points: number
           tags: string[]
@@ -349,6 +350,7 @@ export type Database = {
           allowed_roles?: Database["public"]["Enums"]["app_role"][]
           category?: string | null
           created_at?: string
+          downloadable?: boolean
           id?: string
           points?: number
           tags?: string[]
@@ -361,6 +363,7 @@ export type Database = {
           allowed_roles?: Database["public"]["Enums"]["app_role"][]
           category?: string | null
           created_at?: string
+          downloadable?: boolean
           id?: string
           points?: number
           tags?: string[]
