@@ -38,6 +38,16 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
   const [_forceNativeDrive] = useState(false); // kept for hook order stability
   const [htmlContent, setHtmlContent] = useState<string | null>(null);
   const [downloadState, setDownloadState] = useState<'idle' | 'downloading' | 'done' | 'error'>('idle');
+  const [isLoading, setIsLoading] = useState(true);
+
+  const materialKey = material ? `${material.id}-${language}` : '';
+  useEffect(() => {
+    if (!material) return;
+    setIsLoading(true);
+    // Safety timeout — hide loader after 15s regardless
+    const t = setTimeout(() => setIsLoading(false), 15000);
+    return () => clearTimeout(t);
+  }, [materialKey, material]);
 
   useEffect(() => {
     if (material?.type === 'html') {
@@ -45,8 +55,8 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       if (url) {
         fetch(url).
         then((res) => res.text()).
-        then((text) => setHtmlContent(text)).
-        catch(() => setHtmlContent(null));
+        then((text) => { setHtmlContent(text); setIsLoading(false); }).
+        catch(() => { setHtmlContent(null); setIsLoading(false); });
       }
     }
   }, [material?.type, material?.assets, language]);
