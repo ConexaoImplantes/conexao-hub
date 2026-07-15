@@ -1,6 +1,7 @@
 import { supabase } from './supabaseClient';
 import { Material, UserProfile, Role, SystemConfig, ColorScheme, UserStatus, AccessLog, Language, MaterialAsset, Collection, CollectionItem, UserProgress, EnvironmentThemes } from '../types';
 import { DEFAULT_DARK, mergeScheme, DEFAULT_ENVIRONMENT_THEMES } from './themeDefaults';
+import { normalizeName } from './nameUtils';
 
 export interface CollectionProgress {
   id: string;
