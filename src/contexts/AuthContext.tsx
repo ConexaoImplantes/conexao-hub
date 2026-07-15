@@ -3,6 +3,7 @@ import { toast } from 'sonner';
 import { UserProfile, Role } from '../types';
 import { supabase } from '../lib/supabaseClient';
 import { mockDb } from '../lib/mockDb';
+import { normalizeName } from '../lib/nameUtils';
 
 interface AuthContextType {
   user: UserProfile | null;
