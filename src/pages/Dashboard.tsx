@@ -412,7 +412,7 @@ export const Dashboard: React.FC = () => {
                   {colMaterials.map((mat, idx) => {
                     const prog = userProgress.find(p => p.materialId === mat.id && p.collectionId === selectedCollection.id);
                     const availableLang: Language = mat.assets[language] ? language : (['pt-br', 'en-us', 'es-es'] as Language[]).find(l => mat.assets[l]?.url) || language;
-                    const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
+                    const matTitle = mat.title[language] || mat.title['pt-br'] || t('untitled');
                     return (
                       <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: colorMix('var(--color-surface)', 50, 'rgba(30,41,59,0.5)') }}>
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-xs sm:text-sm"
