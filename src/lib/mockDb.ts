@@ -160,7 +160,7 @@ export const mockDb = {
     const { error } = await supabase
       .from('profiles')
       .update({
-        name: updatedUser.name,
+        name: normalizeName(updatedUser.name),
         email: updatedUser.email,
         whatsapp: updatedUser.whatsapp,
         cro: updatedUser.cro,
