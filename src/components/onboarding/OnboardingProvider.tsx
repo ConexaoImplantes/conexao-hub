@@ -106,7 +106,7 @@ export const OnboardingProvider: React.FC<{ children: React.ReactNode }> = ({ ch
     <OnboardingContext.Provider value={value}>
       {children}
       {phase === 'welcome' && tour && envForFlow && (
-        <WelcomeModal envId={envForFlow} tour={tour} onClose={handleWelcomeClose} />
+        <WelcomeModal envId={envForFlow} userRole={user?.role} tour={tour} onClose={handleWelcomeClose} />
       )}
       {phase === 'tour' && tour && (
         <OnboardingTour steps={tour.steps} onClose={handleTourClose} />
