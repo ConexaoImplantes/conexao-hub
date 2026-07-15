@@ -327,53 +327,6 @@ export const Admin: React.FC = () => {
   const [rejectingUser, setRejectingUser] = useState<UserProfile | null>(null);
 
 
-  const [materials, setMaterials] = useState<Material[]>([]);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
-  const [viewingMaterial, setViewingMaterial] = useState<{mat: Material;lang: Language;} | null>(null);
-  const [materialSearch, setMaterialSearch] = useState("");
-  const [materialTypeFilter, setMaterialTypeFilter] = useState<MaterialType | "all">("all");
-  const [materialStatusFilter, setMaterialStatusFilter] = useState<"all" | "active" | "inactive">("all");
-  const [materialSortOrder, setMaterialSortOrder] = useState<"asc" | "desc">("asc");
-  const [users, setUsers] = useState<UserProfile[]>([]);
-  const [userComm, setUserComm] = useState<UserProfile | null>(null);
-  const [userEditing, setUserEditing] = useState<UserProfile | null>(null);
-  const [copiedLink, setCopiedLink] = useState<string | null>(null);
-  const [userSearch, setUserSearch] = useState("");
-  const [userRoleFilter, setUserRoleFilter] = useState<Role | "all">("all");
-  const [userStatusFilter, setUserStatusFilter] = useState<UserStatus | "all">("all");
-  const [accessLogs, setAccessLogs] = useState<AccessLog[]>([]);
-  const [analyticsDetail, setAnalyticsDetail] = useState<{material: Material;logs: AccessLog[];} | null>(null);
-  const [analyticsTypeFilter, setAnalyticsTypeFilter] = useState<MaterialType | "all">("all");
-  const [analyticsRoleFilter, setAnalyticsRoleFilter] = useState<Role | "all">("all");
-  const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<{type: "material" | "user" | "collection";id: string;} | null>(
-    null
-  );
-  const [localConfig, setLocalConfig] = useState(config);
-  // Collections state
-  const [collections, setCollections] = useState<Collection[]>([]);
-  const [isCollectionFormOpen, setIsCollectionFormOpen] = useState(false);
-  const [editingCollection, setEditingCollection] = useState<Collection | null>(null);
-  const [collectionSearch, setCollectionSearch] = useState("");
-  const [expandedCollection, setExpandedCollection] = useState<string | null>(null);
-  const [expandedCollectionItems, setExpandedCollectionItems] = useState<import("../types").CollectionItem[]>([]);
-  const [analyticsLoading, setAnalyticsLoading] = useState(false);
-  const [collectionProgress, setCollectionProgress] = useState<CollectionProgress[]>([]);
-  // Gamification levels state
-  const [gamificationLevels, setGamificationLevels] = useState<GamificationLevel[]>([]);
-  const [editingLevel, setEditingLevel] = useState<GamificationLevel | null>(null);
-  const [newLevelName, setNewLevelName] = useState("");
-  const [newLevelPoints, setNewLevelPoints] = useState(0);
-  const [newLevelColor, setNewLevelColor] = useState("#c9a655");
-  const analyticsRef = useRef<HTMLDivElement>(null);
-  // Invite tokens state
-  const [inviteTokens, setInviteTokens] = useState<any[]>([]);
-  const [inviteRole, setInviteRole] = useState<Role>('client');
-  const [inviteExpiry, setInviteExpiry] = useState(7);
-  const [inviteGenerating, setInviteGenerating] = useState(false);
-  // Reject modal state
-  const [rejectingUser, setRejectingUser] = useState<UserProfile | null>(null);
   const exportAnalyticsCsv = () => {
     const headers = ['Material', 'Tipo', 'Visualizações', 'Usuários Únicos', 'Último Acesso'];
     const rows = aggregatedMetrics.map((item) => {
