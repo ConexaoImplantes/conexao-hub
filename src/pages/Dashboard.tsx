@@ -497,11 +497,12 @@ export const Dashboard: React.FC = () => {
                   <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
                   <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
                 </div>
-                <div className="relative w-full xl:w-96 group/search">
+                <div data-tour="search-input" className="relative w-full xl:w-96 group/search">
                    <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)') }} />
                   <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: colorMix('var(--color-surface)', 60, 'rgba(30,41,59,0.6)') }}>
                     <div className="pl-4 sm:pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={20} className="sm:hidden" /><Search size={22} className="hidden sm:block" /></div>
                     <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+
                   </div>
                 </div>
                 <button
