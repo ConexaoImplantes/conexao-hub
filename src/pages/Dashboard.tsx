@@ -395,7 +395,7 @@ export const Dashboard: React.FC = () => {
                     )}
                     {progressPct === 100 && materialIds.length > 0 && (
                       <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
-                        <Trophy size={16} /> Trilha concluída!
+                        <Trophy size={16} /> {t('trail.completed')}
                       </div>
                     )}
                   </div>
