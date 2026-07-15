@@ -142,6 +142,31 @@ export const Dashboard: React.FC = () => {
     };
   }, [materials, user, language]);
 
+  // Language-scoped views for trails: only materials with an asset in the current language count
+  const langCollectionItemMap = useMemo(() => {
+    const out: Record<string, string[]> = {};
+    Object.entries(collectionItemMap).forEach(([colId, ids]) => {
+      out[colId] = ids.filter(mid => {
+        const mat = (collectionMaterialsMap[colId] || []).find(m => m.id === mid);
+        return mat ? !!mat.assets[language] : false;
+      });
+    });
+    return out;
+  }, [collectionItemMap, collectionMaterialsMap, language]);
+
+  const langCollectionMaterialsMap = useMemo(() => {
+    const out: Record<string, Material[]> = {};
+    Object.entries(collectionMaterialsMap).forEach(([colId, mats]) => {
+      out[colId] = mats.filter(m => !!m.assets[language]);
+    });
+    return out;
+  }, [collectionMaterialsMap, language]);
+
+  const visibleCollections = useMemo(
+    () => collections.filter(c => (langCollectionMaterialsMap[c.id] || []).length > 0),
+    [collections, langCollectionMaterialsMap]
+  );
+
   const handleViewMaterial = async (mat: Material, lang: Language) => {
     const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
     if (user) {
