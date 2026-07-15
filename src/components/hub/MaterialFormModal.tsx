@@ -375,12 +375,27 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 </div>
               </div>
 
-              {/* Tags */}
+              {/* Download toggle (replaces Tags) */}
               <div className="flex-1">
-                <label className="text-[11px] font-bold uppercase mb-2 block tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
-                  Tags
+                <label className="text-[11px] font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider" style={{ color: 'var(--color-text-muted)' }}>
+                  <Download size={12} /> Download
                 </label>
-                <TagInput tags={tags} onChange={setTags} />
+                <div
+                  onClick={() => { if (isSuperAdmin) setDownloadable(!downloadable); }}
+                  className={`p-3 rounded-xl flex items-center justify-between transition-colors h-[46px] ${isSuperAdmin ? 'cursor-pointer' : 'cursor-not-allowed opacity-70'}`}
+                  style={{
+                    backgroundColor: downloadable ? 'var(--color-success-bg)' : 'var(--color-bg)',
+                    color: downloadable ? 'var(--color-success)' : 'var(--color-text-muted)',
+                  }}
+                  title={isSuperAdmin ? '' : 'Somente Super Admin pode alterar'}
+                >
+                  <span className="text-sm font-medium">
+                    {downloadable ? 'Permitido' : 'Bloqueado'}
+                  </span>
+                  <div className="w-9 h-5 rounded-full relative transition-colors shrink-0" style={{ backgroundColor: downloadable ? 'var(--color-success)' : 'var(--color-border)' }}>
+                    <div className={`absolute top-0.5 w-4 h-4 bg-white rounded-full transition-transform duration-200 shadow-sm ${downloadable ? 'left-[18px]' : 'left-0.5'}`} />
+                  </div>
+                </div>
               </div>
             </div>
 
