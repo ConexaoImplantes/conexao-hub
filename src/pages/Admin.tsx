@@ -372,6 +372,7 @@ export const Admin: React.FC = () => {
     setInviteGenerating(true);
     try {
       await mockDb.createInviteToken(inviteRole, inviteExpiry);
+      audit('invites', 'create', { type: 'invite', label: `Convite (${inviteRole})`, details: { role: inviteRole, expiry: inviteExpiry } });
       loadInviteTokens();
     } catch (e: any) {
       toast.error('Erro ao gerar convite: ' + e.message);
