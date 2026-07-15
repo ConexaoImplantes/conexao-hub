@@ -23,7 +23,9 @@ export const useOnboarding = () => {
   return ctx;
 };
 
-const seenKey = (userId: string, env: EnvironmentId) => `hub:onboarding:seen:${userId}:${env}`;
+// v2 key — old "seen" flags from earlier versions are intentionally ignored so
+// the auto-open behavior always reflects the current rule (only the checkbox suppresses it).
+const seenKey = (userId: string, env: EnvironmentId) => `hub:onboarding:dismissed:v2:${userId}:${env}`;
 
 const wasSeen = (userId: string, env: EnvironmentId): boolean => {
   try {
