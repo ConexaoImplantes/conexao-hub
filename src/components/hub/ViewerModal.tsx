@@ -178,9 +178,8 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
             <X size={24} />
           </button>
         </div>
-
-        </button>
       </div>
+
 
       <div className="flex-1 w-full h-full flex items-center justify-center bg-black overflow-hidden relative">
         {(() => {
