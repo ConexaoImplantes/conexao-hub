@@ -18,19 +18,37 @@ async function fetchDrive(id: string): Promise<Response> {
   const base = `https://drive.google.com/uc?export=download&id=${id}`;
   // First request
   let res = await fetch(base, { redirect: "follow" });
-  const ct = res.headers.get("content-type") || "";
-  // If HTML, we hit the virus-scan/confirm interstitial
+  let ct = res.headers.get("content-type") || "";
+
+  // If HTML, we hit the virus-scan/confirm interstitial (large files)
   if (ct.includes("text/html")) {
     const html = await res.text();
-    // Newer confirm token pattern: name="confirm" value="XYZ" or ?confirm=XYZ
-    const tokenMatch =
-      html.match(/name=\"confirm\"\s+value=\"([^\"]+)\"/) ||
-      html.match(/confirm=([0-9A-Za-z_-]+)/);
-    const uuidMatch = html.match(/name=\"uuid\"\s+value=\"([^\"]+)\"/);
-    const token = tokenMatch?.[1] ?? "t";
-    let confirmUrl = `${base}&confirm=${token}`;
-    if (uuidMatch) confirmUrl += `&uuid=${uuidMatch[1]}`;
+    // Parse form action + hidden inputs. Large files POST to drive.usercontent.google.com
+    const actionMatch = html.match(/action="([^"]+download[^"]*)"/i);
+    const action = actionMatch?.[1] ?? "https://drive.usercontent.google.com/download";
+    const params = new URLSearchParams();
+    const inputRe = /<input[^>]+name="([^"]+)"[^>]+value="([^"]+)"/gi;
+    let m: RegExpExecArray | null;
+    while ((m = inputRe.exec(html)) !== null) {
+      params.set(m[1], m[2]);
+    }
+    if (!params.has("id")) params.set("id", id);
+    if (!params.has("export")) params.set("export", "download");
+    if (!params.has("confirm")) params.set("confirm", "t");
+    const confirmUrl = `${action}?${params.toString()}`;
     res = await fetch(confirmUrl, { redirect: "follow" });
+    ct = res.headers.get("content-type") || "";
+    // Some paths still return HTML — final fallback to usercontent host directly
+    if (ct.includes("text/html")) {
+      const html2 = await res.text();
+      const uuidMatch = html2.match(/name="uuid"\s+value="([^"]+)"/);
+      const fallback = new URL("https://drive.usercontent.google.com/download");
+      fallback.searchParams.set("id", id);
+      fallback.searchParams.set("export", "download");
+      fallback.searchParams.set("confirm", "t");
+      if (uuidMatch) fallback.searchParams.set("uuid", uuidMatch[1]);
+      res = await fetch(fallback.toString(), { redirect: "follow" });
+    }
   }
   return res;
 }
