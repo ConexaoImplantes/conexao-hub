@@ -46,7 +46,10 @@ export const useEnvironment = () => {
 const AppContent = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { permissions, loading: permsLoading } = usePermissions();
-  const { setActiveEnvironment } = useBrand();
+  const { setActiveEnvironment, config } = useBrand();
+
+  const isSuperAdmin = user?.role === "super_admin";
+  const maintenance = config.environmentMaintenance ?? {};
 
   const eligible = React.useMemo(
     () => (user ? getEligibleEnvironments(user.role, permissions) : []),
