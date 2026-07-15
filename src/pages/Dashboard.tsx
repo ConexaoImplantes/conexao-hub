@@ -533,7 +533,7 @@ export const Dashboard: React.FC = () => {
                 <p className="text-sm max-w-xs" style={{ color: 'var(--color-text-muted)' }}>{t('no.materials')}</p>
                 {(searchTerm || filterType !== 'all' || filterTag) && (
                   <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95" style={{ backgroundColor: colorMix('var(--color-bg)', 80, 'rgba(15,23,42,0.8)'), border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`, color: 'var(--color-accent)' }}>
-                    Limpar filtros
+                    {t('clear.filters')}
                   </button>
                 )}
               </div>
