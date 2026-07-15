@@ -258,12 +258,12 @@ export const Dashboard: React.FC = () => {
             <div data-tour="user-level-card" className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
-                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nível {userLevel}</span>
+                <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>{t('level')} {userLevel}</span>
                 <span className="ml-auto text-xs font-bold" style={{ color: 'var(--color-accent)' }}>{user.points} XP</span>
               </div>
               <Progress value={levelProgress} className="h-1.5" />
               <p className="text-[10px] mt-1.5 text-right" style={{ color: 'var(--color-text-muted)' }}>
-                Próximo: {nextThreshold} XP
+                {t('next')}: {nextThreshold} XP
               </p>
             </div>
           )}
@@ -275,14 +275,14 @@ export const Dashboard: React.FC = () => {
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'materials' ? 'liquid-glass-gold' : ''}`}
               style={activeView === 'materials' ? { color: 'var(--color-accent)' } : { color: 'var(--color-text-muted)' }}
             >
-              <Grid size={14} /> Materiais
+              <Grid size={14} /> {t('tab.materials')}
             </button>
             <button
               onClick={() => setActiveView('collections')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'collections' ? 'liquid-glass-gold' : ''}`}
               style={activeView === 'collections' ? { color: 'var(--color-accent)' } : { color: 'var(--color-text-muted)' }}
             >
-              <BookOpen size={14} /> Trilhas
+              <BookOpen size={14} /> {t('tab.collections')}
             </button>
           </div>
 
@@ -291,7 +291,7 @@ export const Dashboard: React.FC = () => {
             <div data-tour="material-filters" className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: colorMix('var(--color-surface)', 30, 'rgba(30,41,59,0.3)') }}>
               <div className="hidden md:flex items-center justify-between px-4 py-3 mb-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
-                  <Layers size={14} style={{ color: 'var(--color-accent)' }} /> Biblioteca
+                  <Layers size={14} style={{ color: 'var(--color-accent)' }} /> {t('library')}
                 </h3>
               </div>
               <div className="shrink-0 md:shrink md:min-w-0 md:flex-1"><MenuCategory type="all" icon={Grid} label={t('filter.all')} count={counts.all} active={filterType === 'all'} /></div>
@@ -331,11 +331,11 @@ export const Dashboard: React.FC = () => {
                   <div className="relative z-10">
                     <div className="flex items-center gap-2 mb-2" style={{ color: 'var(--color-warning)' }}>
                       <Sparkles size={16} className="animate-pulse" />
-                      <span className="text-xs font-bold uppercase tracking-wide">Dica Pro</span>
+                      <span className="text-xs font-bold uppercase tracking-wide">{t('pro.tip')}</span>
                     </div>
                     <p className="text-xs leading-relaxed" style={{ color: 'var(--color-text-muted)' }}>
-                      Use <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>Ctrl+F</span> para focar na busca rapidamente.
-                      Pressione <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>?</span> para ver todos os atalhos.
+                      <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>Ctrl+F</span> {t('pro.tip.search')}{' '}
+                      <span className="font-mono bg-white/10 px-1 rounded text-[10px]" style={{ color: 'var(--color-text-main)' }}>?</span> {t('pro.tip.shortcuts')}
                     </p>
                   </div>
                 </div>
@@ -364,7 +364,7 @@ export const Dashboard: React.FC = () => {
                 className="mb-6 flex items-center gap-2 text-sm font-semibold transition-all hover:opacity-70"
                 style={{ color: 'var(--color-text-muted)' }}
               >
-                <ArrowLeft size={16} /> Voltar para Trilhas
+                <ArrowLeft size={16} /> {t('trail.back')}
               </button>
 
               <div className="relative rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden mb-6 sm:mb-10">
@@ -375,14 +375,14 @@ export const Dashboard: React.FC = () => {
                 <div className="relative z-10 p-5 sm:p-8 md:p-10">
                   <div className="flex items-center gap-2 mb-3">
                     <BookOpen size={20} style={{ color: 'var(--color-accent)' }} />
-                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>Trilha de Aprendizagem</span>
+                    <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-accent)' }}>{t('trail.learning')}</span>
                   </div>
                   <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-3" style={{ color: 'var(--color-text-main)' }}>{displayTitle}</h2>
                   {displayDesc && <p className="text-base mb-6 max-w-2xl" style={{ color: 'var(--color-text-muted)' }}>{displayDesc}</p>}
                   <div className="flex flex-wrap items-center gap-6">
                     <div className="space-y-2 flex-1 min-w-[200px]">
                       <div className="flex justify-between text-sm font-medium">
-                        <span style={{ color: 'var(--color-text-muted)' }}>{completedCount} de {materialIds.length} concluídos</span>
+                        <span style={{ color: 'var(--color-text-muted)' }}>{completedCount} {t('progress.of')} {materialIds.length} {t('progress.completed.items')}</span>
                         <span style={{ color: 'var(--color-accent)' }}>{progressPct}%</span>
                       </div>
                       <Progress value={progressPct} className="h-2" />
@@ -390,12 +390,12 @@ export const Dashboard: React.FC = () => {
                     {selectedCollection.points > 0 && (
                       <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
                         <Star size={16} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
-                        {selectedCollection.points} XP ao concluir
+                        {selectedCollection.points} {t('trail.xp.on.complete')}
                       </div>
                     )}
                     {progressPct === 100 && materialIds.length > 0 && (
                       <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: 'var(--color-success-bg)', color: 'var(--color-success)' }}>
-                        <Trophy size={16} /> Trilha concluída!
+                        <Trophy size={16} /> {t('trail.completed')}
                       </div>
                     )}
                   </div>
@@ -405,14 +405,14 @@ export const Dashboard: React.FC = () => {
               {colMaterials.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 rounded-[2rem] border border-white/5 text-center" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                   <BookOpen size={40} className="mb-3 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Esta trilha ainda não tem materiais.</p>
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t('trail.no.materials')}</p>
                 </div>
               ) : (
                 <div className="space-y-2 sm:space-y-3 pb-20">
                   {colMaterials.map((mat, idx) => {
                     const prog = userProgress.find(p => p.materialId === mat.id && p.collectionId === selectedCollection.id);
                     const availableLang: Language = mat.assets[language] ? language : (['pt-br', 'en-us', 'es-es'] as Language[]).find(l => mat.assets[l]?.url) || language;
-                    const matTitle = mat.title[language] || mat.title['pt-br'] || 'Sem título';
+                    const matTitle = mat.title[language] || mat.title['pt-br'] || t('untitled');
                     return (
                       <div key={mat.id} className="flex flex-row items-center gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-white/5 transition-all hover:border-[var(--color-accent)]/30" style={{ backgroundColor: colorMix('var(--color-surface)', 50, 'rgba(30,41,59,0.5)') }}>
                         <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center shrink-0 font-bold text-xs sm:text-sm"
@@ -431,10 +431,10 @@ export const Dashboard: React.FC = () => {
                                 <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />{mat.points} XP
                               </span>
                             )}
-                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: 'var(--color-success)' }}>Concluído</span>}
+                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: 'var(--color-success)' }}>{t('progress.completed')}</span>}
                             {prog?.status === 'started' && (
                               <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
-                                <PlayCircle size={10} /> Em andamento
+                                <PlayCircle size={10} /> {t('progress.in.progress')}
                               </span>
                             )}
                           </div>
@@ -444,7 +444,7 @@ export const Dashboard: React.FC = () => {
                           className="liquid-glass-gold flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap shrink-0"
                           style={{ color: 'var(--color-accent)' }}
                         >
-                          {prog?.status === 'completed' ? 'Revisar' : prog?.status === 'started' ? 'Continuar' : 'Iniciar'}
+                          {prog?.status === 'completed' ? t('progress.review') : prog?.status === 'started' ? t('progress.continue') : t('progress.start')}
                           <ChevronRight size={14} />
                         </button>
                       </div>
@@ -462,8 +462,8 @@ export const Dashboard: React.FC = () => {
             <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
               <div className="absolute inset-0 opacity-60" style={{ background: `linear-gradient(to right, ${colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)')}, ${colorMix('var(--color-gradient-mid)', 10, 'rgba(232,212,139,0.1)')}, transparent)` }} />
               <div className="relative z-10 p-5 sm:p-8 md:p-10">
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
-                <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>{t('trails.title')}</h2>
+                <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('trails.desc')}</p>
               </div>
             </div>
             {isLoading ? (
@@ -471,8 +471,8 @@ export const Dashboard: React.FC = () => {
             ) : visibleCollections.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-24 rounded-[2rem] text-center px-4 border border-white/5" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                 <BookOpen size={48} className="mb-4 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
-                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhuma trilha disponível</h3>
-                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>As trilhas de aprendizagem serão exibidas aqui.</p>
+                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>{t('trail.no.available')}</h3>
+                <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t('trail.no.available.desc')}</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
@@ -500,7 +500,7 @@ export const Dashboard: React.FC = () => {
               <div className="relative z-10 p-5 sm:p-8 md:p-10 flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 sm:gap-8 backdrop-blur-sm">
                 <div>
                   <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
-                  <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
+                  <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('dashboard.desc')}</p>
                 </div>
                 <div data-tour="search-input" className="relative w-full xl:w-96 group/search">
                    <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)') }} />
@@ -529,11 +529,11 @@ export const Dashboard: React.FC = () => {
                 <div className="w-24 h-24 rounded-full flex items-center justify-center mb-6 shadow-lg" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
                   <Filter size={32} className="opacity-50" />
                 </div>
-                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>Nenhum resultado encontrado</h3>
+                <h3 className="text-xl font-bold mb-2" style={{ color: 'var(--color-text-main)' }}>{t('no.results')}</h3>
                 <p className="text-sm max-w-xs" style={{ color: 'var(--color-text-muted)' }}>{t('no.materials')}</p>
                 {(searchTerm || filterType !== 'all' || filterTag) && (
                   <button onClick={() => { setSearchTerm(''); setFilterType('all'); setFilterTag(''); }} className="mt-8 px-8 py-3 rounded-xl font-bold hover:scale-105 hover:shadow-xl transition-all duration-300 active:scale-95" style={{ backgroundColor: colorMix('var(--color-bg)', 80, 'rgba(15,23,42,0.8)'), border: `1px solid ${colorMix('var(--color-accent)', 25, 'rgba(201,166,85,0.25)')}`, color: 'var(--color-accent)' }}>
-                    Limpar filtros
+                    {t('clear.filters')}
                   </button>
                 )}
               </div>
