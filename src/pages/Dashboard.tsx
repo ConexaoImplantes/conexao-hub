@@ -390,7 +390,7 @@ export const Dashboard: React.FC = () => {
                     {selectedCollection.points > 0 && (
                       <div className="flex items-center gap-2 px-4 py-2 rounded-xl font-bold text-sm" style={{ backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'), color: 'var(--color-accent)' }}>
                         <Star size={16} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
-                        {selectedCollection.points} XP ao concluir
+                        {selectedCollection.points} {t('trail.xp.on.complete')}
                       </div>
                     )}
                     {progressPct === 100 && materialIds.length > 0 && (
