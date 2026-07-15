@@ -80,7 +80,7 @@ export function getEligibleEnvironments(
   permissions: Set<string>
 ): EnvironmentId[] {
   if (role === 'super_admin' || permissions.has('*')) {
-    return ['admin', 'client'];
+    return ['admin', 'manager', 'client'];
   }
   const eligible: EnvironmentId[] = [];
   const anyIn = (set: Set<string>) => {
