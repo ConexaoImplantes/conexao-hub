@@ -109,11 +109,39 @@ export const UserPermissionsPanel: React.FC = () => {
     }
   };
 
+  /** Env a role can reach based on the role_permissions matrix (super_admin = all). */
+  const roleEnvsMap = useMemo(() => {
+    const out: Record<string, EnvironmentId[]> = {};
+    Object.entries(roleMatrix).forEach(([role, keys]) => {
+      if (role === 'super_admin') {
+        out[role] = ['admin', 'manager', 'client'];
+        return;
+      }
+      const envs: EnvironmentId[] = [];
+      for (const k of keys) {
+        if (MANAGER_UNLOCK_KEYS.has(k)) { envs.push('manager'); break; }
+      }
+      for (const k of keys) {
+        if (CLIENT_PERMISSION_KEYS.has(k)) { envs.push('client'); break; }
+      }
+      out[role] = envs;
+    });
+    return out;
+  }, [roleMatrix]);
+
   const filteredUsers = useMemo(() => {
     const s = userSearch.trim().toLowerCase();
-    if (!s) return users;
-    return users.filter((u) => u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s));
-  }, [users, userSearch]);
+    return users.filter((u) => {
+      if (s && !u.name.toLowerCase().includes(s) && !u.email.toLowerCase().includes(s)) return false;
+      if (roleFilter !== 'all' && u.role !== roleFilter) return false;
+      if (envFilter !== 'all') {
+        const envs = roleEnvsMap[u.role] ?? [];
+        if (!envs.includes(envFilter)) return false;
+      }
+      return true;
+    });
+  }, [users, userSearch, roleFilter, envFilter, roleEnvsMap]);
+
 
   const filteredCatalog = useMemo(() => {
     const s = permSearch.trim().toLowerCase();
