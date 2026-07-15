@@ -677,8 +677,34 @@ const translations: Record<Language, Record<string, string>> = {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
+const STORAGE_KEY = 'hub.language';
+
+const isLanguage = (v: unknown): v is Language =>
+  v === 'pt-br' || v === 'en-us' || v === 'es-es';
+
+const readStoredLanguage = (): Language => {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (isLanguage(raw)) return raw;
+  } catch {
+    /* ignore */
+  }
+  return 'pt-br';
+};
+
 export const LanguageProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [language, setLanguage] = useState<Language>('pt-br');
+  // Lazy init from localStorage so the previously chosen language survives reloads
+  // BEFORE the profile has a chance to load from Supabase.
+  const [language, setLanguageState] = React.useState<Language>(() => readStoredLanguage());
+
+  const setLanguage = React.useCallback((lang: Language) => {
+    setLanguageState(lang);
+    try {
+      localStorage.setItem(STORAGE_KEY, lang);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   const t = (key: string) => {
     return translations[language][key] || key;
