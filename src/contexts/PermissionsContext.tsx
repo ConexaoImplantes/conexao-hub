@@ -4,6 +4,7 @@ import { useAuth } from './AuthContext';
 import type { Role } from '../types';
 
 export type PermissionKey = string;
+export type PermissionEffect = 'grant' | 'revoke';
 
 export interface PermissionCatalogItem {
   key: string;
@@ -13,6 +14,12 @@ export interface PermissionCatalogItem {
   sort_order: number;
 }
 
+export interface UserOverrideRow {
+  user_id: string;
+  permission_key: string;
+  effect: PermissionEffect;
+}
+
 interface PermissionsContextType {
   permissions: Set<PermissionKey>;
   loading: boolean;
@@ -20,12 +27,15 @@ interface PermissionsContextType {
   hasAny: (...keys: PermissionKey[]) => boolean;
   hasAll: (...keys: PermissionKey[]) => boolean;
   refresh: () => Promise<void>;
-  /** Full catalog (loaded on demand for the Admin permissions matrix) */
   loadCatalog: () => Promise<PermissionCatalogItem[]>;
-  /** All role→permission bindings (for the Admin matrix) */
   loadMatrix: () => Promise<Array<{ role: Role; permission_key: string }>>;
-  /** Set all permissions for a given role (super_admin cannot be modified) */
   saveRolePermissions: (role: Role, keys: PermissionKey[]) => Promise<void>;
+  /** Load user-level overrides (grant/revoke) for a specific user */
+  loadUserOverrides: (userId: string) => Promise<UserOverrideRow[]>;
+  /** Load a user's effective permission keys (role + overrides) */
+  loadEffectivePermissions: (userId: string) => Promise<Set<string>>;
+  /** Replace all overrides for a user */
+  saveUserOverrides: (userId: string, overrides: Array<{ key: string; effect: PermissionEffect }>) => Promise<void>;
 }
 
 const PermissionsContext = createContext<PermissionsContextType | undefined>(undefined);
@@ -41,7 +51,6 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setLoading(false);
       return;
     }
-    // Super admin has everything
     if (user.role === 'super_admin') {
       setPermissions(new Set(['*']));
       setLoading(false);
@@ -49,12 +58,11 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('role_permissions')
-        .select('permission_key')
-        .eq('role', user.role);
+      // Effective permissions = role_permissions + user_permissions grants - revokes
+      const { data, error } = await supabase.rpc('get_effective_permissions', { _user_id: user.id });
       if (error) throw error;
-      setPermissions(new Set((data ?? []).map((r: any) => r.permission_key as string)));
+      const keys = (data ?? []).map((r: any) => (typeof r === 'string' ? r : r.get_effective_permissions ?? r.key));
+      setPermissions(new Set(keys.filter(Boolean)));
     } catch (e) {
       console.error('[PermissionsContext] load failed:', e);
       setPermissions(new Set());
@@ -63,9 +71,7 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, [user]);
 
-  useEffect(() => {
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const has = useCallback(
     (key: PermissionKey) => permissions.has('*') || permissions.has(key),
@@ -102,26 +108,68 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (role === 'super_admin') {
         throw new Error('As permissões do Super Admin não podem ser alteradas.');
       }
-      // Replace strategy: delete all for role, then insert selected
-      const { error: delErr } = await supabase
-        .from('role_permissions')
-        .delete()
-        .eq('role', role);
+      const { error: delErr } = await supabase.from('role_permissions').delete().eq('role', role);
       if (delErr) throw delErr;
       if (keys.length > 0) {
         const rows = keys.map((k) => ({ role, permission_key: k }));
         const { error: insErr } = await supabase.from('role_permissions').insert(rows);
         if (insErr) throw insErr;
       }
-      // If the current user's role was changed, refresh
       if (user?.role === role) await load();
+    },
+    [load, user]
+  );
+
+  const loadUserOverrides = useCallback(async (userId: string): Promise<UserOverrideRow[]> => {
+    const { data, error } = await supabase
+      .from('user_permissions')
+      .select('user_id, permission_key, effect')
+      .eq('user_id', userId);
+    if (error) throw error;
+    return (data ?? []) as UserOverrideRow[];
+  }, []);
+
+  const loadEffectivePermissions = useCallback(async (userId: string): Promise<Set<string>> => {
+    const { data, error } = await supabase.rpc('get_effective_permissions', { _user_id: userId });
+    if (error) throw error;
+    const keys = (data ?? []).map((r: any) => (typeof r === 'string' ? r : r.get_effective_permissions ?? r.key));
+    return new Set(keys.filter(Boolean));
+  }, []);
+
+  const saveUserOverrides = useCallback(
+    async (userId: string, overrides: Array<{ key: string; effect: PermissionEffect }>) => {
+      const { error: delErr } = await supabase.from('user_permissions').delete().eq('user_id', userId);
+      if (delErr) throw delErr;
+      if (overrides.length > 0) {
+        const rows = overrides.map((o) => ({
+          user_id: userId,
+          permission_key: o.key,
+          effect: o.effect,
+        }));
+        const { error: insErr } = await supabase.from('user_permissions').insert(rows);
+        if (insErr) throw insErr;
+      }
+      if (user?.id === userId) await load();
     },
     [load, user]
   );
 
   return (
     <PermissionsContext.Provider
-      value={{ permissions, loading, has, hasAny, hasAll, refresh: load, loadCatalog, loadMatrix, saveRolePermissions }}
+      value={{
+        permissions,
+        loading,
+        has,
+        hasAny,
+        hasAll,
+        refresh: load,
+        loadCatalog,
+        loadMatrix,
+        saveRolePermissions,
+        loadUserOverrides,
+        loadEffectivePermissions,
+        saveUserOverrides,
+      }}
     >
       {children}
     </PermissionsContext.Provider>
@@ -134,7 +182,6 @@ export const usePermissions = () => {
   return ctx;
 };
 
-/** Boolean hook for a single permission */
 export const usePermission = (key: PermissionKey) => {
   const { has } = usePermissions();
   return has(key);

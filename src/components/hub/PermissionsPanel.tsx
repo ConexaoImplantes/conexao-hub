@@ -1,10 +1,42 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Save, RotateCcw, Search, ShieldCheck, Lock } from 'lucide-react';
+import { Save, RotateCcw, Search, ShieldCheck, Lock, Users } from 'lucide-react';
 import { usePermissions, type PermissionCatalogItem } from '../../contexts/PermissionsContext';
 import type { Role } from '../../types';
 import { logAudit } from '../../lib/audit';
 import { useAuth } from '../../contexts/AuthContext';
+import { UserPermissionsPanel } from './UserPermissionsPanel';
+
+export const PermissionsPanel: React.FC = () => {
+  const [tab, setTab] = useState<'role' | 'user'>('role');
+  return (
+    <div className="space-y-4">
+      <div className="flex gap-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
+        <button
+          onClick={() => setTab('role')}
+          className="px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors"
+          style={{
+            color: tab === 'role' ? 'var(--color-accent)' : 'var(--color-text-muted)',
+            borderBottom: tab === 'role' ? '2px solid var(--color-accent)' : '2px solid transparent',
+          }}
+        >
+          <ShieldCheck size={14} /> Por papel
+        </button>
+        <button
+          onClick={() => setTab('user')}
+          className="px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors"
+          style={{
+            color: tab === 'user' ? 'var(--color-accent)' : 'var(--color-text-muted)',
+            borderBottom: tab === 'user' ? '2px solid var(--color-accent)' : '2px solid transparent',
+          }}
+        >
+          <Users size={14} /> Por usuário
+        </button>
+      </div>
+      {tab === 'role' ? <RolePermissionsPanel /> : <UserPermissionsPanel />}
+    </div>
+  );
+};
 
 const ROLES: { value: Role; label: string; description: string }[] = [
   { value: 'super_admin', label: 'Super Admin', description: 'Acesso total (não editável)' },
@@ -24,7 +56,7 @@ const MODULE_LABELS: Record<string, string> = {
   analytics: 'Relatórios / Analytics',
 };
 
-export const PermissionsPanel: React.FC = () => {
+const RolePermissionsPanel: React.FC = () => {
   const { user } = useAuth();
   const { loadCatalog, loadMatrix, saveRolePermissions } = usePermissions();
   const [catalog, setCatalog] = useState<PermissionCatalogItem[]>([]);

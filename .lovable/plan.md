@@ -1,105 +1,108 @@
 ## Objetivo
 
-Substituir o controle de acesso baseado apenas em role fixa por um sistema granular onde o **Super Admin define, por role, exatamente quais telas cada usuário vê e quais ações pode executar** (criar, editar, excluir, ativar/desativar, compartilhar, etc.), em todos os módulos da plataforma.
-
-Regras invioláveis:
-
-- **Super Admin** sempre tem todas as permissões (não editável).
-- **Exclusão (delete) de qualquer entidade** é permissão exclusiva do Super Admin — não aparece na matriz.
-- Permissionamento é **por role** (sem overrides por usuário, conforme decidido).
+Adicionar **permissões por usuário (overrides)** ao sistema granular existente, mantendo o padrão por role como base, e garantir que **toda a UI (botões, ícones, abas, colunas, dados)** respeite a permissão efetiva — se não tem permissão, o elemento **não renderiza**.
 
 ---
 
-## Catálogo de permissões
+## Modelo de permissão efetiva
 
-Permissões nomeadas no formato `modulo.acao`. Escopo inicial:
+Precedência (do mais forte para o mais fraco):
 
-**Materiais** — `materials.view`, `materials.create`, `materials.edit`, `materials.toggle_active`, `materials.manage_assets` (idiomas), `materials.reorder`
+1. **Super Admin** → tudo liberado, sempre.
+2. **Override do usuário** (`user_permissions`), com dois tipos:
+  - `grant` → concede permissão extra além da role.
+  - `revoke` → remove permissão que a role concederia.
+3. **Permissões da role** (`role_permissions`) — comportamento atual.
 
-**Trilhas / Coleções** — `collections.view`, `collections.create`, `collections.edit`, `collections.toggle_active`, `collections.manage_items`, `collections.reorder`
+Regra: `has_permission(user, key) = super_admin? OR (role_has(key) AND NOT revoked_for_user) OR granted_for_user`.
 
-**Usuários & Acessos** — `users.view`, `users.create`, `users.edit`, `users.toggle_active`, `users.change_role`, `users.approve_pending`
-
-**Credenciais / Convites** — `invites.view`, `invites.create`, `invites.generate_link`, `invites.toggle_active`, `invites.resend`
-
-**Gamificação** — `gamification.view`, `gamification.edit_levels`, `gamification.edit_xp`
-
-**Configurações do Sistema** — `settings.view`, `settings.edit_branding`, `settings.edit_theme`, `settings.edit_environment`
-
-**Relatórios / Analytics** — `analytics.view_all`, `analytics.export`
-
-**Nota:** Toda ação de `delete` fica hardcoded como `super_admin only`.
+Delete continua **exclusivo do Super Admin** — não entra nem em role nem em override.
 
 ---
 
-## Alterações no backend
+## Backend
 
-Migração única criando:
+Nova tabela `user_permissions`:
 
-1. `permissions` (catálogo) — `key TEXT PK`, `module`, `label`, `description`
-2. `role_permissions` — `role app_role`, `permission_key`, PK composto
-3. Função `has_permission(_user_id uuid, _permission text) RETURNS boolean` (SECURITY DEFINER) — retorna `true` se a role do usuário tem a permissão OU se é `super_admin`
-4. Seed do catálogo com todas as permissões acima
-5. Seed dos defaults por role (mantendo comportamento atual):
-  - `super_admin`: todas
-  - `manager`: todas as `.view` + `invites.*` (exceto delete)
-  - `consultant`, `distributor`, `client`: apenas `.view` dos módulos que já acessam
-6. RLS de `role_permissions`: leitura para authenticated, escrita só para super_admin
-7. Atualizar RLS das tabelas afetadas para usar `has_permission()` nas ações críticas (mantendo `has_role('super_admin')` para deletes)
+- `user_id uuid` → `auth.users`
+- `permission_key text` → `permissions.key`
+- `effect text CHECK IN ('grant','revoke')`
+- `created_at`, `created_by`
+- PK `(user_id, permission_key)`
+- RLS: leitura pelo próprio usuário e por super_admin; escrita só super_admin.
+- GRANTs para `authenticated` e `service_role`.
 
----
+Atualizar `has_permission(_user_id, _permission)`:
 
-## Alterações no frontend
+```sql
+super_admin
+OR EXISTS (user_permissions where effect='grant')
+OR (
+  EXISTS (role_permissions via user_roles) 
+  AND NOT EXISTS (user_permissions where effect='revoke')
+)
+```
 
-**Novo core** (`src/lib/permissions/`):
-
-- `PermissionsContext.tsx` — carrega e cacheia permissões da role do usuário logado
-- `usePermission(key)` — hook booleano
-- `<Can permission="materials.create">...</Can>` — componente wrapper
-- Guarda de rota `<RequirePermission permission="users.view">` para telas inteiras
-
-**Refatoração dos módulos existentes** (Materiais, Trilhas, Usuários, Convites, Config, Gamificação):
-
-- Substituir checagens `role === 'super_admin'` por `<Can>` / `usePermission`
-- Esconder abas/botões conforme permissão
-- Mensagem de "sem acesso" quando rota bloqueada
-
-**Nova aba no Admin — "Permissões"**:
-
-- Matriz Role × Permissão (checkboxes agrupados por módulo)
-- Coluna `super_admin` sempre marcada e desabilitada
-- Botão "Salvar" grava em `role_permissions`
-- Botão "Restaurar padrões" reaplica o seed
-- Busca por permissão, colapsar/expandir grupos
+Nova RPC/view `get_effective_permissions(_user_id)` retornando o `Set` final — usada pelo `PermissionsContext` para carregar de uma vez.
 
 ---
 
-## Migração compatível
+## Frontend — Context
 
-O sistema entra ativo com os defaults acima, então **nenhum usuário perde acesso** no momento do deploy. A partir daí o Super Admin pode ajustar livremente pela nova aba.
+`PermissionsContext` passa a:
 
----
-
-## Detalhes técnicos
-
-- Cache das permissões em memória via Context + invalidação ao trocar de usuário
-- Query única no login: `SELECT permission_key FROM role_permissions WHERE role = <user_role>` → `Set<string>` no client
-- RLS continua sendo a fonte de verdade — o frontend apenas espelha para UX
-- Deletes permanecem via `has_role('super_admin')` direto, não passam pelo catálogo
-- Sem breaking changes na API — apenas adição de tabelas e função
+- Carregar via `get_effective_permissions(auth.uid())` em uma única chamada.
+- Expor `loadUserOverrides(userId)` e `saveUserOverrides(userId, grants[], revokes[])` para a UI de admin.
+- Recomputar ao trocar usuário logado.
 
 ---
 
-## Entrega em duas etapas
+## Frontend — Admin: nova subaba "Por Usuário"
 
-**Etapa 1 (esta):** infra completa (migração + Context + componente `<Can>` + aba "Permissões" no Admin funcional) + refatoração dos módulos **Materiais** e **Usuários/Convites** para usar o novo sistema.
+Dentro da aba **Permissões**, duas subabas:
 
-**Etapa 2 (próxima mensagem sua):** refatorar Trilhas/Coleções, Gamificação, Configurações e Analytics para consumir `<Can>` / `usePermission`.
+- **Por Papel** (a matriz atual).
+- **Por Usuário** (nova):
+  - Campo de busca/select de usuário (nome/email).
+  - Mostra a role e as permissões herdadas (checkbox marcado, cinza).
+  - Para cada permissão: três estados — `herdado`, `conceder` (grant), `revogar` (revoke).
+  - Resumo "Efetivo" no topo (contadores).
+  - Botões: Salvar, Descartar, Limpar overrides.
+  - Log de auditoria a cada save.
 
-Divisão evita PR gigante e permite validar a UX da matriz antes de propagar.
+---
 
-Confirma para eu iniciar a Etapa 1?  
-  
-É IMPORTANTE QUE O LOG DE AÇÕES, PRINCIPALMENTE DE CRUD E COMPARTILHAMENTO SEJA MONITORA EM TABELA SEPARADA NO BANCO DE DADOS PARA AUDITORIA. NOME DO USUÁRIO, DATA/HORA E AÇÃO REALIZADA SÃO OS DADOS IMPORTANTES, SALVO MELHOR JUÍZO
+## Enforcement completo no frontend (Mantendo como padrão o que cada um pode ver e fazer hoje sem quebrar o dar permissões de MANAGER a usuários que não são MANAGER)
 
-&nbsp;
+Varredura e substituição de **toda checagem `user.role === '...'**` por `<Can>` / `usePermission()` nos arquivos:
+
+- `Admin.tsx` — abas, subabas (inclusive **Convites de Cadastro** → botão "Gerar convite" só com `invites.create`, "Gerar link" só com `invites.generate_link`, toggle ativo só com `invites.toggle_active`, reenvio só com `invites.resend`).
+- `MaterialCard`, `MaterialFormModal`, `AssetManagerModal` — botões editar/ativar/gerir idiomas.
+- `CollectionCard`, `CollectionFormModal` — idem para trilhas.
+- `UserEditModal`, `RejectUserModal`, `UserCommunicationModal` — ações de usuários.
+- `Dashboard.tsx` / `ManagerDashboard.tsx` / `Layout.tsx` — itens de menu e cards.
+- `ThemeEditorPanel`, `PermissionsPanel`, `AuditLogPanel` — visibilidade das próprias abas.
+
+Padrão: elementos sem permissão **não renderizam** (não ficam apenas desabilitados), inclusive colunas de tabela que só contenham ações negadas.
+
+Rotas inteiras protegidas por `<RequirePermission>` — se o usuário perder `settings.view`, a subaba some do menu e a URL redireciona.
+
+---
+
+## Migração de dados
+
+- Nenhum override criado por padrão → comportamento atual preservado.
+- Seed apenas do schema + função atualizada.
+
+---
+
+## Entrega
+
+Uma única leva:
+
+1. Migração (`user_permissions` + `has_permission` + `get_effective_permissions` + RLS/GRANTs).
+2. Extensão do `PermissionsContext` + UI "Por Usuário".
+3. Varredura e substituição de checagens hardcoded em todos os componentes listados.
+4. Auditoria de cada alteração de override.
+
+Confirma para eu implementar?
