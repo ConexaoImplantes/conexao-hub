@@ -604,6 +604,21 @@ export const Admin: React.FC = () => {
     }
   };
 
+  const handleToggleDownloadable = async (material: Material) => {
+    try {
+      const next = !material.downloadable;
+      await mockDb.updateMaterial({ ...material, downloadable: next });
+      audit('materials', 'update', {
+        type: 'material',
+        id: material.id,
+        label: material.title?.['pt-br'] ?? material.title?.['en-us'] ?? 'Material',
+      });
+      loadMaterials();
+    } catch (e: any) {
+      toast.error("Erro ao atualizar download: " + e.message);
+    }
+  };
+
   const confirmDelete = async () => {
     if (!itemToDelete) return;
     try {
@@ -1046,6 +1061,7 @@ export const Admin: React.FC = () => {
                           );
                         })}
                         <Can permission="materials.toggle_active"><button onClick={() => handleToggleActive(mat)} className="p-1 rounded-lg" style={{ color: mat.active ? "#10b981" : "#ef4444" }}><Power size={14} /></button></Can>
+                        {isSuperAdmin && <button onClick={() => handleToggleDownloadable(mat)} className="p-1 rounded-lg" title={mat.downloadable ? "Desativar download" : "Ativar download"} style={{ color: mat.downloadable ? "#10b981" : "var(--color-text-muted)", opacity: mat.downloadable ? 1 : 0.5 }}><Download size={14} /></button>}
                         <Can permission="materials.edit"><button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={14} /></button></Can>
                         {isSuperAdmin && <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg" style={{ color: "#ef4444" }}><Trash2 size={14} /></button>}
                       </div>
@@ -1181,6 +1197,17 @@ export const Admin: React.FC = () => {
                                 <Power size={16} />
                               </button>
                             </Can>
+                            {/* Toggle downloadable — super admin only */}
+                            {isSuperAdmin && (
+                              <button
+                                onClick={() => handleToggleDownloadable(mat)}
+                                className="p-1.5 rounded-lg transition-colors"
+                                title={mat.downloadable ? "Desativar download" : "Ativar download"}
+                                style={{ color: mat.downloadable ? "#10b981" : "var(--color-text-muted)", opacity: mat.downloadable ? 1 : 0.5 }}
+                              >
+                                <Download size={16} />
+                              </button>
+                            )}
                             {/* Edit */}
                             <Can permission="materials.edit">
                               <button
