@@ -144,6 +144,12 @@ const AppContent = () => {
   );
 
   const [active, setActive] = React.useState<EnvironmentId | null>(null);
+  const [bypassedEnvs, setBypassedEnvs] = React.useState<Set<EnvironmentId>>(new Set());
+
+  // Reset bypass whenever user, active env or maintenance config changes.
+  React.useEffect(() => {
+    setBypassedEnvs(new Set());
+  }, [user?.id, config.environmentMaintenance]);
 
   // Initialize / reconcile active env when user or eligible list changes
   React.useEffect(() => {
