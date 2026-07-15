@@ -141,6 +141,20 @@ const AppContent = () => {
     return <EnvironmentSelector eligible={eligible} onSelect={selectEnv} />;
   }
 
+  // Maintenance gate — Super Admin always bypasses.
+  const activeMaintenance = active ? maintenance[active] : undefined;
+  if (active && activeMaintenance?.enabled && !isSuperAdmin) {
+    return (
+      <MaintenanceScreen
+        env={active}
+        expectedReturn={activeMaintenance.expectedReturn}
+        message={activeMaintenance.message}
+        canSwitch={eligible.length > 1}
+        onSwitch={switchEnvironment}
+      />
+    );
+  }
+
   const envValue: EnvContextValue = { active, eligible, switchEnvironment, setActive: selectEnv };
 
   return (
