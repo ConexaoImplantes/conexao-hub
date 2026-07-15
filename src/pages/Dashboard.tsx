@@ -261,7 +261,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Material filters (only in materials view) */}
           {activeView === 'materials' && (
-            <div className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: colorMix('var(--color-surface)', 30, 'rgba(30,41,59,0.3)') }}>
+            <div data-tour="material-filters" className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: colorMix('var(--color-surface)', 30, 'rgba(30,41,59,0.3)') }}>
               <div className="hidden md:flex items-center justify-between px-4 py-3 mb-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
                   <Layers size={14} style={{ color: 'var(--color-accent)' }} /> Biblioteca
