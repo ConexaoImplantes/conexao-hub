@@ -228,7 +228,7 @@ export const Dashboard: React.FC = () => {
         <div className="sticky top-28 space-y-4 animate-slide-up">
           {/* Gamification card */}
           {user && (
-            <div className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
+            <div data-tour="user-level-card" className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
                 <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nível {userLevel}</span>
@@ -242,7 +242,7 @@ export const Dashboard: React.FC = () => {
           )}
 
           {/* View toggle */}
-          <div className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
+          <div data-tour="view-toggle" className="flex rounded-xl overflow-hidden border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
             <button
               onClick={() => setActiveView('materials')}
               className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-xs font-bold transition-all rounded-lg ${activeView === 'materials' ? 'liquid-glass-gold' : ''}`}
@@ -261,7 +261,7 @@ export const Dashboard: React.FC = () => {
 
           {/* Material filters (only in materials view) */}
           {activeView === 'materials' && (
-            <div className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: colorMix('var(--color-surface)', 30, 'rgba(30,41,59,0.3)') }}>
+            <div data-tour="material-filters" className="backdrop-blur-xl border border-white/10 p-2 sm:p-3 rounded-3xl flex flex-row md:flex-col overflow-x-auto md:overflow-visible gap-1.5 sm:gap-2 no-scrollbar shadow-xl shadow-black/5" style={{ backgroundColor: colorMix('var(--color-surface)', 30, 'rgba(30,41,59,0.3)') }}>
               <div className="hidden md:flex items-center justify-between px-4 py-3 mb-2">
                 <h3 className="text-xs font-bold uppercase tracking-widest flex items-center gap-2" style={{ color: 'var(--color-text-muted)' }}>
                   <Layers size={14} style={{ color: 'var(--color-accent)' }} /> Biblioteca
@@ -497,11 +497,12 @@ export const Dashboard: React.FC = () => {
                   <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3 drop-shadow-sm" style={{ color: 'var(--color-text-main)' }}>{t('dashboard.title')}</h2>
                   <p className="text-sm sm:text-base max-w-lg leading-relaxed font-medium" style={{ color: 'var(--color-text-muted)' }}>Explore, visualize e baixe todos os materiais disponíveis para o seu perfil.</p>
                 </div>
-                <div className="relative w-full xl:w-96 group/search">
+                <div data-tour="search-input" className="relative w-full xl:w-96 group/search">
                    <div className="absolute inset-0 rounded-2xl blur-lg opacity-0 group-focus-within/search:opacity-50 transition-opacity duration-500" style={{ backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)') }} />
                   <div className="relative backdrop-blur-xl border border-white/10 rounded-2xl flex items-center shadow-inner transition-all duration-300 group-focus-within/search:shadow-lg" style={{ backgroundColor: colorMix('var(--color-surface)', 60, 'rgba(30,41,59,0.6)') }}>
                     <div className="pl-4 sm:pl-5" style={{ color: 'var(--color-text-muted)' }}><Search size={20} className="sm:hidden" /><Search size={22} className="hidden sm:block" /></div>
                     <input ref={searchRef} type="text" placeholder={t('search.placeholder')} className="w-full bg-transparent border-none py-3 sm:py-4 px-3 sm:px-4 focus:ring-0 text-sm font-medium outline-none" style={{ color: 'var(--color-text-main)' }} value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
+
                   </div>
                 </div>
                 <button
@@ -535,9 +536,10 @@ export const Dashboard: React.FC = () => {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-6">
                   {paginatedMaterials.map((mat, index) => (
-                    <div key={mat.id} className="animate-slide-up" style={{ animationDelay: `${index * 70}ms` }}>
+                    <div key={mat.id} data-tour={index === 0 ? 'material-card' : undefined} className="animate-slide-up" style={{ animationDelay: `${index * 70}ms` }}>
                       <MaterialCard material={mat} onView={handleViewMaterial} progress={userProgress.find(p => p.materialId === mat.id && !p.collectionId)} />
                     </div>
+
                   ))}
                 </div>
                 {pagination.totalPages > 1 && (

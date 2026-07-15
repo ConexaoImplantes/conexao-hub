@@ -775,6 +775,7 @@ export const Admin: React.FC = () => {
 
   const renderTabButton = (id: typeof activeTab, label: string, Icon: any) =>
   <button
+    data-tour={`tab-${id}`}
     onClick={() => setActiveTab(id)}
     className={`px-4 py-2 rounded-md text-sm font-medium transition-all flex items-center gap-2 ${activeTab === id ? "liquid-glass-gold shadow-sm" : ""}`}
     style={
@@ -819,7 +820,7 @@ export const Admin: React.FC = () => {
               : "Acesso restrito às funções autorizadas pelo administrador."}
           </p>
         </div>
-        <div className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: "var(--color-bg)" }}>
+        <div data-tour="admin-tabs" className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: "var(--color-bg)" }}>
           {tabVisibility.materials && renderTabButton("materials", t("tab.materials"), ImageIcon)}
           {tabVisibility.users && renderTabButton("users", t("tab.users"), Users)}
           {tabVisibility.collections && renderTabButton("collections", "Trilhas", BookOpen)}

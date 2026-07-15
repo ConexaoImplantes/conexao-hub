@@ -129,7 +129,7 @@ export const MaterialCard: React.FC<MaterialCardProps> = ({ material, onView, pr
              </div>
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div data-tour="material-languages" className="flex flex-wrap gap-2">
             {languages.map(lang => {
               const hasAsset = !!material.assets[lang];
               return (
