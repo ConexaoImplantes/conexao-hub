@@ -38,6 +38,7 @@ export interface Material {
   points: number;
   tags: string[];
   category?: string;
+  downloadable: boolean;
 }
 
 export interface Collection {
