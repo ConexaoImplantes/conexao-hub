@@ -431,10 +431,10 @@ export const Dashboard: React.FC = () => {
                                 <Star size={10} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />{mat.points} XP
                               </span>
                             )}
-                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: 'var(--color-success)' }}>Concluído</span>}
+                            {prog?.status === 'completed' && <span className="text-[10px] sm:text-xs font-bold" style={{ color: 'var(--color-success)' }}>{t('progress.completed')}</span>}
                             {prog?.status === 'started' && (
                               <span className="text-[10px] sm:text-xs font-bold flex items-center gap-1" style={{ color: 'var(--color-accent)' }}>
-                                <PlayCircle size={10} /> Em andamento
+                                <PlayCircle size={10} /> {t('progress.in.progress')}
                               </span>
                             )}
                           </div>
