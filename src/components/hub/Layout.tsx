@@ -13,6 +13,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
   const { user, logout } = useAuth();
   const { language, setLanguage, t } = useLanguage();
   const { config } = useBrand();
+  const { active, eligible, switchEnvironment } = useEnvironment();
   const [levels, setLevels] = useState<GamificationLevel[]>([]);
 
   useEffect(() => {
