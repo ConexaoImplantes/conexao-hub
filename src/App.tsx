@@ -49,7 +49,9 @@ const MaintenanceScreen: React.FC<{
   message?: string;
   canSwitch: boolean;
   onSwitch: () => void;
-}> = ({ env, expectedReturn, message, canSwitch, onSwitch }) => {
+  isSuperAdmin: boolean;
+  onBypass: () => void;
+}> = ({ env, expectedReturn, message, canSwitch, onSwitch, isSuperAdmin, onBypass }) => {
   const envLabels: Record<EnvironmentId, string> = {
     admin: "Painel Administrativo",
     manager: "Painel do Gestor",
@@ -93,23 +95,40 @@ const MaintenanceScreen: React.FC<{
             Retorno previsto: <strong>{formatted}</strong>
           </div>
         )}
-        {canSwitch && (
-          <button
-            type="button"
-            onClick={onSwitch}
-            className="mt-2 px-5 py-2 rounded-lg text-sm font-semibold"
-            style={{
-              backgroundColor: "var(--color-btn-primary-bg)",
-              color: "var(--color-btn-primary-text)",
-            }}
-          >
-            Escolher outro ambiente
-          </button>
-        )}
+        <div className="flex flex-col gap-2 mt-2">
+          {canSwitch && (
+            <button
+              type="button"
+              onClick={onSwitch}
+              className="px-5 py-2 rounded-lg text-sm font-semibold"
+              style={{
+                backgroundColor: "var(--color-btn-primary-bg)",
+                color: "var(--color-btn-primary-text)",
+              }}
+            >
+              Escolher outro ambiente
+            </button>
+          )}
+          {isSuperAdmin && (
+            <button
+              type="button"
+              onClick={onBypass}
+              className="px-5 py-2 rounded-lg text-sm font-medium border"
+              style={{
+                borderColor: "var(--color-border)",
+                color: "var(--color-text-muted)",
+                backgroundColor: "transparent",
+              }}
+            >
+              Acessar mesmo assim (Super Admin)
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
 };
+
 
 const AppContent = () => {
   const { user, isAuthenticated, isLoading } = useAuth();
