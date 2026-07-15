@@ -400,6 +400,7 @@ export const mockDb = {
         points: item.materials.points || 0,
         tags: item.materials.tags || [],
         category: item.materials.category,
+        downloadable: item.materials.downloadable ?? false,
       } : undefined,
     }));
   },
