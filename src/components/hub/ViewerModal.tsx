@@ -1,7 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { Material, Language, MaterialType } from '../../types';
-import { X, ExternalLink, RefreshCw, Youtube, Headphones, Globe, Download } from 'lucide-react';
+import { X, ExternalLink, RefreshCw, Youtube, Headphones, Globe, Download, CheckCircle2, Loader2 } from 'lucide-react';
 import { colorMix } from '../../lib/utils';
 
 interface ViewerModalProps {
