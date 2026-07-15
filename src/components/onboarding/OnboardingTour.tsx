@@ -84,12 +84,41 @@ const computeTooltipPos = (
   return { top, left, effective };
 };
 
-export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
+export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) => {
+  const { language } = useLanguage();
+  const ui = getOnboardingUI(language);
+
+  // Filter out steps whose target element does not exist in the DOM — those are
+  // gated by permissions the user does not have (e.g. audit / permissions tabs
+  // for a manager without those keys). Centered/welcome steps without a
+  // selector are always kept.
+  const steps = React.useMemo(() => {
+    return rawSteps.filter((s) => {
+      if (!s.targetSelector) return true;
+      try {
+        return document.querySelector(s.targetSelector) !== null;
+      } catch {
+        return false;
+      }
+    });
+    // Re-evaluate when the raw list changes (env/language switch) or when the
+    // user closes/reopens the tour.
+  }, [rawSteps]);
+
   const [index, setIndex] = React.useState(0);
   const [rect, setRect] = React.useState<Rect | null>(null);
   const [viewport, setViewport] = React.useState({ w: window.innerWidth, h: window.innerHeight });
-  const { language } = useLanguage();
-  const ui = getOnboardingUI(language);
+
+  // If the current index falls off the end after filtering, clamp it.
+  React.useEffect(() => {
+    if (index > steps.length - 1) setIndex(Math.max(0, steps.length - 1));
+  }, [steps.length, index]);
+
+  // If there are no visible steps at all, close immediately.
+  React.useEffect(() => {
+    if (steps.length === 0) onClose();
+  }, [steps.length, onClose]);
+
   const step = steps[index];
 
   // Recompute target rect on step change, resize, scroll.
