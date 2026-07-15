@@ -1,0 +1,1 @@
+UPDATE public.system_config SET logo_url = '/logo.png' WHERE id = 1;
