@@ -258,7 +258,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
           onClick={onClose}
           className="absolute top-2 right-2 p-1 rounded-md"
           style={{ color: 'var(--color-text-muted)' }}
-          aria-label="Fechar tour"
+          aria-label={ui.closeTour}
         >
           <X size={16} />
         </button>
@@ -267,7 +267,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
           className="text-[10px] font-bold uppercase tracking-wider mb-1"
           style={{ color: 'var(--color-accent)' }}
         >
-          Passo {index + 1} de {steps.length}
+          {ui.stepOf(index + 1, steps.length)}
         </div>
         <h3 className="text-base font-bold mb-1.5" style={{ color: 'var(--color-text-main)' }}>
           {step.title}
@@ -283,7 +283,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
             className="text-xs font-medium underline-offset-2 hover:underline"
             style={{ color: 'var(--color-text-muted)' }}
           >
-            Pular
+            {ui.skip}
           </button>
           <div className="flex items-center gap-2">
             <button
@@ -297,7 +297,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
                 backgroundColor: 'transparent',
               }}
             >
-              <ArrowLeft size={12} /> Anterior
+              <ArrowLeft size={12} /> {ui.previous}
             </button>
             {isLast ? (
               <button
@@ -309,7 +309,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
                   color: 'var(--color-btn-primary-text)',
                 }}
               >
-                Concluir <Check size={12} />
+                {ui.finish} <Check size={12} />
               </button>
             ) : step.interactive ? (
               <span
@@ -321,7 +321,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
                 }}
               >
                 <MousePointerClick size={12} />
-                {step.interactiveHint || 'Clique para continuar'}
+                {step.interactiveHint || ui.clickToContinue}
               </span>
             ) : (
               <button
@@ -333,7 +333,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps, onClose }) => {
                   color: 'var(--color-btn-primary-text)',
                 }}
               >
-                Próximo <ArrowRight size={12} />
+                {ui.next} <ArrowRight size={12} />
               </button>
             )}
           </div>
