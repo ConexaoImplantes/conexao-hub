@@ -405,7 +405,7 @@ export const Dashboard: React.FC = () => {
               {colMaterials.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-20 rounded-[2rem] border border-white/5 text-center" style={{ backgroundColor: colorMix('var(--color-surface)', 20, 'rgba(30,41,59,0.2)') }}>
                   <BookOpen size={40} className="mb-3 opacity-30" style={{ color: 'var(--color-text-muted)' }} />
-                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>Esta trilha ainda não tem materiais.</p>
+                  <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>{t('trail.no.materials')}</p>
                 </div>
               ) : (
                 <div className="space-y-2 sm:space-y-3 pb-20">
