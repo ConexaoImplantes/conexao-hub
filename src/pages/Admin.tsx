@@ -229,12 +229,59 @@ export const Admin: React.FC = () => {
   };
 
 
-  const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit">(
-    "materials"
-  );
+  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit" | "invites";
+  const [activeTab, setActiveTab] = useState<TabId>("materials");
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
     "identity"
   );
+
+  // Tab visibility gated by granular permissions. Super admin sees all.
+  const tabVisibility: Record<TabId, boolean> = {
+    materials:   isSuperAdmin || has('materials.view'),
+    users:       isSuperAdmin || has('users.view'),
+    collections: isSuperAdmin || has('collections.view'),
+    analytics:   isSuperAdmin || has('analytics.view_all'),
+    audit:       isSuperAdmin || has('audit.view'),
+    // Top-level Invites tab is visible to non-super_admins with invites.view.
+    // Super admin keeps invites nested inside Settings (existing behavior).
+    invites:     !isSuperAdmin && has('invites.view'),
+    settings:    isSuperAdmin || hasAny(
+      'settings.view', 'settings.edit_branding', 'settings.edit_theme',
+      'settings.edit_environment', 'gamification.view',
+      'gamification.edit_levels', 'gamification.edit_xp',
+      // super_admin only for invites-inside-settings; managers use top-level invites tab
+    ),
+    permissions: isSuperAdmin,
+  };
+
+  // Auto-fallback: if the currently active tab is not visible, jump to first visible one.
+  useEffect(() => {
+    if (!tabVisibility[activeTab]) {
+      const order: TabId[] = ["materials", "collections", "users", "invites", "analytics", "audit", "settings", "permissions"];
+      const next = order.find((t) => tabVisibility[t]);
+      if (next) setActiveTab(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.invites, tabVisibility.settings, tabVisibility.permissions, activeTab]);
+
+  // Settings subtab visibility
+  const settingsSubtabVisibility = {
+    identity:     isSuperAdmin || has('settings.edit_branding'),
+    integrations: isSuperAdmin || has('settings.edit_branding'),
+    themes:       isSuperAdmin || hasAny('settings.edit_theme', 'settings.edit_environment'),
+    invites:      isSuperAdmin, // managers use top-level invites tab
+    gamification: isSuperAdmin || hasAny('gamification.view', 'gamification.edit_levels', 'gamification.edit_xp'),
+  } as const;
+
+  useEffect(() => {
+    if (activeTab === "settings" && !settingsSubtabVisibility[settingsTab]) {
+      const order: Array<keyof typeof settingsSubtabVisibility> = ["identity", "integrations", "themes", "gamification", "invites"];
+      const next = order.find((s) => settingsSubtabVisibility[s]);
+      if (next) setSettingsTab(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, settingsTab, isSuperAdmin]);
+
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
