@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowLeft, ArrowRight, X, Check } from 'lucide-react';
+import { ArrowLeft, ArrowRight, X, Check, MousePointerClick } from 'lucide-react';
 import { TourStep, Placement } from './tours';
 import { colorMix } from '../../lib/utils';
 
