@@ -462,8 +462,8 @@ export const Dashboard: React.FC = () => {
             <div className="mb-6 sm:mb-10 relative group rounded-[1.5rem] sm:rounded-[2rem] overflow-hidden animate-fade-in">
               <div className="absolute inset-0 opacity-60" style={{ background: `linear-gradient(to right, ${colorMix('var(--color-accent)', 10, 'rgba(201,166,85,0.1)')}, ${colorMix('var(--color-gradient-mid)', 10, 'rgba(232,212,139,0.1)')}, transparent)` }} />
               <div className="relative z-10 p-5 sm:p-8 md:p-10">
-                <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>Trilhas de Aprendizagem</h2>
-                <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>Complete trilhas, acumule XP e avance de nível.</p>
+                <h2 className="text-2xl sm:text-4xl md:text-5xl font-bold tracking-tight mb-3" style={{ color: 'var(--color-text-main)' }}>{t('trails.title')}</h2>
+                <p className="text-sm sm:text-base max-w-lg font-medium" style={{ color: 'var(--color-text-muted)' }}>{t('trails.desc')}</p>
               </div>
             </div>
             {isLoading ? (
