@@ -1151,32 +1151,38 @@ export const Admin: React.FC = () => {
                               );
                             })}
                             {/* Toggle active */}
-                            <button
-                              onClick={() => handleToggleActive(mat)}
-                              className="p-1.5 rounded-lg transition-colors"
-                              title={mat.active ? "Desativar material" : "Ativar material"}
-                              style={{ color: mat.active ? "#10b981" : "#ef4444" }}
-                            >
-                              <Power size={16} />
-                            </button>
+                            <Can permission="materials.toggle_active">
+                              <button
+                                onClick={() => handleToggleActive(mat)}
+                                className="p-1.5 rounded-lg transition-colors"
+                                title={mat.active ? "Desativar material" : "Ativar material"}
+                                style={{ color: mat.active ? "#10b981" : "#ef4444" }}
+                              >
+                                <Power size={16} />
+                              </button>
+                            </Can>
                             {/* Edit */}
-                            <button
-                              onClick={() => handleOpenEdit(mat)}
-                              className="p-1.5 rounded-lg"
-                              style={{ color: "var(--color-accent)" }}
-                              title="Editar material"
-                            >
-                              <Edit size={16} />
-                            </button>
-                            {/* Delete */}
-                            <button
-                              onClick={() => handleDeleteMaterial(mat.id)}
-                              className="p-1.5 rounded-lg"
-                              style={{ color: "#ef4444" }}
-                              title="Excluir material"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                            <Can permission="materials.edit">
+                              <button
+                                onClick={() => handleOpenEdit(mat)}
+                                className="p-1.5 rounded-lg"
+                                style={{ color: "var(--color-accent)" }}
+                                title="Editar material"
+                              >
+                                <Edit size={16} />
+                              </button>
+                            </Can>
+                            {/* Delete — super admin only */}
+                            {isSuperAdmin && (
+                              <button
+                                onClick={() => handleDeleteMaterial(mat.id)}
+                                className="p-1.5 rounded-lg"
+                                style={{ color: "#ef4444" }}
+                                title="Excluir material"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>);
