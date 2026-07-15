@@ -1818,13 +1818,32 @@ export const Admin: React.FC = () => {
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
                     <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded" style={{ backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" }}>{t(`role.${user.role}`)}</span>
-                    <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize ${
-                      user.status === "active" ? "bg-green-500/10 text-green-600" :
-                      user.status === "pending" ? "bg-yellow-500/10 text-yellow-600" :
-                      user.status === "rejected" ? "bg-red-500/10 text-red-600" : ""}`}
-                      style={user.status === "inactive" ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
-                      {t(`user.status.${user.status}`)}
-                    </span>
+                    {(user.status === "active" || user.status === "inactive") ? (
+                      <Can
+                        permission="users.toggle_active"
+                        fallback={
+                          <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize ${user.status === "active" ? "bg-green-500/10 text-green-600" : ""}`}
+                            style={user.status === "inactive" ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}>
+                            {t(`user.status.${user.status}`)}
+                          </span>
+                        }
+                      >
+                        <button
+                          onClick={() => handleUserStatus(user.id, user.status === "active" ? "inactive" : "active")}
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize transition-opacity hover:opacity-80 cursor-pointer ${user.status === "active" ? "bg-green-500/10 text-green-600" : ""}`}
+                          style={user.status === "inactive" ? { backgroundColor: "var(--color-bg)", color: "var(--color-text-muted)" } : {}}
+                          title={user.status === "active" ? "Clique para desativar" : "Clique para ativar"}
+                        >
+                          {t(`user.status.${user.status}`)}
+                        </button>
+                      </Can>
+                    ) : (
+                      <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold capitalize ${
+                        user.status === "pending" ? "bg-yellow-500/10 text-yellow-600" :
+                        user.status === "rejected" ? "bg-red-500/10 text-red-600" : ""}`}>
+                        {t(`user.status.${user.status}`)}
+                      </span>
+                    )}
                     {user.cro && <span className="text-[10px]" style={{ color: "var(--color-text-muted)" }}>CRO: {user.cro}</span>}
                   </div>
                 </div>
