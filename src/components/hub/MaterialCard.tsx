@@ -1,6 +1,6 @@
 import React from 'react';
 import { Material, Language, UserProgress } from '../../types';
-import { FileText, Image as ImageIcon, Video, Eye, Lock, ChevronRight, CheckCircle, PlayCircle, Star, Tag, Headphones, Globe } from 'lucide-react';
+import { FileText, Image as ImageIcon, Video, ChevronRight, CheckCircle, PlayCircle, Star, Tag, Headphones, Globe } from 'lucide-react';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { colorMix } from '../../lib/utils';
 
