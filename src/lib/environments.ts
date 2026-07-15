@@ -38,7 +38,7 @@ export const ENVIRONMENTS: Record<EnvironmentId, EnvironmentDef> = {
  * NOTE: pure consumer views (materials.view / collections.view / gamification.view)
  * are intentionally excluded — those unlock the client env only.
  */
-const MANAGER_UNLOCK_KEYS = new Set<string>([
+export const MANAGER_UNLOCK_KEYS = new Set<string>([
   // Materials write
   'materials.create', 'materials.edit', 'materials.toggle_active',
   'materials.manage_assets', 'materials.reorder',
@@ -64,7 +64,7 @@ const MANAGER_UNLOCK_KEYS = new Set<string>([
 /**
  * Permission keys that unlock the CLIENT (consumer) environment.
  */
-const CLIENT_PERMISSION_KEYS = new Set<string>([
+export const CLIENT_PERMISSION_KEYS = new Set<string>([
   'materials.view',
   'collections.view',
   'gamification.view',
@@ -72,8 +72,6 @@ const CLIENT_PERMISSION_KEYS = new Set<string>([
 
 /**
  * Compute which environments the user may access.
- * - super_admin → ['admin', 'client'] (admin env is exclusive to super_admin; no manager env for them)
- * - other roles → 'manager' if any admin-mirror permission; 'client' if any consumer view
  */
 export function getEligibleEnvironments(
   role: Role | undefined,
@@ -91,6 +89,20 @@ export function getEligibleEnvironments(
   if (anyIn(CLIENT_PERMISSION_KEYS)) eligible.push('client');
   return eligible;
 }
+
+/** Which environments a set of permission keys unlocks (excluding admin, which is super_admin-only). */
+export function getEnvironmentsForKeys(keys: Iterable<string>): EnvironmentId[] {
+  const set = keys instanceof Set ? keys : new Set(keys);
+  const envs: EnvironmentId[] = [];
+  for (const k of set) {
+    if (MANAGER_UNLOCK_KEYS.has(k)) { envs.push('manager'); break; }
+  }
+  for (const k of set) {
+    if (CLIENT_PERMISSION_KEYS.has(k)) { envs.push('client'); break; }
+  }
+  return envs;
+}
+
 
 const STORAGE_KEY = 'hub.activeEnvironment';
 

@@ -1,11 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { Save, Search, User as UserIcon, RotateCcw, ShieldCheck, Trash2 } from 'lucide-react';
+import { Save, Search, User as UserIcon, RotateCcw, ShieldCheck, Trash2, Filter } from 'lucide-react';
 import { supabase } from '../../lib/supabaseClient';
 import { usePermissions, type PermissionCatalogItem, type PermissionEffect } from '../../contexts/PermissionsContext';
 import { useAuth } from '../../contexts/AuthContext';
 import { logAudit } from '../../lib/audit';
 import type { Role } from '../../types';
+import { MANAGER_UNLOCK_KEYS, CLIENT_PERMISSION_KEYS, type EnvironmentId } from '../../lib/environments';
+
 
 type OverrideState = 'inherit' | 'grant' | 'revoke';
 
@@ -35,6 +37,8 @@ export const UserPermissionsPanel: React.FC = () => {
   const [roleMatrix, setRoleMatrix] = useState<Record<Role, Set<string>>>({} as any);
   const [users, setUsers] = useState<AppUser[]>([]);
   const [userSearch, setUserSearch] = useState('');
+  const [roleFilter, setRoleFilter] = useState<'all' | Role>('all');
+  const [envFilter, setEnvFilter] = useState<'all' | EnvironmentId>('all');
   const [selected, setSelected] = useState<AppUser | null>(null);
   const [permSearch, setPermSearch] = useState('');
   const [overrides, setOverrides] = useState<Record<string, PermissionEffect>>({});
@@ -42,6 +46,7 @@ export const UserPermissionsPanel: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [loadingUser, setLoadingUser] = useState(false);
   const [saving, setSaving] = useState(false);
+
 
   useEffect(() => {
     (async () => {
@@ -104,11 +109,39 @@ export const UserPermissionsPanel: React.FC = () => {
     }
   };
 
+  /** Env a role can reach based on the role_permissions matrix (super_admin = all). */
+  const roleEnvsMap = useMemo(() => {
+    const out: Record<string, EnvironmentId[]> = {};
+    Object.entries(roleMatrix).forEach(([role, keys]) => {
+      if (role === 'super_admin') {
+        out[role] = ['admin', 'manager', 'client'];
+        return;
+      }
+      const envs: EnvironmentId[] = [];
+      for (const k of keys) {
+        if (MANAGER_UNLOCK_KEYS.has(k)) { envs.push('manager'); break; }
+      }
+      for (const k of keys) {
+        if (CLIENT_PERMISSION_KEYS.has(k)) { envs.push('client'); break; }
+      }
+      out[role] = envs;
+    });
+    return out;
+  }, [roleMatrix]);
+
   const filteredUsers = useMemo(() => {
     const s = userSearch.trim().toLowerCase();
-    if (!s) return users;
-    return users.filter((u) => u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s));
-  }, [users, userSearch]);
+    return users.filter((u) => {
+      if (s && !u.name.toLowerCase().includes(s) && !u.email.toLowerCase().includes(s)) return false;
+      if (roleFilter !== 'all' && u.role !== roleFilter) return false;
+      if (envFilter !== 'all') {
+        const envs = roleEnvsMap[u.role] ?? [];
+        if (!envs.includes(envFilter)) return false;
+      }
+      return true;
+    });
+  }, [users, userSearch, roleFilter, envFilter, roleEnvsMap]);
+
 
   const filteredCatalog = useMemo(() => {
     const s = permSearch.trim().toLowerCase();
@@ -257,6 +290,53 @@ export const UserPermissionsPanel: React.FC = () => {
               }}
             />
           </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+              <Filter size={10} /> Papel
+            </label>
+            <select
+              value={roleFilter}
+              onChange={(e) => setRoleFilter(e.target.value as any)}
+              className="w-full px-2 py-1.5 rounded-md text-xs"
+              style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)', border: '1px solid var(--color-border)' }}
+            >
+              <option value="all">Todos os papéis</option>
+              <option value="super_admin">Super Admin</option>
+              <option value="manager">Manager</option>
+              <option value="consultant">Consultor</option>
+              <option value="distributor">Distribuidor</option>
+              <option value="client">Cliente</option>
+            </select>
+          </div>
+
+          <div className="space-y-1.5">
+            <label className="text-[10px] uppercase tracking-wider flex items-center gap-1" style={{ color: 'var(--color-text-muted)' }}>
+              <Filter size={10} /> Ambiente
+            </label>
+            <select
+              value={envFilter}
+              onChange={(e) => setEnvFilter(e.target.value as any)}
+              className="w-full px-2 py-1.5 rounded-md text-xs"
+              style={{ backgroundColor: 'var(--color-bg)', color: 'var(--color-text-main)', border: '1px solid var(--color-border)' }}
+            >
+              <option value="all">Todos os ambientes</option>
+              <option value="admin">Administrativo</option>
+              <option value="manager">Gestão</option>
+              <option value="client">Usuário</option>
+            </select>
+          </div>
+
+          {(roleFilter !== 'all' || envFilter !== 'all') && (
+            <button
+              onClick={() => { setRoleFilter('all'); setEnvFilter('all'); }}
+              className="text-[11px] underline"
+              style={{ color: 'var(--color-text-muted)' }}
+            >
+              Limpar filtros
+            </button>
+          )}
+
           <div className="max-h-[520px] overflow-y-auto space-y-1">
             {filteredUsers.map((u) => (
               <button
