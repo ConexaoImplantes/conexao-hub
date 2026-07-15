@@ -15,7 +15,6 @@ import { Layout } from "./components/hub/Layout";
 import { GlobalEffects } from "./components/hub/GlobalEffects";
 import { KeyboardHelpModal } from "./components/hub/KeyboardHelpModal";
 import { AuthPage } from "./pages/AuthPage";
-import { ManagerDashboard } from "./pages/ManagerDashboard";
 import { Dashboard } from "./pages/Dashboard";
 import { Admin } from "./pages/Admin";
 import { RegistrationProgress } from "./components/hub/RegistrationProgress";
@@ -147,7 +146,7 @@ const AppContent = () => {
         <Layout>
           <GlobalEffects />
           <KeyboardHelpModal />
-          {active === "admin" ? <Admin /> : active === "manager" ? <ManagerDashboard /> : <Dashboard />}
+          {active === "admin" || active === "manager" ? <Admin /> : <Dashboard />}
         </Layout>
       </ShortcutProvider>
     </EnvContext.Provider>

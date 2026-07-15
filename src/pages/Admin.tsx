@@ -16,6 +16,7 @@ import { colorMix } from "../lib/utils";
 import { useLanguage } from "../contexts/LanguageContext";
 import { useBrand } from "../contexts/BrandContext";
 import { useAuth } from "../contexts/AuthContext";
+import { usePermissions } from "../contexts/PermissionsContext";
 import { logAudit, type AuditAction } from "../lib/audit";
 import {
   Plus,
@@ -206,6 +207,9 @@ export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
   const { user: currentUser } = useAuth();
+  const { has, hasAny } = usePermissions();
+  const isSuperAdmin = currentUser?.role === 'super_admin';
+
 
   const audit = (
     module: string,
@@ -225,12 +229,55 @@ export const Admin: React.FC = () => {
   };
 
 
-  const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit">(
-    "materials"
-  );
+  type TabId = "materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit";
+  const [activeTab, setActiveTab] = useState<TabId>("materials");
   const [settingsTab, setSettingsTab] = useState<"identity" | "integrations" | "themes" | "invites" | "gamification">(
     "identity"
   );
+
+  // Settings subtab visibility (declared before tabVisibility so settings tab can reflect subtab availability)
+  const settingsSubtabVisibility = {
+    identity:     isSuperAdmin || has('settings.edit_branding'),
+    integrations: isSuperAdmin || has('settings.edit_branding'),
+    themes:       isSuperAdmin || hasAny('settings.edit_theme', 'settings.edit_environment'),
+    invites:      isSuperAdmin || has('invites.view'),
+    gamification: isSuperAdmin || hasAny('gamification.view', 'gamification.edit_levels', 'gamification.edit_xp'),
+  } as const;
+  const anySettingsSubtabVisible =
+    settingsSubtabVisibility.identity || settingsSubtabVisibility.integrations ||
+    settingsSubtabVisibility.themes || settingsSubtabVisibility.invites ||
+    settingsSubtabVisibility.gamification;
+
+  // Tab visibility gated by granular permissions. Super admin sees all.
+  const tabVisibility: Record<TabId, boolean> = {
+    materials:   isSuperAdmin || has('materials.view'),
+    users:       isSuperAdmin || has('users.view'),
+    collections: isSuperAdmin || has('collections.view'),
+    analytics:   isSuperAdmin || has('analytics.view_all'),
+    audit:       isSuperAdmin || has('audit.view'),
+    settings:    isSuperAdmin || anySettingsSubtabVisible,
+    permissions: isSuperAdmin,
+  };
+
+  // Auto-fallback: if the currently active tab is not visible, jump to first visible one.
+  useEffect(() => {
+    if (!tabVisibility[activeTab]) {
+      const order: TabId[] = ["materials", "collections", "users", "analytics", "audit", "settings", "permissions"];
+      const next = order.find((t) => tabVisibility[t]);
+      if (next) setActiveTab(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tabVisibility.materials, tabVisibility.users, tabVisibility.collections, tabVisibility.analytics, tabVisibility.audit, tabVisibility.settings, tabVisibility.permissions, activeTab]);
+
+  useEffect(() => {
+    if (activeTab === "settings" && !settingsSubtabVisibility[settingsTab]) {
+      const order: Array<keyof typeof settingsSubtabVisibility> = ["identity", "integrations", "themes", "gamification", "invites"];
+      const next = order.find((s) => settingsSubtabVisibility[s]);
+      if (next) setSettingsTab(next);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, settingsTab, isSuperAdmin]);
+
   const [materials, setMaterials] = useState<Material[]>([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingMaterial, setEditingMaterial] = useState<Material | null>(null);
@@ -278,6 +325,8 @@ export const Admin: React.FC = () => {
   const [inviteGenerating, setInviteGenerating] = useState(false);
   // Reject modal state
   const [rejectingUser, setRejectingUser] = useState<UserProfile | null>(null);
+
+
   const exportAnalyticsCsv = () => {
     const headers = ['Material', 'Tipo', 'Visualizações', 'Usuários Únicos', 'Último Acesso'];
     const rows = aggregatedMetrics.map((item) => {
@@ -759,25 +808,30 @@ export const Admin: React.FC = () => {
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 pb-4">
         <div>
           <h2 className="text-2xl font-bold" style={{ color: "var(--color-text-main)" }}>
-            {t("admin.title")}
+            {isSuperAdmin ? t("admin.title") : "Painel de Gestão"}
           </h2>
           <p className="text-sm" style={{ color: "var(--color-text-muted)" }}>
-            Gerencie materiais, usuários e a aparência da plataforma.
+            {isSuperAdmin
+              ? "Gerencie materiais, usuários e a aparência da plataforma."
+              : "Acesso restrito às funções autorizadas pelo administrador."}
           </p>
         </div>
         <div className="flex flex-wrap rounded-lg p-1 gap-1" style={{ backgroundColor: "var(--color-bg)" }}>
-          {renderTabButton("materials", t("tab.materials"), ImageIcon)}
-          {renderTabButton("users", t("tab.users"), Users)}
-          {renderTabButton("collections", "Trilhas", BookOpen)}
-          {renderTabButton("analytics", t("tab.analytics"), BarChart2)}
-          {renderTabButton("permissions", "Permissões", ShieldCheck)}
-          {renderTabButton("audit", "Auditoria", FileClock)}
-          {renderTabButton("settings", t("tab.settings"), Settings)}
+          {tabVisibility.materials && renderTabButton("materials", t("tab.materials"), ImageIcon)}
+          {tabVisibility.users && renderTabButton("users", t("tab.users"), Users)}
+          {tabVisibility.collections && renderTabButton("collections", "Trilhas", BookOpen)}
+          
+          {tabVisibility.analytics && renderTabButton("analytics", t("tab.analytics"), BarChart2)}
+          {tabVisibility.permissions && renderTabButton("permissions", "Permissões", ShieldCheck)}
+          {tabVisibility.audit && renderTabButton("audit", "Auditoria", FileClock)}
+          {tabVisibility.settings && renderTabButton("settings", t("tab.settings"), Settings)}
         </div>
       </div>
 
-      {activeTab === "permissions" && <PermissionsPanel />}
-      {activeTab === "audit" && <AuditLogPanel />}
+      {activeTab === "permissions" && tabVisibility.permissions && <PermissionsPanel />}
+      {activeTab === "audit" && tabVisibility.audit && <AuditLogPanel />}
+
+
 
 
       {/* Materials Tab */}
@@ -927,14 +981,16 @@ export const Admin: React.FC = () => {
               {materialSortOrder === "asc" ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
               {materialSortOrder === "asc" ? "A→Z" : "Z→A"}
             </button>
-            <button
-            onClick={handleOpenCreate}
-            className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
-            style={{ color: "var(--color-accent)" }}>
+            <Can permission="materials.create">
+              <button
+                onClick={handleOpenCreate}
+                className="liquid-glass-gold px-4 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap"
+                style={{ color: "var(--color-accent)" }}>
 
-              <Plus size={20} />
-              <span className="hidden md:inline">{t("add.material")}</span>
-            </button>
+                <Plus size={20} />
+                <span className="hidden md:inline">{t("add.material")}</span>
+              </button>
+            </Can>
           </div>
 
           <div className="rounded-xl shadow-sm overflow-hidden" style={{ backgroundColor: "var(--color-surface)" }}>
@@ -969,9 +1025,9 @@ export const Admin: React.FC = () => {
                             </button>
                           );
                         })}
-                        <button onClick={() => handleToggleActive(mat)} className="p-1 rounded-lg" style={{ color: mat.active ? "#10b981" : "#ef4444" }}><Power size={14} /></button>
-                        <button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={14} /></button>
-                        <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg" style={{ color: "#ef4444" }}><Trash2 size={14} /></button>
+                        <Can permission="materials.toggle_active"><button onClick={() => handleToggleActive(mat)} className="p-1 rounded-lg" style={{ color: mat.active ? "#10b981" : "#ef4444" }}><Power size={14} /></button></Can>
+                        <Can permission="materials.edit"><button onClick={() => handleOpenEdit(mat)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={14} /></button></Can>
+                        {isSuperAdmin && <button onClick={() => handleDeleteMaterial(mat.id)} className="p-1.5 rounded-lg" style={{ color: "#ef4444" }}><Trash2 size={14} /></button>}
                       </div>
                     </div>
                     <div className="flex flex-wrap gap-1">
@@ -1095,32 +1151,38 @@ export const Admin: React.FC = () => {
                               );
                             })}
                             {/* Toggle active */}
-                            <button
-                              onClick={() => handleToggleActive(mat)}
-                              className="p-1.5 rounded-lg transition-colors"
-                              title={mat.active ? "Desativar material" : "Ativar material"}
-                              style={{ color: mat.active ? "#10b981" : "#ef4444" }}
-                            >
-                              <Power size={16} />
-                            </button>
+                            <Can permission="materials.toggle_active">
+                              <button
+                                onClick={() => handleToggleActive(mat)}
+                                className="p-1.5 rounded-lg transition-colors"
+                                title={mat.active ? "Desativar material" : "Ativar material"}
+                                style={{ color: mat.active ? "#10b981" : "#ef4444" }}
+                              >
+                                <Power size={16} />
+                              </button>
+                            </Can>
                             {/* Edit */}
-                            <button
-                              onClick={() => handleOpenEdit(mat)}
-                              className="p-1.5 rounded-lg"
-                              style={{ color: "var(--color-accent)" }}
-                              title="Editar material"
-                            >
-                              <Edit size={16} />
-                            </button>
-                            {/* Delete */}
-                            <button
-                              onClick={() => handleDeleteMaterial(mat.id)}
-                              className="p-1.5 rounded-lg"
-                              style={{ color: "#ef4444" }}
-                              title="Excluir material"
-                            >
-                              <Trash2 size={16} />
-                            </button>
+                            <Can permission="materials.edit">
+                              <button
+                                onClick={() => handleOpenEdit(mat)}
+                                className="p-1.5 rounded-lg"
+                                style={{ color: "var(--color-accent)" }}
+                                title="Editar material"
+                              >
+                                <Edit size={16} />
+                              </button>
+                            </Can>
+                            {/* Delete — super admin only */}
+                            {isSuperAdmin && (
+                              <button
+                                onClick={() => handleDeleteMaterial(mat.id)}
+                                className="p-1.5 rounded-lg"
+                                style={{ color: "#ef4444" }}
+                                title="Excluir material"
+                              >
+                                <Trash2 size={16} />
+                              </button>
+                            )}
                           </div>
                         </td>
                       </tr>);
@@ -1158,16 +1220,18 @@ export const Admin: React.FC = () => {
               onChange={(e) => setCollectionSearch(e.target.value)} />
 
             </div>
-            <button
-            onClick={() => {
-              setEditingCollection(null);
-              setIsCollectionFormOpen(true);
-            }}
-            className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap"
-            style={{ color: "var(--color-accent)" }}>
+            <Can permission="collections.create">
+              <button
+                onClick={() => {
+                  setEditingCollection(null);
+                  setIsCollectionFormOpen(true);
+                }}
+                className="liquid-glass-gold flex items-center gap-2 px-4 py-2 rounded-lg font-bold text-sm whitespace-nowrap"
+                style={{ color: "var(--color-accent)" }}>
 
-              <PlusCircle size={16} /> Nova Trilha
-            </button>
+                <PlusCircle size={16} /> Nova Trilha
+              </button>
+            </Can>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             {collections.
@@ -1220,23 +1284,27 @@ export const Admin: React.FC = () => {
                           title="Ver conteúdos da trilha">
                           <List size={16} />
                         </button>
-                        <button
-                      onClick={() => {
-                        setEditingCollection(col);
-                        setIsCollectionFormOpen(true);
-                      }}
-                      className="p-2 rounded-lg"
-                      style={{ color: "var(--color-accent)" }}>
-                          <Edit size={16} />
-                        </button>
-                        <button
-                      onClick={() => {
-                        setItemToDelete({ type: "collection", id: col.id });
-                        setIsConfirmOpen(true);
-                      }}
-                      className="p-2 rounded-lg text-red-500">
-                          <Trash2 size={16} />
-                        </button>
+                        <Can permission="collections.edit">
+                          <button
+                            onClick={() => {
+                              setEditingCollection(col);
+                              setIsCollectionFormOpen(true);
+                            }}
+                            className="p-2 rounded-lg"
+                            style={{ color: "var(--color-accent)" }}>
+                            <Edit size={16} />
+                          </button>
+                        </Can>
+                        {isSuperAdmin && (
+                          <button
+                            onClick={() => {
+                              setItemToDelete({ type: "collection", id: col.id });
+                              setIsConfirmOpen(true);
+                            }}
+                            className="p-2 rounded-lg text-red-500">
+                            <Trash2 size={16} />
+                          </button>
+                        )}
                       </div>
                     </div>
                     <div className="flex gap-1 flex-wrap">
@@ -1350,14 +1418,16 @@ export const Admin: React.FC = () => {
               <option value="manager">{t("role.manager")}</option>
             </select>
             <div className="flex gap-2">
-              <button
-              onClick={exportAnalyticsCsv}
-              className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap text-sm"
-              style={{ color: "var(--color-accent)" }}>
+              <Can permission="analytics.export">
+                <button
+                  onClick={exportAnalyticsCsv}
+                  className="liquid-glass-gold px-3 py-2 rounded-lg flex items-center gap-2 shadow-lg transition-all hover:scale-105 whitespace-nowrap text-sm"
+                  style={{ color: "var(--color-accent)" }}>
 
-                <Download size={16} />
-                <span className="hidden md:inline">CSV</span>
-              </button>
+                  <Download size={16} />
+                  <span className="hidden md:inline">CSV</span>
+                </button>
+              </Can>
               
 
 
@@ -1737,13 +1807,13 @@ export const Admin: React.FC = () => {
                     </div>
                     <div className="flex gap-1 shrink-0">
                       {user.status === "pending" && (
-                        <>
+                        <Can permission="users.approve_pending">
                           <button onClick={() => handleUserStatus(user.id, "active")} className="p-1.5 rounded-lg text-green-500"><CheckCircle size={16} /></button>
                           <button onClick={() => handleRejectUser(user)} className="p-1.5 rounded-lg text-red-500"><XCircle size={16} /></button>
-                        </>
+                        </Can>
                       )}
-                      <button onClick={() => setUserEditing(user)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button>
-                      <button onClick={() => handleDeleteUser(user.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>
+                      <Can permission="users.edit"><button onClick={() => setUserEditing(user)} className="p-1.5 rounded-lg" style={{ color: "var(--color-accent)" }}><Edit size={16} /></button></Can>
+                      {isSuperAdmin && <button onClick={() => handleDeleteUser(user.id)} className="p-1.5 rounded-lg text-red-500"><Trash2 size={16} /></button>}
                     </div>
                   </div>
                   <div className="flex flex-wrap items-center gap-1.5">
@@ -1857,7 +1927,7 @@ export const Admin: React.FC = () => {
                       <td className="p-4 text-right">
                         <div className="flex justify-end gap-1 items-center">
                           {user.status === "pending" &&
-                      <>
+                      <Can permission="users.approve_pending">
                               <button
                           onClick={() => handleUserStatus(user.id, "active")}
                           className="p-2 rounded-lg text-green-500"
@@ -1872,23 +1942,27 @@ export const Admin: React.FC = () => {
 
                                 <XCircle size={18} />
                               </button>
-                            </>
+                            </Can>
                       }
-                          <button
-                        onClick={() => setUserEditing(user)}
-                        className="p-2 rounded-lg ml-1"
-                        title={t("edit")}
-                        style={{ color: "var(--color-accent)" }}>
+                          <Can permission="users.edit">
+                            <button
+                              onClick={() => setUserEditing(user)}
+                              className="p-2 rounded-lg ml-1"
+                              title={t("edit")}
+                              style={{ color: "var(--color-accent)" }}>
 
-                            <Edit size={18} />
-                          </button>
-                          <button
-                        onClick={() => handleDeleteUser(user.id)}
-                        className="p-2 rounded-lg text-red-500 ml-1"
-                        title={t("delete")}>
+                              <Edit size={18} />
+                            </button>
+                          </Can>
+                          {isSuperAdmin && (
+                            <button
+                              onClick={() => handleDeleteUser(user.id)}
+                              className="p-2 rounded-lg text-red-500 ml-1"
+                              title={t("delete")}>
 
-                            <Trash2 size={18} />
-                          </button>
+                              <Trash2 size={18} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -1921,11 +1995,11 @@ export const Admin: React.FC = () => {
                 style={{ color: "var(--color-text-muted)" }}>
                   Opções
                 </p>
-                {renderSettingsSidebarItem("identity", "Identidade Visual", Type)}
-                {renderSettingsSidebarItem("integrations", "Integrações", Webhook)}
-                {renderSettingsSidebarItem("themes", "Temas", Palette)}
-                {renderSettingsSidebarItem("gamification", "Gamificação", Trophy)}
-                {renderSettingsSidebarItem("invites", t("user.invite"), Share2)}
+                {settingsSubtabVisibility.identity && renderSettingsSidebarItem("identity", "Identidade Visual", Type)}
+                {settingsSubtabVisibility.integrations && renderSettingsSidebarItem("integrations", "Integrações", Webhook)}
+                {settingsSubtabVisibility.themes && renderSettingsSidebarItem("themes", "Temas", Palette)}
+                {settingsSubtabVisibility.gamification && renderSettingsSidebarItem("gamification", "Gamificação", Trophy)}
+                {settingsSubtabVisibility.invites && renderSettingsSidebarItem("invites", t("user.invite"), Share2)}
               </div>
             </aside>
 
@@ -1959,6 +2033,7 @@ export const Admin: React.FC = () => {
                 }
                 </h3>
                 {settingsTab !== "invites" && settingsTab !== "gamification" &&
+                  (isSuperAdmin || hasAny('settings.edit_branding', 'settings.edit_theme', 'settings.edit_environment')) &&
               <button
                 onClick={handleSaveSettings}
                 className="liquid-glass-gold px-5 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
@@ -2297,13 +2372,15 @@ export const Admin: React.FC = () => {
                                     </button>
                                   </Can>
                                 )}
-                                <button
-                                  onClick={() => deleteInviteToken(tk.id)}
-                                  className="p-2 rounded-lg text-red-500"
-                                  title="Excluir convite (Super Admin)"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
+                                {isSuperAdmin && (
+                                  <button
+                                    onClick={() => deleteInviteToken(tk.id)}
+                                    className="p-2 rounded-lg text-red-500"
+                                    title="Excluir convite (Super Admin)"
+                                  >
+                                    <Trash2 size={16} />
+                                  </button>
+                                )}
                               </div>
                             </div>
                           );

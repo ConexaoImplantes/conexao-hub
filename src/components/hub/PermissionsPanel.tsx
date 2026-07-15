@@ -8,7 +8,19 @@ import { useAuth } from '../../contexts/AuthContext';
 import { UserPermissionsPanel } from './UserPermissionsPanel';
 
 export const PermissionsPanel: React.FC = () => {
+  const { user } = useAuth();
   const [tab, setTab] = useState<'role' | 'user'>('role');
+
+  // Defensive: only super_admin may configure permissions.
+  if (user?.role !== 'super_admin') {
+    return (
+      <div className="p-6 rounded-xl text-center" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
+        <Lock size={20} className="mx-auto mb-2" />
+        <p className="text-sm">Somente o Super Admin pode configurar permissões.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       <div className="flex gap-2 border-b" style={{ borderColor: 'var(--color-border)' }}>
