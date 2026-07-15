@@ -12,6 +12,7 @@ import { PermissionsProvider, usePermissions } from "./contexts/PermissionsConte
 import { useBrand } from "./contexts/BrandContext";
 import { ShortcutProvider } from "./contexts/ShortcutContext";
 import { Layout } from "./components/hub/Layout";
+import { LanguagePersistence } from "./components/LanguagePersistence";
 import { GlobalEffects } from "./components/hub/GlobalEffects";
 import { KeyboardHelpModal } from "./components/hub/KeyboardHelpModal";
 import { AuthPage } from "./pages/AuthPage";
