@@ -2025,6 +2025,7 @@ export const Admin: React.FC = () => {
                 }
                 </h3>
                 {settingsTab !== "invites" && settingsTab !== "gamification" &&
+                  (isSuperAdmin || hasAny('settings.edit_branding', 'settings.edit_theme', 'settings.edit_environment')) &&
               <button
                 onClick={handleSaveSettings}
                 className="liquid-glass-gold px-5 py-2 rounded-lg text-sm font-bold shadow-lg hover:opacity-90 transition-opacity flex items-center gap-2"
