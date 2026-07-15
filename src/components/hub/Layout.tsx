@@ -66,7 +66,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
             </div>
 
             <div className="flex items-center gap-1.5 sm:gap-3">
-                <div className="flex items-center gap-1 sm:gap-2 rounded-full px-1 py-1 sm:px-1.5 sm:py-1.5 transition-colors group" style={{ backgroundColor: colorMix('var(--color-bg)', 50, 'rgba(15,23,42,0.5)'), border: `1px solid ${colorMix('var(--color-border)', 50, 'rgba(255,255,255,0.1)')}` }}>
+                <div data-tour="language-switcher" className="flex items-center gap-1 sm:gap-2 rounded-full px-1 py-1 sm:px-1.5 sm:py-1.5 transition-colors group" style={{ backgroundColor: colorMix('var(--color-bg)', 50, 'rgba(15,23,42,0.5)'), border: `1px solid ${colorMix('var(--color-border)', 50, 'rgba(255,255,255,0.1)')}` }}>
                     <div className="p-1 sm:p-1.5 rounded-full shadow-sm transition-colors" style={{ backgroundColor: 'var(--color-surface)', color: 'var(--color-text-muted)' }}>
                         <Globe size={12} className="sm:hidden" />
                         <Globe size={14} className="hidden sm:block" />
