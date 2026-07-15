@@ -204,6 +204,25 @@ const AnalyticsDetailModal = ({
 export const Admin: React.FC = () => {
   const { t, language } = useLanguage();
   const { config, updateConfig } = useBrand();
+  const { user: currentUser } = useAuth();
+
+  const audit = (
+    module: string,
+    action: AuditAction,
+    entity?: { type?: string; id?: string | number | null; label?: string; details?: Record<string, unknown> }
+  ) => {
+    if (!currentUser) return;
+    logAudit({
+      module,
+      action,
+      entityType: entity?.type,
+      entityId: entity?.id,
+      entityLabel: entity?.label,
+      details: entity?.details,
+      user: { id: currentUser.id, name: currentUser.name, email: currentUser.email, role: currentUser.role },
+    });
+  };
+
 
   const [activeTab, setActiveTab] = useState<"materials" | "users" | "settings" | "analytics" | "collections" | "permissions" | "audit">(
     "materials"
