@@ -2,8 +2,9 @@ import React from 'react';
 import { X, Sparkles, PlayCircle, Check } from 'lucide-react';
 import { EnvironmentId } from '../../lib/environments';
 import { Role } from '../../types';
-import { EnvironmentTour } from './tours';
+import { EnvironmentTour, getOnboardingUI } from './tours';
 import { colorMix } from '../../lib/utils';
+import { useLanguage } from '../../contexts/LanguageContext';
 
 interface Props {
   envId: EnvironmentId;
@@ -12,28 +13,18 @@ interface Props {
   onClose: (dontShowAgain: boolean, startTour: boolean) => void;
 }
 
-const roleLabels: Record<Role, string> = {
-  client: 'Ambiente do Cliente',
-  distributor: 'Ambiente do Distribuidor',
-  consultant: 'Ambiente do Consultor',
-  manager: 'Ambiente do Gestor',
-  super_admin: 'Painel Administrativo',
-};
-
-const envFallback: Record<EnvironmentId, string> = {
-  admin: 'Painel Administrativo',
-  manager: 'Ambiente do Gestor',
-  client: 'Ambiente do Usuário',
-};
-
-const badgeLabel = (envId: EnvironmentId, role?: Role): string => {
-  if (envId === 'admin') return 'Painel Administrativo';
-  if (envId === 'manager') return 'Ambiente do Gestor';
-  // client environment — personalize by user role.
-  if (role && roleLabels[role] && role !== 'super_admin' && role !== 'manager') {
-    return roleLabels[role];
-  }
-  return envFallback[envId];
+const badgeLabel = (
+  envId: EnvironmentId,
+  role: Role | undefined,
+  ui: ReturnType<typeof getOnboardingUI>
+): string => {
+  if (envId === 'admin') return ui.badge.admin;
+  if (envId === 'manager') return ui.badge.manager;
+  // client environment — personalize by user role when possible.
+  if (role === 'distributor') return ui.roleBadge.distributor;
+  if (role === 'consultant') return ui.roleBadge.consultant;
+  if (role === 'client') return ui.roleBadge.client;
+  return ui.badge.client;
 };
 
 export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }) => {
