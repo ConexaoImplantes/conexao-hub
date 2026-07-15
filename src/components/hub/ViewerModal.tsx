@@ -134,6 +134,79 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       style={{ zIndex: 9999 }}
       onContextMenu={handleContextMenu}>
 
+      {/* Download overlay — blocks the whole viewport while working, then shows success */}
+      {downloadState !== 'idle' && (
+        <div
+          className="fixed inset-0 flex items-center justify-center animate-fade-in"
+          style={{ zIndex: 10000, backgroundColor: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(6px)' }}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          <div
+            className="flex flex-col items-center gap-5 px-8 py-7 rounded-2xl border shadow-2xl animate-scale-in max-w-sm text-center"
+            style={{
+              backgroundColor: 'var(--color-surface)',
+              borderColor: 'color-mix(in srgb, var(--color-accent) 25%, transparent)',
+            }}
+          >
+            {downloadState === 'downloading' && (
+              <>
+                <div className="relative">
+                  <div
+                    className="absolute inset-0 rounded-full blur-2xl"
+                    style={{ backgroundColor: 'color-mix(in srgb, var(--color-accent) 45%, transparent)' }}
+                  />
+                  <Loader2 size={56} className="animate-spin relative" style={{ color: 'var(--color-accent)' }} />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>
+                    Baixando material…
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Preparando seu arquivo. Não feche esta janela.
+                  </p>
+                </div>
+              </>
+            )}
+
+            {downloadState === 'done' && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full blur-2xl bg-emerald-400/40" />
+                  <CheckCircle2 size={64} className="relative text-emerald-400" strokeWidth={2.2} />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>
+                    Download concluído!
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Verifique a pasta <span className="font-semibold" style={{ color: 'var(--color-text-main)' }}>Downloads</span> do seu dispositivo.
+                  </p>
+                </div>
+              </>
+            )}
+
+            {downloadState === 'error' && (
+              <>
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full blur-2xl bg-red-500/40" />
+                  <X size={56} className="relative text-red-400" />
+                </div>
+                <div>
+                  <p className="font-bold text-lg" style={{ color: 'var(--color-text-main)' }}>
+                    Não foi possível baixar
+                  </p>
+                  <p className="text-sm mt-1" style={{ color: 'var(--color-text-muted)' }}>
+                    Abrimos o arquivo em uma nova aba para você.
+                  </p>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
+
+
       <div className="absolute top-0 left-0 right-0 p-3 sm:p-4 flex justify-between items-start bg-gradient-to-b from-black/90 via-black/50 to-transparent z-50 pointer-events-none">
         <div className="pointer-events-auto flex flex-col gap-2 max-w-[70%] sm:max-w-[80%]">
           <h3 className="font-bold text-lg text-white drop-shadow-md leading-tight line-clamp-2">{displayTitle}</h3>
