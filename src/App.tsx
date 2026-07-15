@@ -234,9 +234,11 @@ const AppContent = () => {
     return <EnvironmentSelector eligible={eligible} onSelect={selectEnv} />;
   }
 
-  // Maintenance gate — Super Admin always bypasses.
+  // Maintenance gate — applies to everyone, including Super Admin.
+  // Super Admin can bypass with an explicit button for validation/testing.
   const activeMaintenance = active ? maintenance[active] : undefined;
-  if (active && activeMaintenance?.enabled && !isSuperAdmin) {
+  const isBypassed = active ? bypassedEnvs.has(active) : false;
+  if (active && activeMaintenance?.enabled && !isBypassed) {
     return (
       <MaintenanceScreen
         env={active}
@@ -244,6 +246,14 @@ const AppContent = () => {
         message={activeMaintenance.message}
         canSwitch={eligible.length > 1}
         onSwitch={switchEnvironment}
+        isSuperAdmin={!!isSuperAdmin}
+        onBypass={() =>
+          setBypassedEnvs((prev) => {
+            const next = new Set(prev);
+            next.add(active);
+            return next;
+          })
+        }
       />
     );
   }
