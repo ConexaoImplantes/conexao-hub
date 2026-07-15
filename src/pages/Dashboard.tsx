@@ -350,8 +350,8 @@ export const Dashboard: React.FC = () => {
 
         {/* ─── Collection Detail View ─── */}
         {activeView === 'collection-detail' && selectedCollection && (() => {
-          const colMaterials = collectionMaterialsMap[selectedCollection.id] || [];
-          const materialIds = collectionItemMap[selectedCollection.id] || [];
+          const colMaterials = langCollectionMaterialsMap[selectedCollection.id] || [];
+          const materialIds = langCollectionItemMap[selectedCollection.id] || [];
           const completedCount = userProgress.filter(p => p.status === 'completed' && p.collectionId === selectedCollection.id && materialIds.includes(p.materialId)).length;
           const progressPct = materialIds.length > 0 ? Math.round((completedCount / materialIds.length) * 100) : 0;
           const displayTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || '';
