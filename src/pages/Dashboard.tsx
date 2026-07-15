@@ -228,7 +228,7 @@ export const Dashboard: React.FC = () => {
         <div className="sticky top-28 space-y-4 animate-slide-up">
           {/* Gamification card */}
           {user && (
-            <div className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
+            <div data-tour="user-level-card" className="rounded-2xl p-4 border border-white/10" style={{ backgroundColor: colorMix('var(--color-surface)', 40, 'rgba(30,41,59,0.4)') }}>
               <div className="flex items-center gap-2 mb-3">
                 <Star size={14} style={{ fill: 'var(--color-warning)', color: 'var(--color-warning)' }} />
                 <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--color-text-muted)' }}>Nível {userLevel}</span>
