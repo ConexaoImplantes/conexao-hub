@@ -121,7 +121,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
       setAllowedRoles(initialData.allowedRoles);
       setActive(initialData.active);
       setAssets(initialData.assets);
-      setTags(initialData.tags || []);
+      setDownloadable(initialData.downloadable ?? false);
       setPoints(initialData.points || 0);
     }
   }, [initialData]);
