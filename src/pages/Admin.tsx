@@ -84,6 +84,8 @@ import { InviteShareModal } from "../components/hub/InviteShareModal";
 import { RejectUserModal } from "../components/hub/RejectUserModal";
 import { CollectionFormModal } from "../components/hub/CollectionFormModal";
 import { SkeletonTable } from "../components/hub/SkeletonTable";
+import { PermissionsPanel } from "../components/hub/PermissionsPanel";
+import { AuditLogPanel } from "../components/hub/AuditLogPanel";
 import {
   AreaChart,
   Area,
