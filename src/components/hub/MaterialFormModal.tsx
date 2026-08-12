@@ -208,7 +208,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     if (type === 'video') return "Cole o link do YouTube, Drive ou MP4 aqui...";
     if (type === 'audio') return t('url.placeholder.audio');
     if (type === 'image') return t('url.placeholder.image');
-    if (type === 'html') return "URL da página HTML ou apresentação (.ppt/.pptx)...";
+    if (type === 'html') return "URL do material interativo ou apresentação (.ppt/.pptx)...";
     return t('url.placeholder.pdf');
   };
 
@@ -319,7 +319,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 <div className="flex gap-2">
                   {(['pdf', 'image', 'video', 'audio', 'html'] as MaterialType[]).map(t => {
                     const icons = { pdf: FileText, image: ImageIcon, video: Video, audio: Headphones, html: Globe };
-                    const labels = { pdf: 'PDF', image: 'IMG', video: 'Video', audio: 'Áudio', html: 'HTML' };
+                    const labels = { pdf: 'PDF', image: 'IMG', video: 'Video', audio: 'Áudio', html: 'Interativo' };
                     return <TypeCard key={t} value={t} icon={icons[t]} label={labels[t]} currentType={type} onSelect={(val) => { setType(val); if (!initialData) setPoints(defaultPointsByType[val]); }} />;
                   })}
                 </div>
@@ -536,7 +536,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 {type === 'html' && htmlInputMode === 'upload' ? (
                   <div className="block">
                     <span className="text-sm font-semibold mb-1 block" style={{ color: 'var(--color-text-main)' }}>
-                      Arquivo HTML ou Apresentação <span className="text-red-500">*</span>
+                      Arquivo do Material Interativo ou Apresentação <span className="text-red-500">*</span>
                     </span>
                     <div
                       className="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors hover:opacity-80"

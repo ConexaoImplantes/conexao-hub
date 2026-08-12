@@ -101,7 +101,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
                   {lang}
                 </span>
                 {material.type === 'video' && <span className="text-xs text-amber-600 font-medium">Video</span>}
-                {isHtml && <span className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>HTML</span>}
+                {isHtml && <span className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>Material Interativo</span>}
               </div>
               <div className="space-y-3">
                 {isHtml && (
@@ -127,7 +127,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
 
                 {isHtml && htmlInputMode[lang] === 'upload' ? (
                   <div>
-                    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>Arquivo HTML / Apresentação</label>
+                    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>Arquivo do Material Interativo / Apresentação</label>
                     <div
                       className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors hover:opacity-80"
                       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
