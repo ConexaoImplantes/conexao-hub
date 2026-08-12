@@ -208,7 +208,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     if (type === 'video') return "Cole o link do YouTube, Drive ou MP4 aqui...";
     if (type === 'audio') return t('url.placeholder.audio');
     if (type === 'image') return t('url.placeholder.image');
-    if (type === 'html') return "URL da página HTML ou apresentação (.ppt/.pptx)...";
+    if (type === 'html') return "URL do material interativo ou apresentação (.ppt/.pptx)...";
     return t('url.placeholder.pdf');
   };
 
