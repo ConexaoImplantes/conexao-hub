@@ -319,7 +319,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 <div className="flex gap-2">
                   {(['pdf', 'image', 'video', 'audio', 'html'] as MaterialType[]).map(t => {
                     const icons = { pdf: FileText, image: ImageIcon, video: Video, audio: Headphones, html: Globe };
-                    const labels = { pdf: 'PDF', image: 'IMG', video: 'Video', audio: 'Áudio', html: 'HTML' };
+                    const labels = { pdf: 'PDF', image: 'IMG', video: 'Video', audio: 'Áudio', html: 'Interativo' };
                     return <TypeCard key={t} value={t} icon={icons[t]} label={labels[t]} currentType={type} onSelect={(val) => { setType(val); if (!initialData) setPoints(defaultPointsByType[val]); }} />;
                   })}
                 </div>
