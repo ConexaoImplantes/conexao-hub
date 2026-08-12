@@ -308,8 +308,26 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
         )}
         {(() => {
           if (material.type === 'html') {
+            // Apresentações .ppt/.pptx ou links do Google Drive
+            if (isPresentation(asset.url) || embedConfig.provider === 'Google Drive') {
+              const src = embedConfig.provider === 'Google Drive'
+                ? embedConfig.embedUrl
+                : getOfficeViewerUrl(asset.url);
+              return (
+                <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
+                  <iframe
+                    key={src}
+                    src={src}
+                    className="w-full h-full rounded-lg bg-white shadow-2xl"
+                    title="Presentation Viewer"
+                    allowFullScreen
+                    onLoad={() => setIsLoading(false)}
+                    style={{ border: 'none' }} />
+                </div>);
+            }
             return (
               <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
+
                 {htmlContent ?
                 <iframe
                   srcDoc={htmlContent}
