@@ -99,9 +99,10 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     if (t === 'image') return 'jpg';
     if (t === 'video') return 'mp4';
     if (t === 'audio') return 'mp3';
-    if (t === 'html') return 'html';
+    if (t === 'html') return isPresentation(url) ? 'pptx' : 'html';
     return 'bin';
   };
+
 
   const triggerDownload = async (url: string, filename: string, blob?: Blob) => {
     try {
