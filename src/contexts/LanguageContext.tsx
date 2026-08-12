@@ -267,7 +267,7 @@ const translations: Record<Language, Record<string, string>> = {
     'material.type.image': 'Image',
     'material.type.video': 'Video',
     'material.type.audio': 'Audio',
-    'material.type.html': 'Interactive Page',
+    'material.type.html': 'Interactive Material',
     'no.materials': 'No materials found matching current filters.',
     'no.results': 'No results found',
     'add.material': 'Add Material',
