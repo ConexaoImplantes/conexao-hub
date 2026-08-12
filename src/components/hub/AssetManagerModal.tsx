@@ -28,19 +28,27 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
     });
   };
 
+  const contentTypeForFile = (name: string) => {
+    if (/\.pptx$/i.test(name)) return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    if (/\.ppt$/i.test(name)) return 'application/vnd.ms-powerpoint';
+    return 'text/html';
+  };
+
   const handleHtmlUpload = async (lang: Language, file: File) => {
-    if (!file.name.match(/\.(html|htm)$/i)) {
-      setError('Apenas arquivos .html ou .htm são permitidos.');
+    if (!file.name.match(/\.(html|htm|ppt|pptx)$/i)) {
+      setError('Apenas arquivos .html, .htm, .ppt ou .pptx são permitidos.');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError('O arquivo deve ter no máximo 5MB.');
+    const isPpt = /\.(ppt|pptx)$/i.test(file.name);
+    const maxSize = isPpt ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError(`O arquivo deve ter no máximo ${isPpt ? '50MB' : '5MB'}.`);
       return;
     }
     setUploading(prev => ({ ...prev, [lang]: true }));
     setError(null);
     const filePath = `html/${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage.from('materials').upload(filePath, file, { contentType: 'text/html', upsert: false });
+    const { error: uploadError } = await supabase.storage.from('materials').upload(filePath, file, { contentType: contentTypeForFile(file.name), upsert: false });
     if (uploadError) {
       setError(`Erro no upload: ${uploadError.message}`);
       setUploading(prev => ({ ...prev, [lang]: false }));
@@ -50,6 +58,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
     handleChange(lang, 'url', data.publicUrl);
     setUploading(prev => ({ ...prev, [lang]: false }));
   };
+
 
   const handleSave = () => {
     const cleanedAssets: Partial<Record<Language, MaterialAsset>> = {};
