@@ -934,7 +934,7 @@ export const Admin: React.FC = () => {
                 { type: "image" as MaterialType, icon: ImageIcon, lbl: "Imagens", clr: "#3b82f6" },
                 { type: "video" as MaterialType, icon: Video, lbl: "Vídeos", clr: "#8b5cf6" },
                 { type: "audio" as MaterialType, icon: Headphones, lbl: "Áudios", clr: "#f59e0b" },
-                { type: "html" as MaterialType, icon: Globe, lbl: "Pág. Interativas", clr: "#10b981" },
+                { type: "html" as MaterialType, icon: Globe, lbl: "Mat. Interativos", clr: "#10b981" },
               ];
               return (
                 <div key={role} className="p-5 rounded-xl shadow-sm" style={{ backgroundColor: "var(--color-surface)" }}>
