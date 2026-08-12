@@ -62,6 +62,11 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
   useEffect(() => {
     if (material?.type === 'html') {
       const url = material.assets[language]?.url;
+      if (url && isPresentation(url)) {
+        // Apresentações (.ppt/.pptx) são binárias — não buscar como texto
+        setHtmlContent(null);
+        return;
+      }
       if (url) {
         fetch(url).
         then((res) => res.text()).
@@ -70,6 +75,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       }
     }
   }, [material?.type, material?.assets, language]);
+
 
   const asset = material?.assets[language] ?? null;
   const displayTitle = material ? material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled' : '';
