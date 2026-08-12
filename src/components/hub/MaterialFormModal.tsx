@@ -536,7 +536,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 {type === 'html' && htmlInputMode === 'upload' ? (
                   <div className="block">
                     <span className="text-sm font-semibold mb-1 block" style={{ color: 'var(--color-text-main)' }}>
-                      Arquivo HTML ou Apresentação <span className="text-red-500">*</span>
+                      Arquivo do Material Interativo ou Apresentação <span className="text-red-500">*</span>
                     </span>
                     <div
                       className="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors hover:opacity-80"
