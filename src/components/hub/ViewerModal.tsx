@@ -25,6 +25,15 @@ const getEmbedConfig = (url: string) => {
   return { isEmbed: false, provider: 'Direct', originalUrl: cleanUrl, embedUrl: cleanUrl, nativeUrl: cleanUrl };
 };
 
+const isPresentation = (url: string): boolean => {
+  if (!url) return false;
+  const path = url.split('?')[0].split('#')[0];
+  return /\.(pptx|ppt)$/i.test(path);
+};
+
+const getOfficeViewerUrl = (url: string) =>
+  `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+
 const getResolvedUrl = (url: string, type: MaterialType): string => {
   const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
   if (!driveMatch?.[1]) return url;
@@ -33,6 +42,7 @@ const getResolvedUrl = (url: string, type: MaterialType): string => {
   if (type === 'pdf') return `https://drive.google.com/file/d/${id}/preview`;
   return url;
 };
+
 
 export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, onClose }) => {
   const [_forceNativeDrive] = useState(false); // kept for hook order stability
