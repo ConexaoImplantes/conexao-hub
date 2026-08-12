@@ -145,7 +145,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
                       />
                       <Upload size={20} className="mx-auto mb-1" style={{ color: 'var(--color-text-muted)' }} />
                       <p className="text-xs" style={{ color: 'var(--color-text-main)' }}>
-                        {uploading[lang] ? 'Enviando...' : 'Clique para selecionar .html'}
+                        {uploading[lang] ? 'Enviando...' : 'Clique para selecionar .html / .ppt / .pptx'}
                       </p>
                       {assets[lang]?.url && (
                         <p className="text-xs mt-1 font-mono truncate" style={{ color: 'var(--color-success)' }}>
