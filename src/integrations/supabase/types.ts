@@ -647,24 +647,6 @@ export type Database = {
           theme_dark: Json | null
           updated_at: string | null
         }
-        Insert: {
-          app_name?: string | null
-          environment_maintenance?: Json | null
-          environment_themes?: Json | null
-          id?: number | null
-          logo_url?: string | null
-          theme_dark?: Json | null
-          updated_at?: string | null
-        }
-        Update: {
-          app_name?: string | null
-          environment_maintenance?: Json | null
-          environment_themes?: Json | null
-          id?: number | null
-          logo_url?: string | null
-          theme_dark?: Json | null
-          updated_at?: string | null
-        }
         Relationships: []
       }
     }
@@ -676,6 +658,18 @@ export type Database = {
       get_effective_permissions: {
         Args: { _user_id: string }
         Returns: string[]
+      }
+      get_public_config: {
+        Args: never
+        Returns: {
+          app_name: string
+          environment_maintenance: Json
+          environment_themes: Json
+          id: number
+          logo_url: string
+          theme_dark: Json
+          updated_at: string
+        }[]
       }
       get_user_role: {
         Args: { _user_id: string }
