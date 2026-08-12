@@ -101,7 +101,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
                   {lang}
                 </span>
                 {material.type === 'video' && <span className="text-xs text-amber-600 font-medium">Video</span>}
-                {isHtml && <span className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>HTML</span>}
+                {isHtml && <span className="text-xs font-medium" style={{ color: 'var(--color-accent)' }}>Material Interativo</span>}
               </div>
               <div className="space-y-3">
                 {isHtml && (
