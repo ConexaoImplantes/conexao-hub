@@ -127,7 +127,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
 
                 {isHtml && htmlInputMode[lang] === 'upload' ? (
                   <div>
-                    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>Arquivo HTML</label>
+                    <label className="block text-xs font-medium mb-1" style={{ color: 'var(--color-text-muted)' }}>Arquivo HTML / Apresentação</label>
                     <div
                       className="border-2 border-dashed rounded-lg p-4 text-center cursor-pointer transition-colors hover:opacity-80"
                       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-surface)' }}
