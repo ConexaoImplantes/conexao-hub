@@ -208,25 +208,33 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     if (type === 'video') return "Cole o link do YouTube, Drive ou MP4 aqui...";
     if (type === 'audio') return t('url.placeholder.audio');
     if (type === 'image') return t('url.placeholder.image');
-    if (type === 'html') return "URL da página HTML interativa...";
+    if (type === 'html') return "URL da página HTML ou apresentação (.ppt/.pptx)...";
     return t('url.placeholder.pdf');
+  };
+
+  const contentTypeForFile = (name: string) => {
+    if (/\.pptx$/i.test(name)) return 'application/vnd.openxmlformats-officedocument.presentationml.presentation';
+    if (/\.ppt$/i.test(name)) return 'application/vnd.ms-powerpoint';
+    return 'text/html';
   };
 
   const handleHtmlFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (!file.name.match(/\.(html|htm)$/i)) {
-      setError('Apenas arquivos .html ou .htm são permitidos.');
+    if (!file.name.match(/\.(html|htm|ppt|pptx)$/i)) {
+      setError('Apenas arquivos .html, .htm, .ppt ou .pptx são permitidos.');
       return;
     }
-    if (file.size > 5 * 1024 * 1024) {
-      setError('O arquivo deve ter no máximo 5MB.');
+    const isPpt = /\.(ppt|pptx)$/i.test(file.name);
+    const maxSize = isPpt ? 50 * 1024 * 1024 : 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      setError(`O arquivo deve ter no máximo ${isPpt ? '50MB' : '5MB'}.`);
       return;
     }
     setUploading(true);
     setError(null);
     const filePath = `html/${Date.now()}-${file.name}`;
-    const { error: uploadError } = await supabase.storage.from('materials').upload(filePath, file, { contentType: 'text/html', upsert: false });
+    const { error: uploadError } = await supabase.storage.from('materials').upload(filePath, file, { contentType: contentTypeForFile(file.name), upsert: false });
     if (uploadError) {
       setError(`Erro no upload: ${uploadError.message}`);
       setUploading(false);
@@ -235,6 +243,7 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
     const { data: publicUrlData } = supabase.storage.from('materials').getPublicUrl(filePath);
     handleUrlPasteOrChange(activeTab, publicUrlData.publicUrl);
     setUploading(false);
+
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
@@ -527,19 +536,20 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 {type === 'html' && htmlInputMode === 'upload' ? (
                   <div className="block">
                     <span className="text-sm font-semibold mb-1 block" style={{ color: 'var(--color-text-main)' }}>
-                      Arquivo HTML <span className="text-red-500">*</span>
+                      Arquivo HTML ou Apresentação <span className="text-red-500">*</span>
                     </span>
                     <div
                       className="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors hover:opacity-80"
                       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg)' }}
                       onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
                     >
-                      <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleHtmlFileUpload} onClick={(e) => e.stopPropagation()} />
+                      <input ref={fileInputRef} type="file" accept=".html,.htm,.ppt,.pptx" className="hidden" onChange={handleHtmlFileUpload} onClick={(e) => e.stopPropagation()} />
                       <Upload size={24} className="mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} />
                       <p className="text-sm font-medium" style={{ color: 'var(--color-text-main)' }}>
-                        {uploading ? 'Enviando...' : 'Clique para selecionar um arquivo .html'}
+                        {uploading ? 'Enviando...' : 'Clique para selecionar .html, .htm, .ppt ou .pptx'}
                       </p>
-                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Máximo 5MB</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>HTML até 5MB · PPT/PPTX até 50MB</p>
+
                       {assets[activeTab]?.url && (
                         <p className="text-xs mt-2 font-mono truncate" style={{ color: 'var(--color-success)' }}>
                           ✓ {assets[activeTab]!.url.split('/').pop()}

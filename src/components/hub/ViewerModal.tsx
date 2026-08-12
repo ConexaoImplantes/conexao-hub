@@ -25,6 +25,15 @@ const getEmbedConfig = (url: string) => {
   return { isEmbed: false, provider: 'Direct', originalUrl: cleanUrl, embedUrl: cleanUrl, nativeUrl: cleanUrl };
 };
 
+const isPresentation = (url: string): boolean => {
+  if (!url) return false;
+  const path = url.split('?')[0].split('#')[0];
+  return /\.(pptx|ppt)$/i.test(path);
+};
+
+const getOfficeViewerUrl = (url: string) =>
+  `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(url)}`;
+
 const getResolvedUrl = (url: string, type: MaterialType): string => {
   const driveMatch = url.match(/\/d\/([a-zA-Z0-9_-]+)/) || url.match(/id=([a-zA-Z0-9_-]+)/);
   if (!driveMatch?.[1]) return url;
@@ -33,6 +42,7 @@ const getResolvedUrl = (url: string, type: MaterialType): string => {
   if (type === 'pdf') return `https://drive.google.com/file/d/${id}/preview`;
   return url;
 };
+
 
 export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, onClose }) => {
   const [_forceNativeDrive] = useState(false); // kept for hook order stability
@@ -52,6 +62,11 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
   useEffect(() => {
     if (material?.type === 'html') {
       const url = material.assets[language]?.url;
+      if (url && isPresentation(url)) {
+        // Apresentações (.ppt/.pptx) são binárias — não buscar como texto
+        setHtmlContent(null);
+        return;
+      }
       if (url) {
         fetch(url).
         then((res) => res.text()).
@@ -60,6 +75,7 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
       }
     }
   }, [material?.type, material?.assets, language]);
+
 
   const asset = material?.assets[language] ?? null;
   const displayTitle = material ? material.title[language] || material.title['pt-br'] || Object.values(material.title)[0] || 'Untitled' : '';
@@ -83,9 +99,10 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
     if (t === 'image') return 'jpg';
     if (t === 'video') return 'mp4';
     if (t === 'audio') return 'mp3';
-    if (t === 'html') return 'html';
+    if (t === 'html') return isPresentation(url) ? 'pptx' : 'html';
     return 'bin';
   };
+
 
   const triggerDownload = async (url: string, filename: string, blob?: Blob) => {
     try {
@@ -291,8 +308,26 @@ export const ViewerModal: React.FC<ViewerModalProps> = ({ material, language, on
         )}
         {(() => {
           if (material.type === 'html') {
+            // Apresentações .ppt/.pptx ou links do Google Drive
+            if (isPresentation(asset.url) || embedConfig.provider === 'Google Drive') {
+              const src = embedConfig.provider === 'Google Drive'
+                ? embedConfig.embedUrl
+                : getOfficeViewerUrl(asset.url);
+              return (
+                <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
+                  <iframe
+                    key={src}
+                    src={src}
+                    className="w-full h-full rounded-lg bg-white shadow-2xl"
+                    title="Presentation Viewer"
+                    allowFullScreen
+                    onLoad={() => setIsLoading(false)}
+                    style={{ border: 'none' }} />
+                </div>);
+            }
             return (
               <div className="w-full h-full pt-16 sm:pt-20 pb-4 px-2 sm:px-4">
+
                 {htmlContent ?
                 <iframe
                   srcDoc={htmlContent}
