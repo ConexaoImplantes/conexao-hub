@@ -536,19 +536,20 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
                 {type === 'html' && htmlInputMode === 'upload' ? (
                   <div className="block">
                     <span className="text-sm font-semibold mb-1 block" style={{ color: 'var(--color-text-main)' }}>
-                      Arquivo HTML <span className="text-red-500">*</span>
+                      Arquivo HTML ou Apresentação <span className="text-red-500">*</span>
                     </span>
                     <div
                       className="relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-colors hover:opacity-80"
                       style={{ borderColor: 'var(--color-border)', backgroundColor: 'var(--color-bg)' }}
                       onClick={(e) => { e.stopPropagation(); fileInputRef.current?.click(); }}
                     >
-                      <input ref={fileInputRef} type="file" accept=".html,.htm" className="hidden" onChange={handleHtmlFileUpload} onClick={(e) => e.stopPropagation()} />
+                      <input ref={fileInputRef} type="file" accept=".html,.htm,.ppt,.pptx" className="hidden" onChange={handleHtmlFileUpload} onClick={(e) => e.stopPropagation()} />
                       <Upload size={24} className="mx-auto mb-2" style={{ color: 'var(--color-text-muted)' }} />
                       <p className="text-sm font-medium" style={{ color: 'var(--color-text-main)' }}>
-                        {uploading ? 'Enviando...' : 'Clique para selecionar um arquivo .html'}
+                        {uploading ? 'Enviando...' : 'Clique para selecionar .html, .htm, .ppt ou .pptx'}
                       </p>
-                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>Máximo 5MB</p>
+                      <p className="text-xs mt-1" style={{ color: 'var(--color-text-muted)' }}>HTML até 5MB · PPT/PPTX até 50MB</p>
+
                       {assets[activeTab]?.url && (
                         <p className="text-xs mt-2 font-mono truncate" style={{ color: 'var(--color-success)' }}>
                           ✓ {assets[activeTab]!.url.split('/').pop()}
