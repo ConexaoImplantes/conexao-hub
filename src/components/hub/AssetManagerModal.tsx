@@ -136,7 +136,7 @@ export const AssetManagerModal: React.FC<AssetManagerModalProps> = ({ material, 
                       <input
                         ref={el => { fileRefs.current[lang] = el; }}
                         type="file"
-                        accept=".html,.htm"
+                        accept=".html,.htm,.ppt,.pptx"
                         className="hidden"
                         onChange={(e) => {
                           const f = e.target.files?.[0];
