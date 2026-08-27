@@ -27,11 +27,11 @@ export const OnboardingLauncher: React.FC = () => {
       className="rounded-full flex items-center justify-center transition-all duration-300"
       style={{
         position: 'fixed',
-        bottom: 20,
-        right: 20,
+        bottom: 'calc(env(safe-area-inset-bottom, 0px) + 20px)',
+        right: 'calc(env(safe-area-inset-right, 0px) + 16px)',
         zIndex: 900,
-        width: 38,
-        height: 38,
+        width: 42,
+        height: 42,
         backgroundColor: colorMix('var(--color-accent)', 20, 'rgba(201,166,85,0.2)'),
         color: 'var(--color-accent)',
         border: `1px solid ${colorMix('var(--color-accent)', 30, 'rgba(201,166,85,0.3)')}`,

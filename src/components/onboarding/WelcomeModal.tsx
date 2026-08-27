@@ -47,8 +47,8 @@ export const WelcomeModal: React.FC<Props> = ({ envId, userRole, tour, onClose }
       onClick={() => onClose(dontShow, false)}
     >
       <div
-        className="w-full max-w-lg rounded-2xl p-6 sm:p-8 relative liquid-glass animate-slide-up"
-        style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)' }}
+        className="w-full max-w-lg rounded-2xl p-5 sm:p-8 relative liquid-glass animate-slide-up overflow-y-auto"
+        style={{ backgroundColor: 'var(--color-card)', border: '1px solid var(--color-border)', maxHeight: 'calc(100dvh - 32px)' }}
         onClick={(e) => e.stopPropagation()}
       >
         <button
