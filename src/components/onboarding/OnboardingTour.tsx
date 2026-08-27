@@ -160,11 +160,17 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   const { language } = useLanguage();
   const ui = getOnboardingUI(language);
 
-  // Initial filter: drop steps whose target is missing/hidden/empty right now
-  // (permission-gated tabs, filters not rendered in the current view, etc.).
-  const steps = React.useMemo(() => rawSteps.filter(isStepUsable), [rawSteps]);
+  // Keep every step: usability is evaluated live, because the UI changes while
+  // the tour runs (switching Materials/Trails, opening tabs...). A step whose
+  // target is not on screen right now is simply skipped, but it can become
+  // available again later.
+  const steps = rawSteps;
 
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = React.useState(() => {
+    for (let i = 0; i < rawSteps.length; i += 1) if (isStepUsable(rawSteps[i])) return i;
+    return 0;
+  });
+
   const [rect, setRect] = React.useState<Rect | null>(null);
   const [viewport, setViewport] = React.useState({ w: window.innerWidth, h: window.innerHeight });
 
@@ -182,9 +188,14 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   const goNext = React.useCallback(() => {
     setIndex((i) => {
       const n = findUsable(i + 1, 1);
-      return n === -1 ? i : n;
+      // Nothing usable ahead: the tour is over — never leave the user stuck.
+      if (n === -1) {
+        onClose();
+        return i;
+      }
+      return n;
     });
-  }, [findUsable]);
+  }, [findUsable, onClose]);
 
   const goPrev = React.useCallback(() => {
     setIndex((i) => {
@@ -192,6 +203,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
       return p === -1 ? i : p;
     });
   }, [findUsable]);
+
 
   // If the current index falls off the end after filtering, clamp it.
   React.useEffect(() => {
@@ -204,6 +216,27 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   }, [steps.length, onClose]);
 
   const step = steps[index];
+
+  // Step counter based on the steps that are actually reachable right now, so
+  // the user never sees a jump like "step 2 of 7" -> "step 6 of 7" when a whole
+  // section of the UI is not on screen (e.g. filters while viewing Trails).
+  const [progress, setProgress] = React.useState({ current: 1, total: steps.length });
+  React.useEffect(() => {
+    const compute = () => {
+      let total = 0;
+      let current = 1;
+      steps.forEach((s, i) => {
+        const usable = isStepUsable(s);
+        if (usable) total += 1;
+        if (i === index) current = usable ? total : total + 1;
+      });
+      setProgress({ current: Math.max(1, current), total: Math.max(total, current) });
+    };
+    compute();
+    const t = window.setInterval(compute, 500);
+    return () => window.clearInterval(t);
+  }, [steps, index]);
+
 
   // The app can change while the tour runs (switching to Trails hides the type
   // filters, a tab unmounts its content...). Keep checking the current step and
@@ -306,7 +339,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
       }
     : null;
 
-  const isFirst = index === 0;
+  const isFirst = findUsable(index - 1, -1) === -1;
   const isLast = findUsable(index + 1, 1) === -1;
 
   return (
@@ -407,7 +440,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
           className="text-[10px] font-bold uppercase tracking-wider mb-1"
           style={{ color: 'var(--color-accent)' }}
         >
-          {ui.stepOf(index + 1, steps.length)}
+          {ui.stepOf(progress.current, progress.total)}
         </div>
         <h3 className="text-base font-bold mb-1.5" style={{ color: 'var(--color-text-main)' }}>
           {step.title}
@@ -453,17 +486,33 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
                 {ui.finish} <Check size={12} />
               </button>
             ) : step.interactive ? (
-              <span
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 animate-pulse"
-                style={{
-                  backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'),
-                  color: 'var(--color-accent)',
-                  border: `1px dashed ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
-                }}
-              >
-                <MousePointerClick size={12} />
-                {step.interactiveHint || ui.clickToContinue}
-              </span>
+              <>
+                <span
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 animate-pulse"
+                  style={{
+                    backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'),
+                    color: 'var(--color-accent)',
+                    border: `1px dashed ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
+                  }}
+                >
+                  <MousePointerClick size={12} />
+                  {step.interactiveHint || ui.clickToContinue}
+                </span>
+                {/* Escape hatch: interactive steps must never block the tour. */}
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1 border"
+                  style={{
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text-main)',
+                    backgroundColor: 'transparent',
+                  }}
+                >
+                  {ui.skipStep} <ArrowRight size={12} />
+                </button>
+              </>
+
             ) : (
               <button
                 type="button"

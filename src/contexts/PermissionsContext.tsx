@@ -56,6 +56,13 @@ export const PermissionsProvider: React.FC<{ children: React.ReactNode }> = ({ c
       setLoading(false);
       return;
     }
+    if (import.meta.env.DEV && user.id.startsWith('mock-')) {
+      const base = ['materials.view', 'collections.view', 'gamification.view'];
+      const mgr = ['users.view', 'invites.view', 'analytics.view_all', 'settings.view'];
+      setPermissions(new Set(user.role === 'manager' ? [...base, ...mgr] : base));
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       // Effective permissions = role_permissions + user_permissions grants - revokes

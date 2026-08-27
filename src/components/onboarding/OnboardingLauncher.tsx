@@ -12,13 +12,14 @@ export const OnboardingLauncher: React.FC = () => {
   const { language } = useLanguage();
   const ui = getOnboardingUI(language);
 
-  if (isActive) return null;
-
+  // Stays mounted during the tour so the final "replay the tour" step can
+  // actually point at it — it just stops being clickable meanwhile.
   return createPortal(
     <button
       type="button"
       data-tour="onboarding-launcher"
-      onClick={restart}
+      onClick={isActive ? undefined : restart}
+
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onFocus={() => setHover(true)}
@@ -37,7 +38,7 @@ export const OnboardingLauncher: React.FC = () => {
         border: `1px solid ${colorMix('var(--color-accent)', 30, 'rgba(201,166,85,0.3)')}`,
         backdropFilter: 'blur(8px)',
         WebkitBackdropFilter: 'blur(8px)',
-        opacity: hover ? 1 : 0.35,
+        opacity: isActive ? 0.85 : hover ? 1 : 0.35,
         boxShadow: hover
           ? `0 6px 16px ${colorMix('var(--color-accent)', 35, 'rgba(201,166,85,0.35)')}`
           : 'none',
