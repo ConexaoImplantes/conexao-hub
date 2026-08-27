@@ -434,7 +434,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
           className="text-[10px] font-bold uppercase tracking-wider mb-1"
           style={{ color: 'var(--color-accent)' }}
         >
-          {ui.stepOf(index + 1, steps.length)}
+          {ui.stepOf(progress.current, progress.total)}
         </div>
         <h3 className="text-base font-bold mb-1.5" style={{ color: 'var(--color-text-main)' }}>
           {step.title}
