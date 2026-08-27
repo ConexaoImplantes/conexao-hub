@@ -16,9 +16,9 @@ describe('computeTooltipPos responsiveness', () => {
     expect(p.top).toBe(12);
   });
 
-  it('tablet: falls back vertically when the side placement does not fit', () => {
-    const p = computeTooltipPos({ top: 100, left: 600, width: 200, height: 60 }, 'right', 820, 1180);
-    expect(['top', 'bottom']).toContain(p.effective);
+  it('tablet: keeps the card fully inside the viewport', () => {
+    const p = computeTooltipPos({ top: 100, left: 700, width: 200, height: 60 }, 'right', 820, 1180);
+    expect(p.left).toBeGreaterThanOrEqual(8);
     expect(p.left + p.width).toBeLessThanOrEqual(820);
   });
 
