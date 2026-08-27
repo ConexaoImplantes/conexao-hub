@@ -34,7 +34,9 @@ const isVisible = (el: HTMLElement): boolean => {
   const r = el.getBoundingClientRect();
   if (r.width < 4 || r.height < 4) return false;
   const cs = window.getComputedStyle(el);
-  if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) === 0) return false;
+  if (cs.visibility === 'hidden' || cs.display === 'none') return false;
+  if (cs.opacity !== '' && Number(cs.opacity) === 0) return false;
+
   return true;
 };
 
