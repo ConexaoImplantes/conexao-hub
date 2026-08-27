@@ -416,7 +416,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
           {step.body}
         </p>
 
-        <div className="flex items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <button
             type="button"
             onClick={onClose}
@@ -425,7 +425,8 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
           >
             {ui.skip}
           </button>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 ml-auto">
+
             <button
               type="button"
               onClick={goPrev}
