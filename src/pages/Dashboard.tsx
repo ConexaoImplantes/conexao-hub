@@ -167,24 +167,33 @@ export const Dashboard: React.FC = () => {
     [collections, langCollectionMaterialsMap]
   );
 
-  const handleViewMaterial = async (mat: Material, lang: Language) => {
+  const handleViewMaterial = (mat: Material, lang: Language) => {
     const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
-    if (user) {
-      mockDb.logAccess(mat.id, user.id, lang, user.role);
-      // Mark as started / award XP on first view
-      const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === currentCollectionId);
-      if (!existing) {
+    // Abre o material IMEDIATAMENTE — o rastreamento roda em background para
+    // que nenhuma chamada de rede atrase (ou impeça) a abertura no 1º clique.
+    setViewingMaterial({ mat, lang, collectionId: currentCollectionId });
+
+    if (!user) return;
+    const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === currentCollectionId);
+    if (existing) return;
+
+    setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, collectionId: currentCollectionId, status: 'started', createdAt: new Date().toISOString() }]);
+
+    void (async () => {
+      try {
+        mockDb.logAccess(mat.id, user.id, lang, user.role);
         await mockDb.upsertProgress(user.id, mat.id, 'started', currentCollectionId);
         if (mat.points > 0) {
           const startXp = Math.floor(mat.points * 0.3);
           await mockDb.addPoints(user.id, startXp);
           addUserPoints(startXp);
         }
-        setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, collectionId: currentCollectionId, status: 'started', createdAt: new Date().toISOString() }]);
+      } catch (e) {
+        console.error('[progress] falha ao registrar início do material', e);
       }
-    }
-    setViewingMaterial({ mat, lang, collectionId: currentCollectionId });
+    })();
   };
+
 
   const handleCloseViewer = async () => {
     if (viewingMaterial && user) {
