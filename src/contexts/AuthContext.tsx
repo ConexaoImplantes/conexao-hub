@@ -202,6 +202,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(prev => prev ? { ...prev, points: (prev.points || 0) + points } : prev);
   };
 
+  if (import.meta.env.DEV) (window as any).__loginMock = loginMock;
+
   return (
     <AuthContext.Provider value={{ user, isAuthenticated: !!user, login, loginMock, register, logout, isLoading, isDbMissing, addUserPoints }}>
       {!isLoading && children}
