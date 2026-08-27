@@ -30,6 +30,7 @@ export const PROTECTED_TERMS: string[] = [
   "SPIN",
   "DISC",
   "Gatekeeper",
+  "Sales Rocket",
 ];
 
 /** Ordena do termo mais longo para o mais curto (evita casar "Easy" dentro de "Easy Grip"). */

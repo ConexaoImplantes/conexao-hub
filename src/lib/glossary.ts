@@ -27,6 +27,7 @@ export const PROTECTED_TERMS: string[] = [
   'SPIN',
   'DISC',
   'Gatekeeper',
+  'Sales Rocket',
 ];
 
 const TERMS_BY_LENGTH = [...PROTECTED_TERMS].sort((a, b) => b.length - a.length);
