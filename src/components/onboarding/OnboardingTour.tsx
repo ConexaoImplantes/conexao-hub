@@ -480,17 +480,33 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
                 {ui.finish} <Check size={12} />
               </button>
             ) : step.interactive ? (
-              <span
-                className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 animate-pulse"
-                style={{
-                  backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'),
-                  color: 'var(--color-accent)',
-                  border: `1px dashed ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
-                }}
-              >
-                <MousePointerClick size={12} />
-                {step.interactiveHint || ui.clickToContinue}
-              </span>
+              <>
+                <span
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1.5 animate-pulse"
+                  style={{
+                    backgroundColor: colorMix('var(--color-accent)', 15, 'rgba(201,166,85,0.15)'),
+                    color: 'var(--color-accent)',
+                    border: `1px dashed ${colorMix('var(--color-accent)', 40, 'rgba(201,166,85,0.4)')}`,
+                  }}
+                >
+                  <MousePointerClick size={12} />
+                  {step.interactiveHint || ui.clickToContinue}
+                </span>
+                {/* Escape hatch: interactive steps must never block the tour. */}
+                <button
+                  type="button"
+                  onClick={goNext}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1 border"
+                  style={{
+                    borderColor: 'var(--color-border)',
+                    color: 'var(--color-text-main)',
+                    backgroundColor: 'transparent',
+                  }}
+                >
+                  {ui.skipStep} <ArrowRight size={12} />
+                </button>
+              </>
+
             ) : (
               <button
                 type="button"
