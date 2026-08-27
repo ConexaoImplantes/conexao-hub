@@ -247,7 +247,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, steps.length, step]);
+  }, [onClose, step, goNext, goPrev]);
 
   if (!step) return null;
 
@@ -264,7 +264,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     : null;
 
   const isFirst = index === 0;
-  const isLast = index === steps.length - 1;
+  const isLast = findUsable(index + 1, 1) === -1;
 
   return (
     <div className="fixed inset-0 z-[1100] pointer-events-none">
