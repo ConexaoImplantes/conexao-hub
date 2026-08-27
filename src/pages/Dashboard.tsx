@@ -39,13 +39,18 @@ export const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [celebration, setCelebration] = useState<{ trailName: string; bonusXp: number } | null>(null);
 
+  // Recarrega os dados apenas quando muda de usuário/papel — nunca quando o XP
+  // do usuário é atualizado (isso recriava o objeto `user` e causava o "refresh"
+  // que fechava/atrasava a abertura do material).
+  const userId = user?.id;
+  const userRole = user?.role;
   useEffect(() => {
-    if (user) {
+    if (userId && userRole) {
       setIsLoading(true);
       Promise.all([
-        mockDb.getMaterials(user.role),
-        mockDb.getCollections(user.role),
-        mockDb.getUserProgress(user.id),
+        mockDb.getMaterials(userRole),
+        mockDb.getCollections(userRole),
+        mockDb.getUserProgress(userId),
       ]).then(([mats, cols, progress]) => {
         setMaterials(mats);
         setCollections(cols);
@@ -65,7 +70,8 @@ export const Dashboard: React.FC = () => {
           });
       }).finally(() => setIsLoading(false));
     }
-  }, [user]);
+  }, [userId, userRole]);
+
 
   // Register keyboard shortcut for search
   useEffect(() => {
@@ -167,61 +173,81 @@ export const Dashboard: React.FC = () => {
     [collections, langCollectionMaterialsMap]
   );
 
-  const handleViewMaterial = async (mat: Material, lang: Language) => {
+  const handleViewMaterial = (mat: Material, lang: Language) => {
     const currentCollectionId = activeView === 'collection-detail' ? selectedCollection?.id : undefined;
-    if (user) {
-      mockDb.logAccess(mat.id, user.id, lang, user.role);
-      // Mark as started / award XP on first view
-      const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === currentCollectionId);
-      if (!existing) {
+    // Abre o material IMEDIATAMENTE — o rastreamento roda em background para
+    // que nenhuma chamada de rede atrase (ou impeça) a abertura no 1º clique.
+    setViewingMaterial({ mat, lang, collectionId: currentCollectionId });
+
+    if (!user) return;
+    const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === currentCollectionId);
+    if (existing) return;
+
+    setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, collectionId: currentCollectionId, status: 'started', createdAt: new Date().toISOString() }]);
+
+    void (async () => {
+      try {
+        mockDb.logAccess(mat.id, user.id, lang, user.role);
         await mockDb.upsertProgress(user.id, mat.id, 'started', currentCollectionId);
         if (mat.points > 0) {
           const startXp = Math.floor(mat.points * 0.3);
           await mockDb.addPoints(user.id, startXp);
           addUserPoints(startXp);
         }
-        setUserProgress(prev => [...prev, { id: '', userId: user.id, materialId: mat.id, collectionId: currentCollectionId, status: 'started', createdAt: new Date().toISOString() }]);
+      } catch (e) {
+        console.error('[progress] falha ao registrar início do material', e);
       }
-    }
-    setViewingMaterial({ mat, lang, collectionId: currentCollectionId });
+    })();
   };
 
-  const handleCloseViewer = async () => {
-    if (viewingMaterial && user) {
-      const mat = viewingMaterial.mat;
-      const colId = viewingMaterial.collectionId;
-      const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === colId);
 
-      if (existing?.status !== 'completed') {
+  const handleCloseViewer = () => {
+    const current = viewingMaterial;
+    // Fecha na hora; a conclusão/XP é persistida em background.
+    setViewingMaterial(null);
+    if (!current || !user) return;
+
+    const mat = current.mat;
+    const colId = current.collectionId;
+    const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === colId);
+    if (existing?.status === 'completed') return;
+
+    setUserProgress(prev => {
+      const filtered = prev.filter(p => !(p.materialId === mat.id && p.collectionId === colId));
+      return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, collectionId: colId, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
+    });
+
+    if (colId && selectedCollection) {
+      const materialIds = collectionItemMap[selectedCollection.id] || [];
+      const updatedCompleted = userProgress.filter(p => p.status === 'completed' && p.collectionId === colId && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
+      if (updatedCompleted >= materialIds.length && materialIds.length > 0) {
+        const trailTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || 'Trilha';
+        setCelebration({ trailName: trailTitle, bonusXp: selectedCollection.points });
+      }
+    }
+
+    void (async () => {
+      try {
         await mockDb.upsertProgress(user.id, mat.id, 'completed', colId);
-
         if (mat.points > 0) {
           const remainingXp = mat.points - Math.floor(mat.points * 0.3);
           await mockDb.addPoints(user.id, remainingXp);
           addUserPoints(remainingXp);
         }
-
-        setUserProgress(prev => {
-          const filtered = prev.filter(p => !(p.materialId === mat.id && p.collectionId === colId));
-          return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, collectionId: colId, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
-        });
-
         if (colId && selectedCollection) {
           const materialIds = collectionItemMap[selectedCollection.id] || [];
           const updatedCompleted = userProgress.filter(p => p.status === 'completed' && p.collectionId === colId && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
-          if (updatedCompleted >= materialIds.length && materialIds.length > 0) {
-            if (selectedCollection.points > 0) {
-              await mockDb.addPoints(user.id, selectedCollection.points);
-              addUserPoints(selectedCollection.points);
-            }
-            const trailTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || 'Trilha';
-            setCelebration({ trailName: trailTitle, bonusXp: selectedCollection.points });
+          if (updatedCompleted >= materialIds.length && materialIds.length > 0 && selectedCollection.points > 0) {
+            await mockDb.addPoints(user.id, selectedCollection.points);
+            addUserPoints(selectedCollection.points);
           }
         }
+      } catch (e) {
+        console.error('[progress] falha ao registrar conclusão do material', e);
       }
-    }
-    setViewingMaterial(null);
+    })();
   };
+
 
   const userLevel = getUserLevel(user?.points || 0);
   const nextThreshold = getNextLevelThreshold(user?.points || 0);
@@ -440,6 +466,7 @@ export const Dashboard: React.FC = () => {
                           </div>
                         </div>
                         <button
+                          type="button"
                           onClick={() => handleViewMaterial(mat, availableLang)}
                           className="liquid-glass-gold flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap shrink-0"
                           style={{ color: 'var(--color-accent)' }}

@@ -129,6 +129,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
   };
 
+
+
   const ensureProfile = async (userId: string, data: any) => {
       const { error: profileError } = await supabase.from('profiles').upsert({
           id: userId,
