@@ -250,11 +250,15 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
       update();
     };
     window.addEventListener('resize', onResize);
+    window.addEventListener('orientationchange', onResize);
+    window.visualViewport?.addEventListener('resize', onResize);
     window.addEventListener('scroll', update, true);
     const interval = window.setInterval(update, 400); // keep in sync with layout shifts
     return () => {
       cancelAnimationFrame(raf);
       window.removeEventListener('resize', onResize);
+      window.removeEventListener('orientationchange', onResize);
+      window.visualViewport?.removeEventListener('resize', onResize);
       window.removeEventListener('scroll', update, true);
       window.clearInterval(interval);
     };
