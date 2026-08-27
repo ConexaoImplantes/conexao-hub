@@ -78,7 +78,7 @@ interface TooltipPos {
   effective: Placement;
 }
 
-const computeTooltipPos = (
+export const computeTooltipPos = (
   rect: Rect | null,
   placement: Placement,
   vw: number,
