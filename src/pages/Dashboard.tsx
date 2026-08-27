@@ -39,13 +39,18 @@ export const Dashboard: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [celebration, setCelebration] = useState<{ trailName: string; bonusXp: number } | null>(null);
 
+  // Recarrega os dados apenas quando muda de usuário/papel — nunca quando o XP
+  // do usuário é atualizado (isso recriava o objeto `user` e causava o "refresh"
+  // que fechava/atrasava a abertura do material).
+  const userId = user?.id;
+  const userRole = user?.role;
   useEffect(() => {
-    if (user) {
+    if (userId && userRole) {
       setIsLoading(true);
       Promise.all([
-        mockDb.getMaterials(user.role),
-        mockDb.getCollections(user.role),
-        mockDb.getUserProgress(user.id),
+        mockDb.getMaterials(userRole),
+        mockDb.getCollections(userRole),
+        mockDb.getUserProgress(userId),
       ]).then(([mats, cols, progress]) => {
         setMaterials(mats);
         setCollections(cols);
@@ -65,7 +70,8 @@ export const Dashboard: React.FC = () => {
           });
       }).finally(() => setIsLoading(false));
     }
-  }, [user]);
+  }, [userId, userRole]);
+
 
   // Register keyboard shortcut for search
   useEffect(() => {
