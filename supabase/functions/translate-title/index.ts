@@ -1,9 +1,23 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import {
+  enforceProtectedCasing,
+  glossaryPromptBlock,
+  missingProtectedTerms,
+} from "../_shared/glossary.ts";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
+
+type Langs = "pt-br" | "en-us" | "es-es";
+
+/** Normaliza espaçamento/pontuação e a grafia dos termos protegidos. */
+function normalize(text: string): string {
+  return enforceProtectedCasing(
+    text.replace(/\s+/g, " ").trim().replace(/\s*:\s*/g, ": ").replace(/^(\d{1,2})\s*\.\s*/, "$1. "),
+  ).trim();
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
@@ -17,8 +31,21 @@ serve(async (req) => {
       });
     }
 
+    const source = normalize(text);
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY is not configured");
+
+    const systemPrompt = `You are a professional translator for dental/medical marketing materials.
+Translate the given material title into three languages. Keep it concise, professional, and technically accurate for the dental industry.
+
+${glossaryPromptBlock(source)}
+
+Also keep any leading numbering (e.g. "03. ") exactly as in the source.
+
+Return ONLY a valid JSON object with this exact structure, no markdown, no code blocks:
+{"pt-br": "...", "en-us": "...", "es-es": "..."}
+If the input is already in one of the languages, keep it as-is for that language and translate to the others.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -29,15 +56,8 @@ serve(async (req) => {
       body: JSON.stringify({
         model: "google/gemini-2.5-flash-lite",
         messages: [
-          {
-            role: "system",
-            content: `You are a professional translator for dental/medical marketing materials. 
-Translate the given material title into three languages. Keep it concise, professional, and technically accurate for the dental industry.
-Return ONLY a valid JSON object with this exact structure, no markdown, no code blocks:
-{"pt-br": "translated title in Brazilian Portuguese", "en-us": "translated title in American English", "es-es": "translated title in Spanish"}
-If the input is already in one of the languages, keep it as-is for that language and translate to the others.`,
-          },
-          { role: "user", content: text.trim() },
+          { role: "system", content: systemPrompt },
+          { role: "user", content: source },
         ],
       }),
     });
@@ -62,13 +82,30 @@ If the input is already in one of the languages, keep it as-is for that language
 
     const data = await response.json();
     let content = data.choices?.[0]?.message?.content || "";
-    
-    // Strip markdown code blocks if present
     content = content.replace(/```json\s*/g, "").replace(/```\s*/g, "").trim();
-    
-    const translations = JSON.parse(content);
 
-    return new Response(JSON.stringify({ translations }), {
+    const raw = JSON.parse(content) as Record<Langs, string>;
+    const translations: Record<string, string> = {};
+    const warnings: string[] = [];
+
+    for (const lang of ["pt-br", "en-us", "es-es"] as Langs[]) {
+      const value = typeof raw[lang] === "string" ? normalize(raw[lang]) : "";
+      if (!value) {
+        translations[lang] = source;
+        continue;
+      }
+      const missing = missingProtectedTerms(source, value);
+      if (missing.length > 0) {
+        // Nome de produto/marca foi traduzido ou removido: descarta e mantém o original.
+        console.warn("protected terms lost in translation", { lang, missing, value });
+        warnings.push(`${lang}: termos protegidos alterados (${missing.join(", ")}) — mantido original`);
+        translations[lang] = source;
+      } else {
+        translations[lang] = value;
+      }
+    }
+
+    return new Response(JSON.stringify({ translations, warnings }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
   } catch (e) {
