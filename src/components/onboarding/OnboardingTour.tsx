@@ -121,26 +121,38 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   const { language } = useLanguage();
   const ui = getOnboardingUI(language);
 
-  // Filter out steps whose target element does not exist in the DOM — those are
-  // gated by permissions the user does not have (e.g. audit / permissions tabs
-  // for a manager without those keys). Centered/welcome steps without a
-  // selector are always kept.
-  const steps = React.useMemo(() => {
-    return rawSteps.filter((s) => {
-      if (!s.targetSelector) return true;
-      try {
-        return document.querySelector(s.targetSelector) !== null;
-      } catch {
-        return false;
-      }
-    });
-    // Re-evaluate when the raw list changes (env/language switch) or when the
-    // user closes/reopens the tour.
-  }, [rawSteps]);
+  // Initial filter: drop steps whose target is missing/hidden/empty right now
+  // (permission-gated tabs, filters not rendered in the current view, etc.).
+  const steps = React.useMemo(() => rawSteps.filter(isStepUsable), [rawSteps]);
 
   const [index, setIndex] = React.useState(0);
   const [rect, setRect] = React.useState<Rect | null>(null);
   const [viewport, setViewport] = React.useState({ w: window.innerWidth, h: window.innerHeight });
+
+  /** Nearest usable index walking in `dir`; -1 when none. */
+  const findUsable = React.useCallback(
+    (from: number, dir: 1 | -1) => {
+      for (let i = from; i >= 0 && i < steps.length; i += dir) {
+        if (isStepUsable(steps[i])) return i;
+      }
+      return -1;
+    },
+    [steps]
+  );
+
+  const goNext = React.useCallback(() => {
+    setIndex((i) => {
+      const n = findUsable(i + 1, 1);
+      return n === -1 ? i : n;
+    });
+  }, [findUsable]);
+
+  const goPrev = React.useCallback(() => {
+    setIndex((i) => {
+      const p = findUsable(i - 1, -1);
+      return p === -1 ? i : p;
+    });
+  }, [findUsable]);
 
   // If the current index falls off the end after filtering, clamp it.
   React.useEffect(() => {
@@ -153,6 +165,26 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   }, [steps.length, onClose]);
 
   const step = steps[index];
+
+  // The app can change while the tour runs (switching to Trails hides the type
+  // filters, a tab unmounts its content...). Keep checking the current step and
+  // move on when its target is no longer highlightable.
+  React.useEffect(() => {
+    if (!step) return;
+    const check = () => {
+      if (isStepUsable(step)) return;
+      const next = findUsable(index + 1, 1);
+      if (next !== -1) setIndex(next);
+      else {
+        const prev = findUsable(index - 1, -1);
+        if (prev !== -1) setIndex(prev);
+        else onClose();
+      }
+    };
+    const t = window.setInterval(check, 500);
+    return () => window.clearInterval(t);
+  }, [step, index, findUsable, onClose]);
+
 
   // Recompute target rect on step change, resize, scroll.
   React.useEffect(() => {
