@@ -195,42 +195,53 @@ export const Dashboard: React.FC = () => {
   };
 
 
-  const handleCloseViewer = async () => {
-    if (viewingMaterial && user) {
-      const mat = viewingMaterial.mat;
-      const colId = viewingMaterial.collectionId;
-      const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === colId);
+  const handleCloseViewer = () => {
+    const current = viewingMaterial;
+    // Fecha na hora; a conclusão/XP é persistida em background.
+    setViewingMaterial(null);
+    if (!current || !user) return;
 
-      if (existing?.status !== 'completed') {
+    const mat = current.mat;
+    const colId = current.collectionId;
+    const existing = userProgress.find(p => p.materialId === mat.id && p.collectionId === colId);
+    if (existing?.status === 'completed') return;
+
+    setUserProgress(prev => {
+      const filtered = prev.filter(p => !(p.materialId === mat.id && p.collectionId === colId));
+      return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, collectionId: colId, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
+    });
+
+    if (colId && selectedCollection) {
+      const materialIds = collectionItemMap[selectedCollection.id] || [];
+      const updatedCompleted = userProgress.filter(p => p.status === 'completed' && p.collectionId === colId && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
+      if (updatedCompleted >= materialIds.length && materialIds.length > 0) {
+        const trailTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || 'Trilha';
+        setCelebration({ trailName: trailTitle, bonusXp: selectedCollection.points });
+      }
+    }
+
+    void (async () => {
+      try {
         await mockDb.upsertProgress(user.id, mat.id, 'completed', colId);
-
         if (mat.points > 0) {
           const remainingXp = mat.points - Math.floor(mat.points * 0.3);
           await mockDb.addPoints(user.id, remainingXp);
           addUserPoints(remainingXp);
         }
-
-        setUserProgress(prev => {
-          const filtered = prev.filter(p => !(p.materialId === mat.id && p.collectionId === colId));
-          return [...filtered, { id: existing?.id || '', userId: user.id, materialId: mat.id, collectionId: colId, status: 'completed' as const, completedAt: new Date().toISOString(), createdAt: existing?.createdAt || new Date().toISOString() }];
-        });
-
         if (colId && selectedCollection) {
           const materialIds = collectionItemMap[selectedCollection.id] || [];
           const updatedCompleted = userProgress.filter(p => p.status === 'completed' && p.collectionId === colId && materialIds.includes(p.materialId) && p.materialId !== mat.id).length + 1;
-          if (updatedCompleted >= materialIds.length && materialIds.length > 0) {
-            if (selectedCollection.points > 0) {
-              await mockDb.addPoints(user.id, selectedCollection.points);
-              addUserPoints(selectedCollection.points);
-            }
-            const trailTitle = selectedCollection.title[language] || selectedCollection.title['pt-br'] || 'Trilha';
-            setCelebration({ trailName: trailTitle, bonusXp: selectedCollection.points });
+          if (updatedCompleted >= materialIds.length && materialIds.length > 0 && selectedCollection.points > 0) {
+            await mockDb.addPoints(user.id, selectedCollection.points);
+            addUserPoints(selectedCollection.points);
           }
         }
+      } catch (e) {
+        console.error('[progress] falha ao registrar conclusão do material', e);
       }
-    }
-    setViewingMaterial(null);
+    })();
   };
+
 
   const userLevel = getUserLevel(user?.points || 0);
   const nextThreshold = getNextLevelThreshold(user?.points || 0);
