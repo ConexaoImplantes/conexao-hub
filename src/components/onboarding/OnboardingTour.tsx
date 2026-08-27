@@ -230,7 +230,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     const handler = () => {
       // Delay slightly so the app's own click handlers run first (tab switch, etc.).
       window.setTimeout(() => {
-        setIndex((i) => Math.min(i + 1, steps.length - 1));
+        goNext();
       }, 250);
     };
     target.addEventListener(evt, handler, { once: true });
@@ -241,8 +241,8 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (!step?.interactive) {
-        if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, steps.length - 1));
-        if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+        if (e.key === 'ArrowRight') goNext();
+        if (e.key === 'ArrowLeft') goPrev();
       }
     };
     window.addEventListener('keydown', onKey);
@@ -382,7 +382,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setIndex((i) => Math.max(0, i - 1))}
+              onClick={goPrev}
               disabled={isFirst}
               className="px-3 py-1.5 rounded-lg text-xs font-medium border inline-flex items-center gap-1 disabled:opacity-40"
               style={{
@@ -420,7 +420,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
             ) : (
               <button
                 type="button"
-                onClick={() => setIndex((i) => Math.min(steps.length - 1, i + 1))}
+                onClick={goNext}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1"
                 style={{
                   backgroundColor: 'var(--color-btn-primary-bg)',
