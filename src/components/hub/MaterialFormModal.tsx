@@ -7,6 +7,7 @@ import { X, Save, FileText, Image as ImageIcon, Video, Check, Users, Shield, Lin
 import { supabase } from '@/integrations/supabase/client';
 import { colorMix } from '../../lib/utils';
 import { toast } from '@/hooks/use-toast';
+import { normalizeTitle, missingProtectedTerms } from '../../lib/glossary';
 
 interface TypeCardProps {
   value: MaterialType;

@@ -8,6 +8,7 @@ import { mockDb } from '../../lib/mockDb';
 import { Material } from '../../types';
 import { supabase } from '../../integrations/supabase/client';
 import { colorMix } from '../../lib/utils';
+import { normalizeTitle, missingProtectedTerms } from '../../lib/glossary';
 
 interface CollectionFormModalProps {
   initialData?: Collection | null;
