@@ -167,13 +167,24 @@ export const MaterialFormModal: React.FC<MaterialFormModalProps> = ({ initialDat
 
     languages.forEach(lang => {
         const url = assets[lang]?.url?.trim();
-        const title = titles[lang]?.trim();
+        const title = normalizeTitle(titles[lang]);
         if (url && title) {
             hasAtLeastOneValidVersion = true;
             cleanedAssets[lang] = { url, subtitleUrl: assets[lang]?.subtitleUrl?.trim(), status: assets[lang]?.status || 'published' };
             cleanedTitles[lang] = title;
         }
     });
+
+    // Nomes de produto/marca não podem desaparecer entre idiomas.
+    const reference = cleanedTitles['pt-br'] || Object.values(cleanedTitles)[0] || '';
+    const brandIssues = languages
+      .filter(lang => cleanedTitles[lang] && lang !== 'pt-br')
+      .flatMap(lang => missingProtectedTerms(reference, cleanedTitles[lang]!).map(term => `${lang}: "${term}"`));
+    if (brandIssues.length > 0) {
+      setError(`Nomes de produto/marca não podem ser traduzidos. Verifique: ${brandIssues.join(', ')}`);
+      return;
+    }
+
 
     if (!hasAtLeastOneValidVersion) {
         setError('Preencha o Título e a URL para pelo menos um idioma.');

@@ -131,8 +131,19 @@ export const CollectionFormModal: React.FC<CollectionFormModalProps> = ({ initia
 
     const cleanedTitles: Partial<Record<Language, string>> = {};
     languages.forEach((lang) => {
-      if (titles[lang]?.trim()) cleanedTitles[lang] = titles[lang]!.trim();
+      const normalized = normalizeTitle(titles[lang]);
+      if (normalized) cleanedTitles[lang] = normalized;
     });
+
+    const referenceTitle = cleanedTitles['pt-br'] || Object.values(cleanedTitles)[0] || '';
+    const brandIssues = languages
+      .filter((lang) => cleanedTitles[lang] && lang !== 'pt-br')
+      .flatMap((lang) => missingProtectedTerms(referenceTitle, cleanedTitles[lang]!).map((term) => `${lang}: "${term}"`));
+    if (brandIssues.length > 0) {
+      setError(`Nomes de produto/marca não podem ser traduzidos. Verifique: ${brandIssues.join(', ')}`);
+      return;
+    }
+
 
     if (!cleanedTitles['pt-br']) {
       setError('O título em Português é obrigatório.');
