@@ -460,6 +460,7 @@ export const Dashboard: React.FC = () => {
                           </div>
                         </div>
                         <button
+                          type="button"
                           onClick={() => handleViewMaterial(mat, availableLang)}
                           className="liquid-glass-gold flex items-center gap-1.5 sm:gap-2 px-3 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-xs sm:text-sm font-bold transition-all hover:opacity-80 active:scale-95 whitespace-nowrap shrink-0"
                           style={{ color: 'var(--color-accent)' }}
