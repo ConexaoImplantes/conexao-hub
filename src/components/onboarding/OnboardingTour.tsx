@@ -182,9 +182,14 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   const goNext = React.useCallback(() => {
     setIndex((i) => {
       const n = findUsable(i + 1, 1);
-      return n === -1 ? i : n;
+      // Nothing usable ahead: the tour is over — never leave the user stuck.
+      if (n === -1) {
+        onClose();
+        return i;
+      }
+      return n;
     });
-  }, [findUsable]);
+  }, [findUsable, onClose]);
 
   const goPrev = React.useCallback(() => {
     setIndex((i) => {
@@ -192,6 +197,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
       return p === -1 ? i : p;
     });
   }, [findUsable]);
+
 
   // If the current index falls off the end after filtering, clamp it.
   React.useEffect(() => {
