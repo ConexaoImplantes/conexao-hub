@@ -160,11 +160,17 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   const { language } = useLanguage();
   const ui = getOnboardingUI(language);
 
-  // Initial filter: drop steps whose target is missing/hidden/empty right now
-  // (permission-gated tabs, filters not rendered in the current view, etc.).
-  const steps = React.useMemo(() => rawSteps.filter(isStepUsable), [rawSteps]);
+  // Keep every step: usability is evaluated live, because the UI changes while
+  // the tour runs (switching Materials/Trails, opening tabs...). A step whose
+  // target is not on screen right now is simply skipped, but it can become
+  // available again later.
+  const steps = rawSteps;
 
-  const [index, setIndex] = React.useState(0);
+  const [index, setIndex] = React.useState(() => {
+    for (let i = 0; i < rawSteps.length; i += 1) if (isStepUsable(rawSteps[i])) return i;
+    return 0;
+  });
+
   const [rect, setRect] = React.useState<Rect | null>(null);
   const [viewport, setViewport] = React.useState({ w: window.innerWidth, h: window.innerHeight });
 
