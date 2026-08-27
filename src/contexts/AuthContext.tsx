@@ -129,6 +129,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       setIsLoading(false);
   };
 
+  // Dev-only hook usado por testes automatizados de navegador.
+  if (import.meta.env.DEV) {
+    (window as any).__loginMock = loginMock;
+  }
+
+
   const ensureProfile = async (userId: string, data: any) => {
       const { error: profileError } = await supabase.from('profiles').upsert({
           id: userId,
