@@ -47,13 +47,14 @@ const clientPt: EnvironmentTour = {
     'Ganhar XP a cada material visto e subir de patente',
   ],
   steps: [
-    { targetSelector: '[data-tour="user-level-card"]', title: 'Sua patente e XP', body: 'Aqui você acompanha seu nível atual, quanto XP já ganhou e quanto falta para o próximo nível.', placement: 'right' },
-    { targetSelector: '[data-tour="view-toggle"]', title: 'Materiais e Trilhas', body: 'Alterne entre a biblioteca de materiais e as trilhas. Clique em uma das opções para continuar.', placement: 'right', interactive: true, interactiveHint: 'Clique em Materiais ou Trilhas' },
-    { targetSelector: '[data-tour="material-filters"]', title: 'Filtros por tipo', body: 'Filtre os materiais pelo formato (PDF, imagem, vídeo, áudio, página) e por tags. Clique em um filtro para continuar.', placement: 'right', interactive: true, interactiveHint: 'Clique em qualquer filtro' },
-    { targetSelector: '[data-tour="search-input"]', title: 'Busca rápida', body: 'Digite aqui para buscar por título. Dica: use Ctrl+F para focar direto na busca.', placement: 'bottom' },
-    { targetSelector: '[data-tour="material-card"]', title: 'Cards de material', body: 'Cada card mostra o tipo, título, tags e XP que você ganha ao visualizá-lo.', placement: 'top' },
-    { targetSelector: '[data-tour="language-switcher"]', title: 'Idioma da plataforma', body: 'Troque o idioma da interface a qualquer momento aqui no cabeçalho.', placement: 'bottom' },
-    { targetSelector: '[data-tour="onboarding-launcher"]', title: 'Refazer o tour', body: 'Sempre que quiser rever esta apresentação, clique neste balão no canto inferior direito.', placement: 'left' },
+    { targetSelector: '[data-tour="user-level-card"]', title: '1. Seu progresso', body: 'Este cartão mostra o seu nível atual, quantos pontos de experiência (XP) você já acumulou e quanto falta para subir de nível. Você ganha XP cada vez que abre um material.', placement: 'right' },
+    { targetSelector: '[data-tour="view-toggle"]', title: '2. Materiais e Trilhas', body: 'Use estes dois botões para escolher o que ver. "Materiais" mostra todos os conteúdos avulsos. "Trilhas" mostra sequências de materiais organizadas em ordem, para você estudar do começo ao fim. Pode clicar à vontade — o tour continua normalmente.', placement: 'right' },
+    { targetSelector: '[data-tour="material-filters"]', title: '3. Filtrar por formato', body: 'Aqui você mostra apenas um tipo de conteúdo: PDF, imagem, vídeo, áudio ou página interativa. O número ao lado indica quantos itens existem em cada formato. Clique em "Todos" para voltar a ver tudo.', placement: 'right' },
+    { targetSelector: '[data-tour="search-input"]', title: '4. Buscar pelo título', body: 'Digite uma palavra do título para encontrar um material rapidamente. Atalho: aperte Ctrl+F em qualquer momento para ir direto para este campo.', placement: 'bottom' },
+    { targetSelector: '[data-tour="material-card"]', title: '5. Os cartões de material', body: 'Cada cartão é um conteúdo. Ele mostra o formato, o título, as etiquetas e quantos XP você ganha ao abri-lo. Clique no cartão para visualizar e, quando permitido, baixar o arquivo.', placement: 'top' },
+    { targetSelector: '[data-tour="collection-card"]', title: 'As trilhas', body: 'Cada trilha reúne vários materiais em ordem. Ao abrir uma trilha você vê a lista de etapas, seu progresso e o XP extra ao concluir tudo.', placement: 'top' },
+    { targetSelector: '[data-tour="language-switcher"]', title: '6. Idioma', body: 'Troque o idioma da plataforma aqui. A lista de materiais também muda: você vê apenas os conteúdos disponíveis no idioma escolhido.', placement: 'bottom' },
+    { targetSelector: '[data-tour="onboarding-launcher"]', title: '7. Rever este tour', body: 'Pronto! Sempre que quiser rever esta apresentação, clique neste botão no canto inferior direito da tela.', placement: 'left' },
   ],
 };
 
@@ -114,13 +115,14 @@ const clientEn: EnvironmentTour = {
     'Earn XP for every material viewed and rank up',
   ],
   steps: [
-    { targetSelector: '[data-tour="user-level-card"]', title: 'Your rank and XP', body: 'Track your current level, how much XP you already earned and how much is left to the next level.', placement: 'right' },
-    { targetSelector: '[data-tour="view-toggle"]', title: 'Materials and Trails', body: 'Switch between the material library and the trails. Click one of the options to continue.', placement: 'right', interactive: true, interactiveHint: 'Click Materials or Trails' },
-    { targetSelector: '[data-tour="material-filters"]', title: 'Filter by type', body: 'Filter materials by format (PDF, image, video, audio, page) and by tags. Click any filter to continue.', placement: 'right', interactive: true, interactiveHint: 'Click any filter' },
-    { targetSelector: '[data-tour="search-input"]', title: 'Quick search', body: 'Type here to search by title. Tip: use Ctrl+F to focus the search field.', placement: 'bottom' },
-    { targetSelector: '[data-tour="material-card"]', title: 'Material cards', body: 'Each card shows the type, title, tags and XP you earn by viewing it.', placement: 'top' },
-    { targetSelector: '[data-tour="language-switcher"]', title: 'Platform language', body: 'Change the interface language anytime from here in the header.', placement: 'bottom' },
-    { targetSelector: '[data-tour="onboarding-launcher"]', title: 'Replay the tour', body: 'Whenever you want to see this presentation again, click the bubble in the bottom-right corner.', placement: 'left' },
+    { targetSelector: '[data-tour="user-level-card"]', title: '1. Your progress', body: 'This card shows your current level, how many experience points (XP) you have earned and how much is missing to level up. You earn XP every time you open a material.', placement: 'right' },
+    { targetSelector: '[data-tour="view-toggle"]', title: '2. Materials and Trails', body: 'These two buttons switch what you see. "Materials" lists every single piece of content. "Trails" lists ordered sequences of materials, so you can study from start to finish. Feel free to click — the tour keeps going.', placement: 'right' },
+    { targetSelector: '[data-tour="material-filters"]', title: '3. Filter by format', body: 'Show only one type of content: PDF, image, video, audio or interactive page. The number next to each option tells how many items exist in that format. Click "All" to see everything again.', placement: 'right' },
+    { targetSelector: '[data-tour="search-input"]', title: '4. Search by title', body: 'Type a word from the title to find a material quickly. Shortcut: press Ctrl+F anytime to jump straight to this field.', placement: 'bottom' },
+    { targetSelector: '[data-tour="material-card"]', title: '5. Material cards', body: 'Each card is one piece of content. It shows the format, title, tags and how much XP you earn by opening it. Click the card to view and, when allowed, download the file.', placement: 'top' },
+    { targetSelector: '[data-tour="collection-card"]', title: 'Trails', body: 'Each trail groups several materials in order. Opening a trail shows the list of steps, your progress and the extra XP for completing it.', placement: 'top' },
+    { targetSelector: '[data-tour="language-switcher"]', title: '6. Language', body: 'Change the platform language here. The material list changes too: you only see content available in the chosen language.', placement: 'bottom' },
+    { targetSelector: '[data-tour="onboarding-launcher"]', title: '7. Replay this tour', body: 'That is it! Whenever you want to see this presentation again, click this button in the bottom-right corner.', placement: 'left' },
   ],
 };
 
@@ -181,13 +183,14 @@ const clientEs: EnvironmentTour = {
     'Ganar XP con cada material visto y subir de rango',
   ],
   steps: [
-    { targetSelector: '[data-tour="user-level-card"]', title: 'Tu rango y XP', body: 'Aquí sigues tu nivel actual, cuánto XP ya ganaste y cuánto falta para el próximo nivel.', placement: 'right' },
-    { targetSelector: '[data-tour="view-toggle"]', title: 'Materiales y Rutas', body: 'Alterna entre la biblioteca de materiales y las rutas. Haz clic en una opción para continuar.', placement: 'right', interactive: true, interactiveHint: 'Haz clic en Materiales o Rutas' },
-    { targetSelector: '[data-tour="material-filters"]', title: 'Filtros por tipo', body: 'Filtra los materiales por formato (PDF, imagen, video, audio, página) y por etiquetas. Haz clic en un filtro para continuar.', placement: 'right', interactive: true, interactiveHint: 'Haz clic en cualquier filtro' },
-    { targetSelector: '[data-tour="search-input"]', title: 'Búsqueda rápida', body: 'Escribe aquí para buscar por título. Tip: usa Ctrl+F para enfocar la búsqueda.', placement: 'bottom' },
-    { targetSelector: '[data-tour="material-card"]', title: 'Tarjetas de material', body: 'Cada tarjeta muestra el tipo, título, etiquetas y XP que ganas al verlo.', placement: 'top' },
-    { targetSelector: '[data-tour="language-switcher"]', title: 'Idioma de la plataforma', body: 'Cambia el idioma de la interfaz en cualquier momento aquí en el encabezado.', placement: 'bottom' },
-    { targetSelector: '[data-tour="onboarding-launcher"]', title: 'Repetir el tour', body: 'Cuando quieras volver a ver esta presentación, haz clic en el globo en la esquina inferior derecha.', placement: 'left' },
+    { targetSelector: '[data-tour="user-level-card"]', title: '1. Tu progreso', body: 'Esta tarjeta muestra tu nivel actual, cuántos puntos de experiencia (XP) llevas y cuánto falta para subir de nivel. Ganas XP cada vez que abres un material.', placement: 'right' },
+    { targetSelector: '[data-tour="view-toggle"]', title: '2. Materiales y Rutas', body: 'Estos dos botones cambian lo que ves. "Materiales" muestra todos los contenidos sueltos. "Rutas" muestra secuencias ordenadas de materiales para estudiar de principio a fin. Puedes hacer clic sin problema: el tour continúa.', placement: 'right' },
+    { targetSelector: '[data-tour="material-filters"]', title: '3. Filtrar por formato', body: 'Muestra solo un tipo de contenido: PDF, imagen, video, audio o página interactiva. El número al lado indica cuántos elementos hay en cada formato. Haz clic en "Todos" para volver a verlo todo.', placement: 'right' },
+    { targetSelector: '[data-tour="search-input"]', title: '4. Buscar por título', body: 'Escribe una palabra del título para encontrar un material rápidamente. Atajo: pulsa Ctrl+F en cualquier momento para ir directo a este campo.', placement: 'bottom' },
+    { targetSelector: '[data-tour="material-card"]', title: '5. Las tarjetas de material', body: 'Cada tarjeta es un contenido. Muestra el formato, el título, las etiquetas y cuántos XP ganas al abrirlo. Haz clic en la tarjeta para verlo y, cuando esté permitido, descargarlo.', placement: 'top' },
+    { targetSelector: '[data-tour="collection-card"]', title: 'Las rutas', body: 'Cada ruta reúne varios materiales en orden. Al abrir una ruta ves la lista de etapas, tu progreso y el XP extra al completarla.', placement: 'top' },
+    { targetSelector: '[data-tour="language-switcher"]', title: '6. Idioma', body: 'Cambia el idioma de la plataforma aquí. La lista de materiales también cambia: solo ves el contenido disponible en el idioma elegido.', placement: 'bottom' },
+    { targetSelector: '[data-tour="onboarding-launcher"]', title: '7. Repetir el tour', body: '¡Listo! Cuando quieras volver a ver esta presentación, haz clic en este botón en la esquina inferior derecha.', placement: 'left' },
   ],
 };
 
@@ -267,6 +270,7 @@ export interface OnboardingUIStrings {
   finish: string;
   stepOf: (current: number, total: number) => string;
   clickToContinue: string;
+  skipStep: string;
   launcherTooltip: string;
 }
 
@@ -285,6 +289,7 @@ const ui: Record<Language, OnboardingUIStrings> = {
     finish: 'Concluir',
     stepOf: (c, t) => `Passo ${c} de ${t}`,
     clickToContinue: 'Clique para continuar',
+    skipStep: 'Avançar',
     launcherTooltip: 'Refazer o tour',
   },
   'en-us': {
@@ -301,6 +306,7 @@ const ui: Record<Language, OnboardingUIStrings> = {
     finish: 'Finish',
     stepOf: (c, t) => `Step ${c} of ${t}`,
     clickToContinue: 'Click to continue',
+    skipStep: 'Skip step',
     launcherTooltip: 'Replay the tour',
   },
   'es-es': {
@@ -317,6 +323,7 @@ const ui: Record<Language, OnboardingUIStrings> = {
     finish: 'Finalizar',
     stepOf: (c, t) => `Paso ${c} de ${t}`,
     clickToContinue: 'Haz clic para continuar',
+    skipStep: 'Avanzar',
     launcherTooltip: 'Repetir el tour',
   },
 };
