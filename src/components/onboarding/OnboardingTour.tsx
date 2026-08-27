@@ -53,7 +53,7 @@ const hasClickable = (el: HTMLElement): boolean => {
  * steps — offers something the user can actually click. Steps whose target is
  * hidden by permissions, by the current view or simply empty are skipped.
  */
-const isStepUsable = (step: TourStep): boolean => {
+export const isStepUsable = (step: TourStep): boolean => {
   if (!step.targetSelector) return true;
   const el = findTarget(step.targetSelector);
   if (!el || !isVisible(el)) return false;
