@@ -376,11 +376,14 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
 
       {/* Tooltip */}
       <div
-        className="absolute pointer-events-auto rounded-2xl p-5 liquid-glass animate-slide-up"
+        className="absolute pointer-events-auto rounded-2xl p-4 sm:p-5 liquid-glass animate-slide-up"
         style={{
           top: pos.top,
           left: pos.left,
-          width: TOOLTIP_W,
+          width: pos.width,
+          maxWidth: 'calc(100vw - 24px)',
+          maxHeight: 'calc(100vh - 24px)',
+          overflowY: 'auto',
           backgroundColor: 'var(--color-card)',
           border: '1px solid var(--color-border)',
           boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
