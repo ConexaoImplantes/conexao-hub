@@ -339,7 +339,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
       }
     : null;
 
-  const isFirst = index === 0;
+  const isFirst = findUsable(index - 1, -1) === -1;
   const isLast = findUsable(index + 1, 1) === -1;
 
   return (
