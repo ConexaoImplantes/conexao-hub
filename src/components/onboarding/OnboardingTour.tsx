@@ -29,6 +29,41 @@ const findTarget = (selector?: string): HTMLElement | null => {
   }
 };
 
+/** Element is actually painted and has usable size. */
+const isVisible = (el: HTMLElement): boolean => {
+  const r = el.getBoundingClientRect();
+  if (r.width < 4 || r.height < 4) return false;
+  const cs = window.getComputedStyle(el);
+  if (cs.visibility === 'hidden' || cs.display === 'none') return false;
+  if (cs.opacity !== '' && Number(cs.opacity) === 0) return false;
+
+  return true;
+};
+
+/** Interactive targets must actually contain something clickable. */
+const hasClickable = (el: HTMLElement): boolean => {
+  if (el.matches('button, a, input, select, textarea, [role="button"]')) return true;
+  const nodes = el.querySelectorAll<HTMLElement>('button, a, input, select, textarea, [role="button"]');
+  for (const n of nodes) {
+    if (!(n as HTMLButtonElement).disabled && isVisible(n)) return true;
+  }
+  return false;
+};
+
+/**
+ * A step is usable only when its target exists, is visible and — for interactive
+ * steps — offers something the user can actually click. Steps whose target is
+ * hidden by permissions, by the current view or simply empty are skipped.
+ */
+export const isStepUsable = (step: TourStep): boolean => {
+  if (!step.targetSelector) return true;
+  const el = findTarget(step.targetSelector);
+  if (!el || !isVisible(el)) return false;
+  if (step.interactive && !hasClickable(el)) return false;
+  return true;
+};
+
+
 const rectOf = (el: HTMLElement): Rect => {
   const r = el.getBoundingClientRect();
   return { top: r.top, left: r.left, width: r.width, height: r.height };
@@ -88,26 +123,38 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   const { language } = useLanguage();
   const ui = getOnboardingUI(language);
 
-  // Filter out steps whose target element does not exist in the DOM — those are
-  // gated by permissions the user does not have (e.g. audit / permissions tabs
-  // for a manager without those keys). Centered/welcome steps without a
-  // selector are always kept.
-  const steps = React.useMemo(() => {
-    return rawSteps.filter((s) => {
-      if (!s.targetSelector) return true;
-      try {
-        return document.querySelector(s.targetSelector) !== null;
-      } catch {
-        return false;
-      }
-    });
-    // Re-evaluate when the raw list changes (env/language switch) or when the
-    // user closes/reopens the tour.
-  }, [rawSteps]);
+  // Initial filter: drop steps whose target is missing/hidden/empty right now
+  // (permission-gated tabs, filters not rendered in the current view, etc.).
+  const steps = React.useMemo(() => rawSteps.filter(isStepUsable), [rawSteps]);
 
   const [index, setIndex] = React.useState(0);
   const [rect, setRect] = React.useState<Rect | null>(null);
   const [viewport, setViewport] = React.useState({ w: window.innerWidth, h: window.innerHeight });
+
+  /** Nearest usable index walking in `dir`; -1 when none. */
+  const findUsable = React.useCallback(
+    (from: number, dir: 1 | -1) => {
+      for (let i = from; i >= 0 && i < steps.length; i += dir) {
+        if (isStepUsable(steps[i])) return i;
+      }
+      return -1;
+    },
+    [steps]
+  );
+
+  const goNext = React.useCallback(() => {
+    setIndex((i) => {
+      const n = findUsable(i + 1, 1);
+      return n === -1 ? i : n;
+    });
+  }, [findUsable]);
+
+  const goPrev = React.useCallback(() => {
+    setIndex((i) => {
+      const p = findUsable(i - 1, -1);
+      return p === -1 ? i : p;
+    });
+  }, [findUsable]);
 
   // If the current index falls off the end after filtering, clamp it.
   React.useEffect(() => {
@@ -120,6 +167,26 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
   }, [steps.length, onClose]);
 
   const step = steps[index];
+
+  // The app can change while the tour runs (switching to Trails hides the type
+  // filters, a tab unmounts its content...). Keep checking the current step and
+  // move on when its target is no longer highlightable.
+  React.useEffect(() => {
+    if (!step) return;
+    const check = () => {
+      if (isStepUsable(step)) return;
+      const next = findUsable(index + 1, 1);
+      if (next !== -1) setIndex(next);
+      else {
+        const prev = findUsable(index - 1, -1);
+        if (prev !== -1) setIndex(prev);
+        else onClose();
+      }
+    };
+    const t = window.setInterval(check, 500);
+    return () => window.clearInterval(t);
+  }, [step, index, findUsable, onClose]);
+
 
   // Recompute target rect on step change, resize, scroll.
   React.useEffect(() => {
@@ -165,24 +232,24 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     const handler = () => {
       // Delay slightly so the app's own click handlers run first (tab switch, etc.).
       window.setTimeout(() => {
-        setIndex((i) => Math.min(i + 1, steps.length - 1));
+        goNext();
       }, 250);
     };
     target.addEventListener(evt, handler, { once: true });
     return () => target.removeEventListener(evt, handler);
-  }, [step, steps.length]);
+  }, [step, goNext]);
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
       if (!step?.interactive) {
-        if (e.key === 'ArrowRight') setIndex((i) => Math.min(i + 1, steps.length - 1));
-        if (e.key === 'ArrowLeft') setIndex((i) => Math.max(i - 1, 0));
+        if (e.key === 'ArrowRight') goNext();
+        if (e.key === 'ArrowLeft') goPrev();
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [onClose, steps.length, step]);
+  }, [onClose, step, goNext, goPrev]);
 
   if (!step) return null;
 
@@ -199,7 +266,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     : null;
 
   const isFirst = index === 0;
-  const isLast = index === steps.length - 1;
+  const isLast = findUsable(index + 1, 1) === -1;
 
   return (
     <div className="fixed inset-0 z-[1100] pointer-events-none">
@@ -317,7 +384,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
           <div className="flex items-center gap-2">
             <button
               type="button"
-              onClick={() => setIndex((i) => Math.max(0, i - 1))}
+              onClick={goPrev}
               disabled={isFirst}
               className="px-3 py-1.5 rounded-lg text-xs font-medium border inline-flex items-center gap-1 disabled:opacity-40"
               style={{
@@ -355,7 +422,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
             ) : (
               <button
                 type="button"
-                onClick={() => setIndex((i) => Math.min(steps.length - 1, i + 1))}
+                onClick={goNext}
                 className="px-3 py-1.5 rounded-lg text-xs font-semibold inline-flex items-center gap-1"
                 style={{
                   backgroundColor: 'var(--color-btn-primary-bg)',
