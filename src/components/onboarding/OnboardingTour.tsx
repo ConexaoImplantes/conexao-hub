@@ -235,7 +235,7 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
     };
     target.addEventListener(evt, handler, { once: true });
     return () => target.removeEventListener(evt, handler);
-  }, [step, steps.length]);
+  }, [step, goNext]);
 
   React.useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
