@@ -477,7 +477,7 @@ export const Dashboard: React.FC = () => {
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 pb-20">
                 {visibleCollections.map((col, i) => (
-                  <div key={col.id} className="animate-slide-up" style={{ animationDelay: `${i * 70}ms` }}>
+                  <div key={col.id} data-tour={i === 0 ? 'collection-card' : undefined} className="animate-slide-up" style={{ animationDelay: `${i * 70}ms` }}>
                     <CollectionCard
                       collection={col}
                       userProgress={userProgress}
