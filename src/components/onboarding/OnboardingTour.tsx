@@ -211,6 +211,27 @@ export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) =>
 
   const step = steps[index];
 
+  // Step counter based on the steps that are actually reachable right now, so
+  // the user never sees a jump like "step 2 of 7" -> "step 6 of 7" when a whole
+  // section of the UI is not on screen (e.g. filters while viewing Trails).
+  const [progress, setProgress] = React.useState({ current: 1, total: steps.length });
+  React.useEffect(() => {
+    const compute = () => {
+      let total = 0;
+      let current = 1;
+      steps.forEach((s, i) => {
+        const usable = isStepUsable(s);
+        if (usable) total += 1;
+        if (i === index) current = usable ? total : total + 1;
+      });
+      setProgress({ current: Math.max(1, current), total: Math.max(total, current) });
+    };
+    compute();
+    const t = window.setInterval(compute, 500);
+    return () => window.clearInterval(t);
+  }, [steps, index]);
+
+
   // The app can change while the tour runs (switching to Trails hides the type
   // filters, a tab unmounts its content...). Keep checking the current step and
   // move on when its target is no longer highlightable.
