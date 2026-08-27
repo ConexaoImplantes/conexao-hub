@@ -69,17 +69,49 @@ const rectOf = (el: HTMLElement): Rect => {
   return { top: r.top, left: r.left, width: r.width, height: r.height };
 };
 
+const MOBILE_BP = 640;
+
+interface TooltipPos {
+  top: number;
+  left: number;
+  width: number;
+  effective: Placement;
+}
+
 const computeTooltipPos = (
   rect: Rect | null,
   placement: Placement,
   vw: number,
   vh: number
-): { top: number; left: number; effective: Placement } => {
-  if (!rect || placement === 'center') {
-    return { top: vh / 2 - 100, left: vw / 2 - TOOLTIP_W / 2, effective: 'center' };
+): TooltipPos => {
+  const isMobile = vw < MOBILE_BP;
+  // Never wider than the viewport (minus 12px gutters on each side).
+  const tW = Math.min(TOOLTIP_W, vw - 24);
+  const tH = isMobile ? 220 : 180; // estimate; the card itself auto-sizes
+
+  if (!rect) {
+    return { top: Math.max(12, vh / 2 - tH / 2), left: (vw - tW) / 2, width: tW, effective: 'center' };
   }
-  const tW = TOOLTIP_W;
-  const tH = 180; // estimate; height auto-adjusts, arrow ok
+
+  // Mobile / narrow screens: dock the card to the bottom (or to the top when the
+  // highlighted element sits low on the screen) so it never covers the spotlight
+  // and never overflows horizontally.
+  if (isMobile) {
+    const spotlightBottom = rect.top + rect.height;
+    const roomBelow = vh - spotlightBottom;
+    const dockTop = roomBelow < tH + 24 && rect.top > tH + 24;
+    return {
+      top: dockTop ? 12 : Math.max(12, vh - tH - 12),
+      left: 12,
+      width: vw - 24,
+      effective: dockTop ? 'top' : 'bottom',
+    };
+  }
+
+  if (placement === 'center') {
+    return { top: vh / 2 - 100, left: vw / 2 - tW / 2, width: tW, effective: 'center' };
+  }
+
   let top = 0;
   let left = 0;
   let effective: Placement = placement;
@@ -93,6 +125,10 @@ const computeTooltipPos = (
   if (placement === 'top' && !canTop && canBottom) effective = 'bottom';
   if (placement === 'right' && !canRight && canLeft) effective = 'left';
   if (placement === 'left' && !canLeft && canRight) effective = 'right';
+  // Tablet-ish widths: side placements often do not fit — fall back vertically.
+  if ((effective === 'right' && !canRight) || (effective === 'left' && !canLeft)) {
+    effective = canBottom ? 'bottom' : 'top';
+  }
 
   switch (effective) {
     case 'top':
@@ -116,8 +152,9 @@ const computeTooltipPos = (
   // Clamp inside viewport with 8px margin.
   left = Math.max(8, Math.min(left, vw - tW - 8));
   top = Math.max(8, Math.min(top, vh - tH - 8));
-  return { top, left, effective };
+  return { top, left, width: tW, effective };
 };
+
 
 export const OnboardingTour: React.FC<Props> = ({ steps: rawSteps, onClose }) => {
   const { language } = useLanguage();
