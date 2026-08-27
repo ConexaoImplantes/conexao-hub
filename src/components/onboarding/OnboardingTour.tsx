@@ -29,6 +29,39 @@ const findTarget = (selector?: string): HTMLElement | null => {
   }
 };
 
+/** Element is actually painted and has usable size. */
+const isVisible = (el: HTMLElement): boolean => {
+  const r = el.getBoundingClientRect();
+  if (r.width < 4 || r.height < 4) return false;
+  const cs = window.getComputedStyle(el);
+  if (cs.visibility === 'hidden' || cs.display === 'none' || Number(cs.opacity) === 0) return false;
+  return true;
+};
+
+/** Interactive targets must actually contain something clickable. */
+const hasClickable = (el: HTMLElement): boolean => {
+  if (el.matches('button, a, input, select, textarea, [role="button"]')) return true;
+  const nodes = el.querySelectorAll<HTMLElement>('button, a, input, select, textarea, [role="button"]');
+  for (const n of nodes) {
+    if (!(n as HTMLButtonElement).disabled && isVisible(n)) return true;
+  }
+  return false;
+};
+
+/**
+ * A step is usable only when its target exists, is visible and — for interactive
+ * steps — offers something the user can actually click. Steps whose target is
+ * hidden by permissions, by the current view or simply empty are skipped.
+ */
+const isStepUsable = (step: TourStep): boolean => {
+  if (!step.targetSelector) return true;
+  const el = findTarget(step.targetSelector);
+  if (!el || !isVisible(el)) return false;
+  if (step.interactive && !hasClickable(el)) return false;
+  return true;
+};
+
+
 const rectOf = (el: HTMLElement): Rect => {
   const r = el.getBoundingClientRect();
   return { top: r.top, left: r.left, width: r.width, height: r.height };
